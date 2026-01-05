@@ -17,7 +17,7 @@ def save_aggregated_content(state: dict) -> dict:
     Save aggregated content to files.
 
     Args:
-        state: Pipeline state with 'output_data' and 'content_sufficiency'
+        state: Pipeline state with 'output_data', 'content_sufficiency', and 'discarded_articles'
 
     Returns:
         Dict with 'save_status' info
@@ -27,6 +27,7 @@ def save_aggregated_content(state: dict) -> dict:
 
         output_data = state.get("output_data", [])
         content_sufficiency = state.get("content_sufficiency", {})
+        discarded_articles = state.get("discarded_articles", [])
 
         debug_log(f"[NODE: save_aggregated_content] Saving {len(output_data)} records")
 
@@ -86,14 +87,28 @@ def save_aggregated_content(state: dict) -> dict:
 
             debug_log(f"[NODE: save_aggregated_content] Saved CSV to {csv_path}")
 
+        # Save discarded articles CSV
+        discarded_csv_path = data_dir / "discarded_news.csv"
+        if discarded_articles:
+            discarded_fieldnames = ["source_name", "title", "url", "pub_date", "discard_reason"]
+
+            with open(discarded_csv_path, "w", encoding="utf-8", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=discarded_fieldnames, extrasaction="ignore")
+                writer.writeheader()
+                writer.writerows(discarded_articles)
+
+            debug_log(f"[NODE: save_aggregated_content] Saved {len(discarded_articles)} discarded articles to {discarded_csv_path}")
+
         # Print summary
-        _print_summary(metadata, output_data)
+        _print_summary(metadata, output_data, len(discarded_articles))
 
         return {
             "save_status": {
                 "json_path": str(json_path),
                 "csv_path": str(csv_path),
+                "discarded_csv_path": str(discarded_csv_path),
                 "record_count": len(output_data),
+                "discarded_count": len(discarded_articles),
             }
         }
 
@@ -111,12 +126,13 @@ def _get_cost_info() -> dict:
         return {"total_cost": "unknown"}
 
 
-def _print_summary(metadata: dict, output_data: list) -> None:
+def _print_summary(metadata: dict, output_data: list, discarded_count: int = 0) -> None:
     """Print summary to console."""
     print("\n" + "=" * 60)
     print("CONTENT AGGREGATION COMPLETE")
     print("=" * 60)
     print(f"Total articles: {metadata['total_articles']}")
+    print(f"Discarded articles: {discarded_count}")
     print(f"Content source: {metadata['content_source']}")
     print(f"Sufficiency score: {metadata.get('sufficiency_score', 'N/A')}")
     print()

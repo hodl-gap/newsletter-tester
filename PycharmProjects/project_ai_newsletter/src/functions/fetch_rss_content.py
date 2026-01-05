@@ -22,6 +22,13 @@ MAX_RETRIES = 2       # Number of retry attempts after initial failure
 RETRY_DELAY = 5       # Seconds to wait between retries
 REQUEST_TIMEOUT = 20  # Seconds to wait for response (increased from 15)
 
+# Browser-like headers for HTTP fetch
+BROWSER_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+}
+
 
 class RSSArticle(TypedDict):
     """Raw article from RSS feed."""
@@ -64,7 +71,7 @@ def fetch_rss_content(state: dict) -> dict:
             # Retry loop for resilience against timeouts
             for attempt in range(MAX_RETRIES + 1):
                 try:
-                    articles = _fetch_single_feed(feed_url, source_name)
+                    articles = _fetch_single_feed(feed_url, source_name, feed_info)
 
                     # Deduplicate by URL
                     for article in articles:
@@ -90,13 +97,14 @@ def fetch_rss_content(state: dict) -> dict:
         return {"raw_articles": all_articles}
 
 
-def _fetch_single_feed(feed_url: str, source_name: str) -> list[RSSArticle]:
+def _fetch_single_feed(feed_url: str, source_name: str, feed_info: dict) -> list[RSSArticle]:
     """
     Fetch and parse a single RSS feed.
 
     Args:
         feed_url: URL of the RSS feed
         source_name: Name of the source
+        feed_info: Feed metadata including has_full_content and http_fetch_works
 
     Returns:
         List of RSSArticle dicts
@@ -124,14 +132,14 @@ def _fetch_single_feed(feed_url: str, source_name: str) -> list[RSSArticle]:
     articles: list[RSSArticle] = []
 
     for entry in feed.entries:
-        article = _parse_entry(entry, feed_url, source_name)
+        article = _parse_entry(entry, feed_url, source_name, feed_info)
         if article:
             articles.append(article)
 
     return articles
 
 
-def _parse_entry(entry: dict, feed_url: str, source_name: str) -> Optional[RSSArticle]:
+def _parse_entry(entry: dict, feed_url: str, source_name: str, feed_info: dict) -> Optional[RSSArticle]:
     """
     Parse a single feed entry into RSSArticle.
 
@@ -139,6 +147,7 @@ def _parse_entry(entry: dict, feed_url: str, source_name: str) -> Optional[RSSAr
         entry: feedparser entry dict
         feed_url: URL of the feed
         source_name: Name of the source
+        feed_info: Feed metadata including has_full_content and http_fetch_works
 
     Returns:
         RSSArticle or None if parsing fails
@@ -163,7 +172,7 @@ def _parse_entry(entry: dict, feed_url: str, source_name: str) -> Optional[RSSAr
     elif "description" in entry:
         description = _clean_html(entry.description)
 
-    # Get full content if available
+    # Get full content if available from RSS
     full_content = None
     if "content" in entry and entry.content:
         # content is usually a list
@@ -172,6 +181,14 @@ def _parse_entry(entry: dict, feed_url: str, source_name: str) -> Optional[RSSAr
             full_content = content_item.get("value", "")
         else:
             full_content = str(content_item)
+
+    # If no RSS full content but HTTP fetch works, try to fetch article
+    if not full_content and feed_info.get("http_fetch_works"):
+        debug_log(f"[NODE: fetch_rss_content] HTTP fetching: {link}")
+        fetched_content = fetch_article_content(link)
+        if fetched_content and len(fetched_content) > 200:
+            full_content = fetched_content
+            debug_log(f"[NODE: fetch_rss_content] HTTP fetch success: {len(full_content)} chars")
 
     # Get categories/tags
     categories = []
@@ -273,3 +290,90 @@ def _clean_html(text: str) -> str:
     text = re.sub(r'\s+', ' ', text)
 
     return text.strip()
+
+
+def fetch_article_content(url: str) -> Optional[str]:
+    """
+    Fetch article HTML and extract main content text.
+
+    Args:
+        url: Article URL to fetch
+
+    Returns:
+        Extracted article text or None if fetch fails
+    """
+    try:
+        response = httpx.get(
+            url,
+            timeout=15,
+            headers=BROWSER_HEADERS,
+            follow_redirects=True,
+        )
+        if response.status_code != 200:
+            return None
+
+        text = response.text.lower()
+        # Check for Cloudflare challenge
+        if 'just a moment' in text and ('cloudflare' in text or 'cf-' in text):
+            return None
+
+        return extract_article_text(response.text)
+
+    except Exception as e:
+        debug_log(f"[HTTP_FETCH] Error fetching {url}: {e}", "warning")
+        return None
+
+
+def extract_article_text(html: str) -> str:
+    """
+    Extract main article text from HTML.
+
+    Uses simple heuristics to find article content.
+
+    Args:
+        html: Raw HTML content
+
+    Returns:
+        Cleaned article text
+    """
+    # Remove script and style elements
+    text = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<noscript[^>]*>.*?</noscript>', '', text, flags=re.DOTALL | re.IGNORECASE)
+
+    # Remove navigation, header, footer, sidebar
+    text = re.sub(r'<nav[^>]*>.*?</nav>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<header[^>]*>.*?</header>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<footer[^>]*>.*?</footer>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<aside[^>]*>.*?</aside>', '', text, flags=re.DOTALL | re.IGNORECASE)
+
+    # Try to extract article or main content
+    article_match = re.search(r'<article[^>]*>(.*?)</article>', text, flags=re.DOTALL | re.IGNORECASE)
+    if article_match:
+        text = article_match.group(1)
+    else:
+        main_match = re.search(r'<main[^>]*>(.*?)</main>', text, flags=re.DOTALL | re.IGNORECASE)
+        if main_match:
+            text = main_match.group(1)
+
+    # Remove all remaining HTML tags
+    text = re.sub(r'<[^>]+>', ' ', text)
+
+    # Decode entities
+    text = text.replace("&nbsp;", " ")
+    text = text.replace("&amp;", "&")
+    text = text.replace("&lt;", "<")
+    text = text.replace("&gt;", ">")
+    text = text.replace("&quot;", '"')
+    text = text.replace("&#39;", "'")
+    text = text.replace("&rsquo;", "'")
+    text = text.replace("&lsquo;", "'")
+    text = text.replace("&rdquo;", '"')
+    text = text.replace("&ldquo;", '"')
+    text = text.replace("&mdash;", "—")
+    text = text.replace("&ndash;", "–")
+
+    # Normalize whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    return text

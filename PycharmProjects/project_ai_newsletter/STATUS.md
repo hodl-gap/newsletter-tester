@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-01-04
+**Last Updated:** 2026-01-05
 
 ## Current Phase
 
@@ -13,7 +13,55 @@ Layer 2 - Content Aggregation: **COMPLETE & TESTED**
 - **Results:** `data/rss_availability.json`
 - **Cost:** ~$0.025 per run
 
+### Full Content Detection - IMPLEMENTED (2026-01-05)
+
+Layer 1 now detects whether RSS feeds include `<content:encoded>` and whether HTTP fetch works for articles.
+
+**New fields in `rss_availability.json`:**
+- `has_full_content: boolean` - Whether RSS has content:encoded
+- `http_fetch_works: boolean | null` - Whether article URLs can be fetched via HTTP (null if not tested, i.e., has full content)
+
+**Summary stats added:**
+- `with_full_content` - Count of sources with RSS full content
+- `with_http_fetch` - Count of sources where HTTP fetch works
+- `no_content_access` - Count of sources with neither (e.g., Cloudflare blocked)
+
+### HTTP Article Fetch - IMPLEMENTED (2026-01-05)
+
+Layer 2 now automatically fetches article HTML for sources where:
+- RSS does NOT have `content:encoded`
+- HTTP fetch is confirmed to work (tested during Layer 1 discovery)
+
+**Implementation:**
+- `fetch_rss_content.py` receives `http_fetch_works` flag from Layer 1
+- When flag is True and no RSS content, fetches article URL with browser headers
+- Extracts main content from `<article>` or `<main>` tags
+- Falls back to description if fetch fails
+
+**Known blocked sources (Cloudflare JS challenge):**
+- AI Business
+- Others TBD (will be detected during Layer 1 run)
+
 ## Layer 2: Content Aggregation - COMPLETE
+
+### Summarization Improvements - IMPLEMENTED (2026-01-05)
+
+**Previous limitation:** Only articles with `full_content` (RSS `<content:encoded>`) were summarized.
+
+**Fixes implemented:**
+
+1. **Long descriptions now summarized** (`generate_summaries.py`)
+   - Threshold: descriptions > 500 chars are treated as full content
+   - VentureBeat (puts full articles in description) now gets summarized
+
+2. **HTTP fetch provides content** (`fetch_rss_content.py`)
+   - Sources without RSS content but with working HTTP fetch now have full articles
+   - These articles then get summarized
+
+3. **Prompt enhanced** (`generate_summary_system_prompt.md`)
+   - Added requirement: "Always explain what the company/product does"
+   - Example: "Nigerian firm Peaq raised $10M" → BAD
+   - Example: "Nigerian firm Peaq raised $10M. The startup uses AI to generate cartoon illustrations from text prompts." → GOOD
 
 ### Pipeline Flow
 
@@ -23,49 +71,85 @@ load_available_feeds → fetch_rss_content → filter_business_news
 → build_output_dataframe → save_aggregated_content
 ```
 
-### Latest Test Run (2026-01-04)
+### Latest Test Run (2026-01-05)
 
 | Metric | Value |
 |--------|-------|
 | **Model** | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) |
-| **Sources Tested** | Techcabal, Weetracker, 36Kr |
-| **Articles Fetched** | 48 |
-| **After Filtering** | 32 kept, 16 discarded |
-| **Total Cost** | $0.34 |
-| **LLM Calls** | 6 |
+| **Sources Processed** | 26 available feeds |
+| **Articles Fetched** | 465 (deduplicated) |
+| **After Filtering** | 131 kept, 334 discarded |
+| **Total Cost** | $1.60 |
+| **LLM Calls** | 43 |
+| **Total Time** | ~11 minutes |
 
 ### Output Distribution
 
 **By Region:**
-- East Asia: 16
-- Africa: 9
-- North America: 2
-- Middle East: 2
-- Global: 1
+- North America: 59
+- East Asia: 27
+- Europe: 13
+- Global: 9
+- Middle East: 8
+- Africa: 6
+- South Asia: 5
+- Southeast Asia: 2
+- Oceania: 1
 
 **By Category:**
-- Product Launch: 8
-- Funding: 7
-- Expansion: 4
-- Earnings: 3
-- Executive: 2
-- Acquisition: 2
-- IPO: 1
-- Layoff: 1
+- Funding: 40
+- Product Launch: 38
+- Acquisition: 14
+- IPO: 11
+- Expansion: 9
+- Partnership: 8
+- Other: 6
+- Earnings: 4
+- Executive: 1
 
 **By AI Layer:**
-- B2B Applications: 15
-- Chips & Infrastructure: 7
-- Consumer Applications: 5
-- Foundation Models: 4
-- Fine-tuning & MLOps: 1
+- B2B Applications: 53
+- Foundation Models: 33
+- Chips & Infrastructure: 21
+- Consumer Applications: 15
+- Fine-tuning & MLOps: 9
 
 ### Output Files
 
 - `data/aggregated_news.json` - Structured JSON with metadata
-- `data/aggregated_news.csv` - Tabular format
+- `data/aggregated_news.csv` - Tabular format (131 articles)
+- `data/discarded_news.csv` - Discarded articles with reasons (334 articles)
 
 ## Recent Improvements
+
+### 2026-01-05 (Latest)
+
+1. **Adaptive Batch Retry for JSON Parse Errors**
+   - `filter_business_news.py` now retries failed batches with smaller sizes
+   - Retry sequence: 25 → 15 → 10 articles per batch
+   - Increased `max_tokens` for smaller batches (2048 → 3072)
+   - **Result:** 100% recovery rate on failed batches (was 45% failure rate)
+   - Previously ~225 articles lost to `parse_error_discard`, now 0
+
+2. **Discarded Articles Export**
+   - New output file: `data/discarded_news.csv`
+   - Contains all filtered-out articles with LLM-generated discard reasons
+   - Schema: `source_name, title, url, pub_date, discard_reason`
+   - Enables analysis of filtering decisions and potential false negatives
+
+3. **Layer 1 Time Tracking Added**
+   - Added `track_time` to all Layer 1 node functions
+   - `test_rss_preset.py`, `test_ai_category.py`, `discover_rss_agent.py`, `classify_feeds.py`
+
+4. **Excluded General News Sources**
+   - Removed RFI and Euronews from available feeds (status → "excluded")
+   - These are general news sources that polluted results with non-AI articles
+   - Now 26 available feeds
+
+5. **Changed Default Behavior to DISCARD**
+   - `filter_business_news.py` now defaults to DISCARD on errors/missing classifications
+   - Previously defaulted to KEEP, which let non-AI articles slip through
+   - Safer for filtering quality; may lose some valid articles on transient errors
 
 ### 2026-01-04
 
@@ -118,8 +202,9 @@ REQUEST_TIMEOUT = 20  # Request timeout in seconds
 
 ## Next Steps
 
-1. Run full test with all 27 sources
-2. Add more AI-focused RSS sources
-3. Consider scheduled runs (cron/GitHub Actions)
-4. Add deduplication across runs
-5. Build frontend/newsletter output format
+1. ~~Run full test with all 27 sources~~ (Done 2026-01-05)
+2. ~~Add retry logic for LLM parse errors~~ (Done 2026-01-05 - adaptive batch sizing)
+3. Add more AI-focused RSS sources (replace excluded general news sources)
+4. Consider scheduled runs (cron/GitHub Actions)
+5. Add deduplication across runs (by URL, across multiple pipeline runs)
+6. Build frontend/newsletter output format

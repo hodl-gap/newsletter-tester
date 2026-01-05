@@ -47,6 +47,7 @@ class ContentAggregationState(TypedDict):
 
     # From filter_business_news
     filtered_articles: list[dict]
+    discarded_articles: list[dict]
 
     # From evaluate_content_sufficiency
     content_sufficiency: dict
@@ -133,6 +134,7 @@ def run(source_filter: Optional[list[str]] = None) -> dict:
         "available_feeds": [],
         "raw_articles": [],
         "filtered_articles": [],
+        "discarded_articles": [],
         "content_sufficiency": {},
         "enriched_articles": [],
         "output_data": [],

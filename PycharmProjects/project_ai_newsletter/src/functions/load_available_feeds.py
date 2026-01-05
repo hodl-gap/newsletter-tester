@@ -18,6 +18,8 @@ class FeedInfo(TypedDict):
     feed_url: str               # The recommended RSS feed URL
     source_name: str            # Extracted source name
     has_ai_feed: bool           # Whether it has a dedicated AI feed
+    has_full_content: bool      # Whether RSS has content:encoded
+    http_fetch_works: bool | None  # Whether article URLs are fetchable (None if not tested)
 
 
 def load_available_feeds(state: dict) -> dict:
@@ -76,6 +78,8 @@ def load_available_feeds(state: dict) -> dict:
                 "feed_url": feed_url,
                 "source_name": source_name,
                 "has_ai_feed": result.get("ai_feed_url") is not None,
+                "has_full_content": result.get("has_full_content", False),
+                "http_fetch_works": result.get("http_fetch_works"),
             }
             available_feeds.append(feed_info)
 

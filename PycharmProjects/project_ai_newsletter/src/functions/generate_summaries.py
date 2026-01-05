@@ -23,6 +23,9 @@ from src.tracking import track_llm_cost, debug_log, track_time
 # Batch size for LLM calls (smaller due to larger content)
 BATCH_SIZE = 10
 
+# Threshold: descriptions > 500 chars are likely full content (e.g., VentureBeat)
+FULL_CONTENT_THRESHOLD = 500
+
 
 def generate_summaries(state: dict) -> dict:
     """
@@ -60,14 +63,16 @@ def generate_summaries(state: dict) -> dict:
         debug_log("[NODE: generate_summaries] Generating LLM summaries")
 
         # Separate articles with/without full content
-        articles_with_content = [
-            a for a in enriched_articles
-            if a.get("full_content") and len(a.get("full_content", "")) > 100
-        ]
-        articles_without_content = [
-            a for a in enriched_articles
-            if not a.get("full_content") or len(a.get("full_content", "")) <= 100
-        ]
+        # Also treat long descriptions as full content (e.g., VentureBeat puts full articles in description)
+        def has_summarizable_content(a: dict) -> bool:
+            if a.get("full_content") and len(a.get("full_content", "")) > 100:
+                return True
+            if len(a.get("description", "")) > FULL_CONTENT_THRESHOLD:
+                return True
+            return False
+
+        articles_with_content = [a for a in enriched_articles if has_summarizable_content(a)]
+        articles_without_content = [a for a in enriched_articles if not has_summarizable_content(a)]
 
         debug_log(f"[NODE: generate_summaries] {len(articles_with_content)} articles have full content")
         debug_log(f"[NODE: generate_summaries] {len(articles_without_content)} articles will use description")
@@ -134,11 +139,14 @@ def _summarize_batch(articles: list[dict]) -> dict[str, str]:
     system_prompt = load_prompt("generate_summary_system_prompt.md")
 
     # Prepare articles for LLM
+    # Use full_content if available, otherwise fall back to description
     articles_for_llm = [
         {
             "url": a.get("link", ""),
             "title": a.get("title", ""),
-            "full_content": _clean_and_truncate(a.get("full_content", "")),
+            "full_content": _clean_and_truncate(
+                a.get("full_content") or a.get("description", "")
+            ),
         }
         for a in articles
     ]

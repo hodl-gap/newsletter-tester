@@ -64,7 +64,8 @@ project_ai_newsletter/
 │   ├── input_urls.json       # URLs to process (Layer 1 input)
 │   ├── rss_availability.json # RSS discovery results (Layer 1 output)
 │   ├── aggregated_news.json  # Aggregated content (Layer 2 output)
-│   └── aggregated_news.csv   # CSV format output (Layer 2 output)
+│   ├── aggregated_news.csv   # CSV format output (Layer 2 output)
+│   └── discarded_news.csv    # Filtered-out articles with reasons (Layer 2 output)
 ├── debug.log                 # Debug log file (auto-generated)
 ├── tests/                    # Test files
 │   └── test_{function_name}.py
@@ -250,9 +251,19 @@ def run():
 |-----------|----------|--------|
 | Orchestrator | `orchestrator.py` | - |
 | RSS Orchestrator | `rss_orchestrator.py` | - |
+| Content Orchestrator | `content_orchestrator.py` | - |
 | Node functions | `src/functions/` | `{name}.py` |
 | LLM models | `src/models.py` | - |
 | Tracking | `src/tracking.py` | - |
 | Prompts | `prompts/` | `{func}_{desc}_prompt.md` |
-| Data files | `data/` | `{name}.json` |
+| Data files | `data/` | `{name}.json` or `{name}.csv` |
 | Tests | `tests/` | `test_{name}.py` |
+
+## Output Files
+
+| File | Description |
+|------|-------------|
+| `data/rss_availability.json` | Layer 1 output: RSS feed discovery results |
+| `data/aggregated_news.json` | Layer 2 output: AI business news with metadata |
+| `data/aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
+| `data/discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |

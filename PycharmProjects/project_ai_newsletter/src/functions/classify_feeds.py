@@ -14,7 +14,7 @@ import anthropic
 load_dotenv()
 
 from src.utils import load_prompt
-from src.tracking import track_llm_cost, debug_log
+from src.tracking import track_llm_cost, debug_log, track_time
 
 
 class ClassificationResult(TypedDict):
@@ -34,66 +34,67 @@ def classify_feeds(feed_titles: dict[str, list[str]]) -> dict[str, bool]:
         Dict mapping URL to is_ai_focused boolean.
         Example: {"https://example.com": True}
     """
-    debug_log(f"[NODE: classify_feeds] Entering")
-    debug_log(f"[NODE: classify_feeds] Input: {len(feed_titles)} feeds to classify")
+    with track_time("classify_feeds"):
+        debug_log(f"[NODE: classify_feeds] Entering")
+        debug_log(f"[NODE: classify_feeds] Input: {len(feed_titles)} feeds to classify")
 
-    if not feed_titles:
-        debug_log(f"[NODE: classify_feeds] No feeds to classify")
-        return {}
+        if not feed_titles:
+            debug_log(f"[NODE: classify_feeds] No feeds to classify")
+            return {}
 
-    # Load system prompt
-    system_prompt = load_prompt("classify_feeds_system_prompt.md")
+        # Load system prompt
+        system_prompt = load_prompt("classify_feeds_system_prompt.md")
 
-    # Prepare user message with feed titles
-    user_message = json.dumps(feed_titles, indent=2)
+        # Prepare user message with feed titles
+        user_message = json.dumps(feed_titles, indent=2)
 
-    debug_log(f"[LLM INPUT]: {system_prompt}")
-    debug_log(f"[LLM INPUT USER]: {user_message}")
+        debug_log(f"[LLM INPUT]: {system_prompt}")
+        debug_log(f"[LLM INPUT USER]: {user_message}")
 
-    # Make LLM call
-    client = anthropic.Anthropic()
+        # Make LLM call
+        client = anthropic.Anthropic()
 
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1024,
-        system=system_prompt,
-        messages=[
-            {"role": "user", "content": user_message}
-        ],
-    )
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            system=system_prompt,
+            messages=[
+                {"role": "user", "content": user_message}
+            ],
+        )
 
-    # Track cost
-    track_llm_cost(
-        model=response.model,
-        input_tokens=response.usage.input_tokens,
-        output_tokens=response.usage.output_tokens,
-    )
+        # Track cost
+        track_llm_cost(
+            model=response.model,
+            input_tokens=response.usage.input_tokens,
+            output_tokens=response.usage.output_tokens,
+        )
 
-    # Extract response text
-    response_text = response.content[0].text
-    debug_log(f"[LLM OUTPUT]: {response_text}")
+        # Extract response text
+        response_text = response.content[0].text
+        debug_log(f"[LLM OUTPUT]: {response_text}")
 
-    # Parse JSON response (handle markdown code blocks)
-    try:
-        # Strip markdown code blocks if present
-        clean_text = response_text.strip()
-        if clean_text.startswith("```"):
-            # Remove opening ```json or ```
-            lines = clean_text.split("\n")
-            lines = lines[1:]  # Remove first line with ```
-            # Remove closing ```
-            if lines and lines[-1].strip() == "```":
-                lines = lines[:-1]
-            clean_text = "\n".join(lines)
+        # Parse JSON response (handle markdown code blocks)
+        try:
+            # Strip markdown code blocks if present
+            clean_text = response_text.strip()
+            if clean_text.startswith("```"):
+                # Remove opening ```json or ```
+                lines = clean_text.split("\n")
+                lines = lines[1:]  # Remove first line with ```
+                # Remove closing ```
+                if lines and lines[-1].strip() == "```":
+                    lines = lines[:-1]
+                clean_text = "\n".join(lines)
 
-        result = json.loads(clean_text)
-        debug_log(f"[NODE: classify_feeds] Output: {result}")
-        return result
-    except json.JSONDecodeError as e:
-        debug_log(f"[NODE: classify_feeds] ERROR: Failed to parse LLM response as JSON: {e}")
-        debug_log(f"[NODE: classify_feeds] Raw response: {response_text}")
-        # Return all as non-AI-focused as fallback
-        return {url: False for url in feed_titles.keys()}
+            result = json.loads(clean_text)
+            debug_log(f"[NODE: classify_feeds] Output: {result}")
+            return result
+        except json.JSONDecodeError as e:
+            debug_log(f"[NODE: classify_feeds] ERROR: Failed to parse LLM response as JSON: {e}")
+            debug_log(f"[NODE: classify_feeds] Raw response: {response_text}")
+            # Return all as non-AI-focused as fallback
+            return {url: False for url in feed_titles.keys()}
 
 
 def determine_recommended_feed(

@@ -19,7 +19,7 @@ import httpx
 load_dotenv()
 
 from src.utils import load_prompt_with_vars
-from src.tracking import track_llm_cost, debug_log
+from src.tracking import track_llm_cost, debug_log, track_time
 
 
 class RSSDiscoveryResult(TypedDict):
@@ -162,109 +162,110 @@ def discover_rss_agent(url: str) -> RSSDiscoveryResult:
     Returns:
         RSSDiscoveryResult with status and feed_url if found.
     """
-    debug_log("[NODE: discover_rss_agent] Entering")
-    debug_log(f"[NODE: discover_rss_agent] Input URL: {url}")
+    with track_time("discover_rss_agent"):
+        debug_log("[NODE: discover_rss_agent] Entering")
+        debug_log(f"[NODE: discover_rss_agent] Input URL: {url}")
 
-    # Extract domain for search
-    parsed = urlparse(url)
-    domain = parsed.netloc or parsed.path
+        # Extract domain for search
+        parsed = urlparse(url)
+        domain = parsed.netloc or parsed.path
 
-    # Load and format prompt
-    system_prompt = load_prompt_with_vars(
-        "discover_rss_agent_system_prompt.md",
-        url=url,
-        domain=domain,
-    )
-
-    debug_log(f"[LLM INPUT]: {system_prompt}")
-
-    # Initialize Anthropic client
-    client = anthropic.Anthropic()
-
-    messages = [
-        {"role": "user", "content": f"Find the RSS feed for: {url}"}
-    ]
-
-    # Agent loop
-    max_iterations = 5
-    iteration = 0
-
-    while iteration < max_iterations:
-        iteration += 1
-        debug_log(f"[NODE: discover_rss_agent] Iteration {iteration}")
-
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1024,
-            system=system_prompt,
-            tools=TOOLS,
-            messages=messages,
+        # Load and format prompt
+        system_prompt = load_prompt_with_vars(
+            "discover_rss_agent_system_prompt.md",
+            url=url,
+            domain=domain,
         )
 
-        # Track cost
-        track_llm_cost(
-            model=response.model,
-            input_tokens=response.usage.input_tokens,
-            output_tokens=response.usage.output_tokens,
-        )
+        debug_log(f"[LLM INPUT]: {system_prompt}")
 
-        debug_log(f"[LLM OUTPUT]: {response.content}")
+        # Initialize Anthropic client
+        client = anthropic.Anthropic()
 
-        # Check if we got a final text response
-        if response.stop_reason == "end_turn":
-            # Extract JSON from response
-            for block in response.content:
-                if hasattr(block, "text"):
-                    text = block.text
-                    # Try to parse JSON from response
-                    json_match = re.search(r'\{[^{}]*"status"[^{}]*\}', text, re.DOTALL)
-                    if json_match:
-                        try:
-                            result_data = json.loads(json_match.group())
-                            result: RSSDiscoveryResult = {
-                                "url": url,
-                                "status": result_data.get("status", "unavailable"),
-                                "feed_url": result_data.get("feed_url"),
-                                "method": result_data.get("method", "agent_search"),
-                                "notes": result_data.get("notes"),
-                            }
-                            debug_log(f"[NODE: discover_rss_agent] Output: {result}")
-                            return result
-                        except json.JSONDecodeError:
-                            pass
+        messages = [
+            {"role": "user", "content": f"Find the RSS feed for: {url}"}
+        ]
 
-            # No valid JSON found, return unavailable
-            break
+        # Agent loop
+        max_iterations = 5
+        iteration = 0
 
-        # Handle tool use
-        if response.stop_reason == "tool_use":
-            # Add assistant response to messages
-            messages.append({"role": "assistant", "content": response.content})
+        while iteration < max_iterations:
+            iteration += 1
+            debug_log(f"[NODE: discover_rss_agent] Iteration {iteration}")
 
-            # Execute tools and add results
-            tool_results = []
-            for block in response.content:
-                if block.type == "tool_use":
-                    debug_log(f"[NODE: discover_rss_agent] Tool call: {block.name}")
-                    result = execute_tool(block.name, block.input)
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": result,
-                    })
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=1024,
+                system=system_prompt,
+                tools=TOOLS,
+                messages=messages,
+            )
 
-            messages.append({"role": "user", "content": tool_results})
+            # Track cost
+            track_llm_cost(
+                model=response.model,
+                input_tokens=response.usage.input_tokens,
+                output_tokens=response.usage.output_tokens,
+            )
 
-    # Default result if agent didn't return valid JSON
-    result: RSSDiscoveryResult = {
-        "url": url,
-        "status": "unavailable",
-        "feed_url": None,
-        "method": "agent_search",
-        "notes": "Agent could not determine RSS availability",
-    }
-    debug_log(f"[NODE: discover_rss_agent] Output: {result}")
-    return result
+            debug_log(f"[LLM OUTPUT]: {response.content}")
+
+            # Check if we got a final text response
+            if response.stop_reason == "end_turn":
+                # Extract JSON from response
+                for block in response.content:
+                    if hasattr(block, "text"):
+                        text = block.text
+                        # Try to parse JSON from response
+                        json_match = re.search(r'\{[^{}]*"status"[^{}]*\}', text, re.DOTALL)
+                        if json_match:
+                            try:
+                                result_data = json.loads(json_match.group())
+                                result: RSSDiscoveryResult = {
+                                    "url": url,
+                                    "status": result_data.get("status", "unavailable"),
+                                    "feed_url": result_data.get("feed_url"),
+                                    "method": result_data.get("method", "agent_search"),
+                                    "notes": result_data.get("notes"),
+                                }
+                                debug_log(f"[NODE: discover_rss_agent] Output: {result}")
+                                return result
+                            except json.JSONDecodeError:
+                                pass
+
+                # No valid JSON found, return unavailable
+                break
+
+            # Handle tool use
+            if response.stop_reason == "tool_use":
+                # Add assistant response to messages
+                messages.append({"role": "assistant", "content": response.content})
+
+                # Execute tools and add results
+                tool_results = []
+                for block in response.content:
+                    if block.type == "tool_use":
+                        debug_log(f"[NODE: discover_rss_agent] Tool call: {block.name}")
+                        result = execute_tool(block.name, block.input)
+                        tool_results.append({
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": result,
+                        })
+
+                messages.append({"role": "user", "content": tool_results})
+
+        # Default result if agent didn't return valid JSON
+        result: RSSDiscoveryResult = {
+            "url": url,
+            "status": "unavailable",
+            "feed_url": None,
+            "method": "agent_search",
+            "notes": "Agent could not determine RSS availability",
+        }
+        debug_log(f"[NODE: discover_rss_agent] Output: {result}")
+        return result
 
 
 def discover_rss_agent_batch(urls: list[str]) -> list[RSSDiscoveryResult]:

@@ -33,6 +33,8 @@ class FinalResult(TypedDict):
     recommended_feed_url: str | None  # The actual URL to use
     method: str  # "preset", "agent_search", "agent_browse"
     notes: str | None
+    has_full_content: bool  # Whether RSS has content:encoded
+    http_fetch_works: bool | None  # Whether article URLs are fetchable (None if not tested)
 
 
 class RSSDiscoveryState(TypedDict):
@@ -250,6 +252,22 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                 url, is_ai_focused, main_feed_url, ai_feed_url
             )
 
+            # Determine content availability based on recommended feed
+            has_full_content = False
+            http_fetch_works = None
+
+            if recommended_field == "ai_feed_url" and ai_r:
+                has_full_content = ai_r.get("has_full_content", False)
+                http_fetch_works = ai_r.get("http_fetch_works")
+            elif recommended_field == "main_feed_url":
+                if main_r.get("status") == "available":
+                    has_full_content = main_r.get("has_full_content", False)
+                    http_fetch_works = main_r.get("http_fetch_works")
+                elif agent_r.get("status") == "available":
+                    # Agent results don't have content detection yet
+                    has_full_content = False
+                    http_fetch_works = None
+
             final_results.append({
                 "url": url,
                 "status": status,
@@ -260,6 +278,8 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                 "recommended_feed_url": recommended_url,
                 "method": method,
                 "notes": notes,
+                "has_full_content": has_full_content,
+                "http_fetch_works": http_fetch_works,
             })
 
         debug_log(f"[NODE: merge_results] Output: {len(final_results)} final results")
@@ -273,6 +293,15 @@ def save_results(state: RSSDiscoveryState) -> dict:
 
         results = state["final_results"]
 
+        # Calculate content availability stats for available feeds
+        available_results = [r for r in results if r["status"] == "available"]
+        with_full_content = sum(1 for r in available_results if r.get("has_full_content"))
+        with_http_fetch = sum(1 for r in available_results if r.get("http_fetch_works"))
+        no_content_access = sum(
+            1 for r in available_results
+            if not r.get("has_full_content") and not r.get("http_fetch_works")
+        )
+
         output = {
             "results": results,
             "timestamp": datetime.now().isoformat(),
@@ -282,6 +311,9 @@ def save_results(state: RSSDiscoveryState) -> dict:
             "unavailable": sum(1 for r in results if r["status"] == "unavailable"),
             "ai_focused": sum(1 for r in results if r["is_ai_focused"]),
             "has_ai_category": sum(1 for r in results if r["ai_feed_url"]),
+            "with_full_content": with_full_content,
+            "with_http_fetch": with_http_fetch,
+            "no_content_access": no_content_access,
         }
 
         output_path = Path("data/rss_availability.json")
@@ -298,6 +330,9 @@ def save_results(state: RSSDiscoveryState) -> dict:
         debug_log(f"  - Unavailable: {output['unavailable']}")
         debug_log(f"  - AI-focused: {output['ai_focused']}")
         debug_log(f"  - Has AI category: {output['has_ai_category']}")
+        debug_log(f"  - With full RSS content: {output['with_full_content']}")
+        debug_log(f"  - With HTTP fetch: {output['with_http_fetch']}")
+        debug_log(f"  - No content access: {output['no_content_access']}")
 
         return {}
 

@@ -10,9 +10,10 @@ Generate a concise summary (2-3 sentences, under 100 words) of each article.
 
 1. **Focus on business facts**: Who, what, how much, when
 2. **Include specific numbers**: Funding amounts, valuations, revenue figures, deal sizes
-3. **Mention geography**: If the company/deal is region-specific
-4. **Keep it factual**: No speculation, opinions, or marketing language
-5. **Lead with the news**: Start with the most important fact
+3. **Always explain what the company/product does** - Don't just state the business event
+4. **Mention geography**: If the company/deal is region-specific
+5. **Keep it factual**: No speculation, opinions, or marketing language
+6. **Lead with the news**: Start with the most important fact
 
 ## Style Guidelines
 
@@ -66,3 +67,9 @@ Return ONLY valid JSON:
 
 **Bad summary:**
 "A new funding round was announced today for an exciting AI startup in India that is working on language technology."
+
+**Good summary (includes what the product does):**
+"Nigerian firm Peaq raised $10M in Series A funding. The startup uses AI to generate cartoon illustrations from text prompts."
+
+**Bad summary (missing what the product does):**
+"Nigerian firm Peaq raised $10M in Series A funding."

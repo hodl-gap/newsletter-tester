@@ -34,8 +34,18 @@ class FilteredArticle(TypedDict):
     filter_reason: str
 
 
-# Batch size for LLM calls
+class DiscardedArticle(TypedDict):
+    """Article discarded during filtering."""
+    source_name: str
+    title: str
+    url: str
+    pub_date: str
+    discard_reason: str
+
+
+# Batch size for LLM calls (with fallback sizes on error)
 BATCH_SIZE = 25
+FALLBACK_BATCH_SIZES = [15, 10]
 
 
 def filter_business_news(state: dict) -> dict:
@@ -67,17 +77,18 @@ def filter_business_news(state: dict) -> dict:
 
             debug_log(f"[NODE: filter_business_news] Processing batch {batch_num}/{total_batches}")
 
-            classifications = _classify_batch(batch)
+            classifications = _classify_batch_with_retry(batch)
             all_classifications.update(classifications)
 
         # Apply classifications
         filtered_articles: list[FilteredArticle] = []
+        discarded_articles: list[DiscardedArticle] = []
         kept_count = 0
         discarded_count = 0
 
         for article in raw_articles:
             url = article.get("link", "")
-            classification = all_classifications.get(url, {"is_business_news": True, "reason": "default_keep"})
+            classification = all_classifications.get(url, {"is_business_news": False, "reason": "default_discard"})
 
             if classification["is_business_news"]:
                 filtered_article: FilteredArticle = {
@@ -89,23 +100,85 @@ def filter_business_news(state: dict) -> dict:
                 kept_count += 1
             else:
                 discarded_count += 1
-                debug_log(f"[NODE: filter_business_news] Discarded: {article.get('title', '')[:50]}... ({classification.get('reason', 'unknown')})")
+                reason = classification.get("reason", "unknown")
+                debug_log(f"[NODE: filter_business_news] Discarded: {article.get('title', '')[:50]}... ({reason})")
+
+                # Collect discarded article
+                discarded_article: DiscardedArticle = {
+                    "source_name": article.get("source_name", ""),
+                    "title": article.get("title", ""),
+                    "url": url,
+                    "pub_date": article.get("pub_date", ""),
+                    "discard_reason": reason,
+                }
+                discarded_articles.append(discarded_article)
 
         debug_log(f"[NODE: filter_business_news] Kept: {kept_count}, Discarded: {discarded_count}")
         debug_log(f"[NODE: filter_business_news] Output: {len(filtered_articles)} articles")
 
-        return {"filtered_articles": filtered_articles}
+        return {"filtered_articles": filtered_articles, "discarded_articles": discarded_articles}
 
 
-def _classify_batch(articles: list[dict]) -> dict[str, dict]:
+def _classify_batch_with_retry(articles: list[dict]) -> dict[str, dict]:
     """
-    Classify a batch of articles using LLM.
+    Classify a batch of articles with automatic retry on smaller batch sizes.
+
+    If parsing fails with the initial batch, splits into smaller sub-batches
+    and retries with reduced batch sizes (25 -> 15 -> 10).
 
     Args:
         articles: List of article dicts
 
     Returns:
         Dict mapping URL to classification {is_business_news, reason}
+    """
+    # Try with full batch first
+    success, classifications = _classify_batch(articles, max_tokens=2048)
+
+    if success:
+        return classifications
+
+    # Retry with smaller batch sizes
+    all_classifications: dict[str, dict] = {}
+
+    for fallback_size in FALLBACK_BATCH_SIZES:
+        debug_log(f"[NODE: filter_business_news] Retrying with batch size {fallback_size}")
+
+        all_success = True
+        temp_classifications: dict[str, dict] = {}
+
+        for i in range(0, len(articles), fallback_size):
+            sub_batch = articles[i:i + fallback_size]
+            # Increase max_tokens for smaller batches (more room per article)
+            max_tokens = 2048 if fallback_size >= 15 else 3072
+
+            success, sub_classifications = _classify_batch(sub_batch, max_tokens=max_tokens)
+
+            if success:
+                temp_classifications.update(sub_classifications)
+            else:
+                all_success = False
+                break
+
+        if all_success:
+            debug_log(f"[NODE: filter_business_news] Retry with batch size {fallback_size} succeeded")
+            return temp_classifications
+
+    # All retries failed - discard all articles in this batch
+    debug_log(f"[NODE: filter_business_news] All retries failed, discarding {len(articles)} articles", "error")
+    return {a.get("link", ""): {"is_business_news": False, "reason": "all_retries_failed"} for a in articles}
+
+
+def _classify_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool, dict[str, dict]]:
+    """
+    Classify a batch of articles using LLM.
+
+    Args:
+        articles: List of article dicts
+        max_tokens: Maximum tokens for LLM response
+
+    Returns:
+        Tuple of (success: bool, classifications: dict)
     """
     # Load system prompt
     system_prompt = load_prompt("filter_business_news_system_prompt.md")
@@ -122,7 +195,7 @@ def _classify_batch(articles: list[dict]) -> dict[str, dict]:
 
     user_message = json.dumps({"articles": articles_for_llm}, indent=2)
 
-    debug_log(f"[LLM INPUT]: System prompt length: {len(system_prompt)}")
+    debug_log(f"[LLM INPUT]: System prompt length: {len(system_prompt)}, max_tokens: {max_tokens}, batch_size: {len(articles)}")
     debug_log(f"[LLM INPUT USER]: {user_message[:1000]}...")
 
     # Make LLM call
@@ -130,7 +203,7 @@ def _classify_batch(articles: list[dict]) -> dict[str, dict]:
 
     response = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=2048,
+        max_tokens=max_tokens,
         system=system_prompt,
         messages=[
             {"role": "user", "content": user_message}
@@ -162,12 +235,11 @@ def _classify_batch(articles: list[dict]) -> dict[str, dict]:
                     "reason": item.get("reason", ""),
                 }
 
-        return classifications
+        return True, classifications
 
     except Exception as e:
         debug_log(f"[NODE: filter_business_news] ERROR parsing response: {e}", "error")
-        # Default to keeping all articles on error
-        return {a.get("link", ""): {"is_business_news": True, "reason": "parse_error_default"} for a in articles}
+        return False, {}
 
 
 def _parse_llm_response(response_text: str) -> dict:

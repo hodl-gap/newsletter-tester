@@ -10,7 +10,12 @@ from typing import TypedDict, Optional
 import httpx
 from urllib.parse import urljoin
 
-from src.tracking import debug_log
+from src.tracking import debug_log, track_time
+from src.functions.test_rss_preset import (
+    has_full_content,
+    extract_first_article_url,
+    test_http_fetch,
+)
 
 
 # AI category preset paths to try
@@ -36,6 +41,8 @@ class AIFeedResult(TypedDict):
     method: str  # "preset"
     notes: Optional[str]
     article_titles: list[str]
+    has_full_content: bool  # Whether RSS has content:encoded
+    http_fetch_works: Optional[bool]  # Whether article URLs are fetchable (None if not tested)
 
 
 def is_valid_rss(content: str) -> bool:
@@ -80,75 +87,91 @@ def test_ai_category(url: str) -> AIFeedResult:
     Returns:
         AIFeedResult with status and ai_feed_url if found.
     """
-    debug_log(f"[NODE: test_ai_category] Entering")
-    debug_log(f"[NODE: test_ai_category] Input URL: {url}")
+    with track_time("test_ai_category"):
+        debug_log(f"[NODE: test_ai_category] Entering")
+        debug_log(f"[NODE: test_ai_category] Input URL: {url}")
 
-    # Normalize URL
-    if not url.startswith(("http://", "https://")):
-        url = f"https://{url}"
-    url = url.rstrip("/")
+        # Normalize URL
+        if not url.startswith(("http://", "https://")):
+            url = f"https://{url}"
+        url = url.rstrip("/")
 
-    result: AIFeedResult = {
-        "url": url,
-        "status": "unavailable",
-        "ai_feed_url": None,
-        "method": "preset",
-        "notes": None,
-        "article_titles": [],
-    }
+        result: AIFeedResult = {
+            "url": url,
+            "status": "unavailable",
+            "ai_feed_url": None,
+            "method": "preset",
+            "notes": None,
+            "article_titles": [],
+            "has_full_content": False,
+            "http_fetch_works": None,
+        }
 
-    tried_paths = []
-    status_codes = []  # Track HTTP status codes for paywall detection
+        tried_paths = []
+        status_codes = []  # Track HTTP status codes for paywall detection
 
-    for path in AI_CATEGORY_PATHS:
-        feed_url = urljoin(url + "/", path.lstrip("/"))
-        tried_paths.append(path)
+        for path in AI_CATEGORY_PATHS:
+            feed_url = urljoin(url + "/", path.lstrip("/"))
+            tried_paths.append(path)
 
-        debug_log(f"[NODE: test_ai_category] Trying: {feed_url}")
+            debug_log(f"[NODE: test_ai_category] Trying: {feed_url}")
 
-        try:
-            response = httpx.get(
-                feed_url,
-                timeout=REQUEST_TIMEOUT,
-                follow_redirects=True,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; RSSBot/1.0)"}
-            )
+            try:
+                response = httpx.get(
+                    feed_url,
+                    timeout=REQUEST_TIMEOUT,
+                    follow_redirects=True,
+                    headers={"User-Agent": "Mozilla/5.0 (compatible; RSSBot/1.0)"}
+                )
 
-            status_codes.append(response.status_code)
+                status_codes.append(response.status_code)
 
-            if response.status_code == 200:
-                content = response.text
-                if is_valid_rss(content):
-                    titles = extract_article_titles(content)
-                    result["status"] = "available"
-                    result["ai_feed_url"] = feed_url
-                    result["notes"] = f"Found AI category at {path}"
-                    result["article_titles"] = titles
-                    debug_log(f"[NODE: test_ai_category] SUCCESS: Found AI feed at {feed_url}")
-                    debug_log(f"[NODE: test_ai_category] Titles: {titles}")
-                    debug_log(f"[NODE: test_ai_category] Output: {result}")
-                    return result
+                if response.status_code == 200:
+                    content = response.text
+                    if is_valid_rss(content):
+                        titles = extract_article_titles(content)
+                        result["status"] = "available"
+                        result["ai_feed_url"] = feed_url
+                        result["notes"] = f"Found AI category at {path}"
+                        result["article_titles"] = titles
 
-            debug_log(f"[NODE: test_ai_category] {path}: HTTP {response.status_code}")
+                        # Check for full content availability
+                        result["has_full_content"] = has_full_content(content)
+                        debug_log(f"[NODE: test_ai_category] has_full_content: {result['has_full_content']}")
 
-        except httpx.TimeoutException:
-            debug_log(f"[NODE: test_ai_category] {path}: Timeout")
-        except httpx.RequestError as e:
-            debug_log(f"[NODE: test_ai_category] {path}: Error - {e}")
+                        # If no full content, test HTTP fetch on first article
+                        if not result["has_full_content"]:
+                            first_url = extract_first_article_url(content)
+                            if first_url:
+                                debug_log(f"[NODE: test_ai_category] Testing HTTP fetch: {first_url}")
+                                result["http_fetch_works"] = test_http_fetch(first_url)
+                                debug_log(f"[NODE: test_ai_category] http_fetch_works: {result['http_fetch_works']}")
 
-    # Determine final status based on HTTP response codes
-    # If ALL responses were 403 (Forbidden), mark as paywalled
-    if status_codes and all(code == 403 for code in status_codes):
-        result["status"] = "paywalled"
-        result["notes"] = f"All {len(status_codes)} AI category paths returned HTTP 403 (Forbidden)"
-        debug_log(f"[NODE: test_ai_category] PAYWALLED: All paths returned 403 Forbidden")
-    else:
-        result["status"] = "unavailable"
-        result["notes"] = f"Tried: {', '.join(tried_paths)}"
-        debug_log(f"[NODE: test_ai_category] No AI category feed found")
+                        debug_log(f"[NODE: test_ai_category] SUCCESS: Found AI feed at {feed_url}")
+                        debug_log(f"[NODE: test_ai_category] Titles: {titles}")
+                        debug_log(f"[NODE: test_ai_category] Output: {result}")
+                        return result
 
-    debug_log(f"[NODE: test_ai_category] Output: {result}")
-    return result
+                debug_log(f"[NODE: test_ai_category] {path}: HTTP {response.status_code}")
+
+            except httpx.TimeoutException:
+                debug_log(f"[NODE: test_ai_category] {path}: Timeout")
+            except httpx.RequestError as e:
+                debug_log(f"[NODE: test_ai_category] {path}: Error - {e}")
+
+        # Determine final status based on HTTP response codes
+        # If ALL responses were 403 (Forbidden), mark as paywalled
+        if status_codes and all(code == 403 for code in status_codes):
+            result["status"] = "paywalled"
+            result["notes"] = f"All {len(status_codes)} AI category paths returned HTTP 403 (Forbidden)"
+            debug_log(f"[NODE: test_ai_category] PAYWALLED: All paths returned 403 Forbidden")
+        else:
+            result["status"] = "unavailable"
+            result["notes"] = f"Tried: {', '.join(tried_paths)}"
+            debug_log(f"[NODE: test_ai_category] No AI category feed found")
+
+        debug_log(f"[NODE: test_ai_category] Output: {result}")
+        return result
 
 
 def test_ai_category_batch(urls: list[str]) -> list[AIFeedResult]:
