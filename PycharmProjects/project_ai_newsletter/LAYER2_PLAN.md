@@ -40,7 +40,7 @@ DataFrame/JSON with columns:
 ### Pipeline Architecture
 
 ```
-[load_available_feeds] ──→ Read 27 feeds from rss_availability.json
+[load_available_feeds] ──→ Read feeds from rss_availability.json
         │
 [fetch_rss_content] ─────→ Fetch & parse RSS XML with feedparser
         │
@@ -48,14 +48,11 @@ DataFrame/JSON with columns:
         │                  KEEP: funding, M&A, startups, launches
         │                  DISCARD: technical research, tutorials
         │
-[evaluate_content_sufficiency] → Sample 10-20% of articles
-        │                        Score description vs full content
-        │                        Decide: use descriptions or summaries
-        │
 [extract_metadata] ──────→ LLM batch extraction (15 articles/call)
         │                  Extract: region, category, layer
         │
-[generate_summaries] ────→ Conditional: only if descriptions insufficient
+[generate_summaries] ────→ LLM generates English summaries for ALL articles
+        │                  1-2 sentences, translates non-English sources
         │
 [build_output_dataframe] → Assemble final output format
         │
@@ -71,7 +68,6 @@ DataFrame/JSON with columns:
 - `load_available_feeds.py`
 - `fetch_rss_content.py`
 - `filter_business_news.py`
-- `evaluate_content_sufficiency.py`
 - `extract_metadata.py`
 - `generate_summaries.py`
 - `build_output_dataframe.py`
@@ -79,7 +75,6 @@ DataFrame/JSON with columns:
 
 **Prompts (prompts/):**
 - `filter_business_news_system_prompt.md`
-- `evaluate_content_sufficiency_system_prompt.md`
 - `extract_metadata_system_prompt.md`
 - `generate_summary_system_prompt.md`
 

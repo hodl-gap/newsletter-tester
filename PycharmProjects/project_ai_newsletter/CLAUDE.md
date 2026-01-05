@@ -17,7 +17,9 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 
 **Layer 2: Content Aggregation** (depends on Layer 1)
 - Fetch actual content from discovered sources
-- Process and aggregate newsletters
+- Filter for AI business news
+- Generate concise English summaries (1-2 sentences)
+- Extract metadata (region, category, AI layer)
 
 ---
 
@@ -46,7 +48,6 @@ project_ai_newsletter/
 │       ├── load_available_feeds.py
 │       ├── fetch_rss_content.py
 │       ├── filter_business_news.py
-│       ├── evaluate_content_sufficiency.py
 │       ├── extract_metadata.py
 │       ├── generate_summaries.py
 │       ├── build_output_dataframe.py
@@ -57,7 +58,6 @@ project_ai_newsletter/
 │   ├── classify_feeds_system_prompt.md
 │   │── # Layer 2 prompts
 │   ├── filter_business_news_system_prompt.md
-│   ├── evaluate_content_sufficiency_system_prompt.md
 │   ├── extract_metadata_system_prompt.md
 │   └── generate_summary_system_prompt.md
 ├── data/                     # Input/output data files

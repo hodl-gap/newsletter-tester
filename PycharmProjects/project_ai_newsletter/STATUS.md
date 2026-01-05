@@ -44,31 +44,31 @@ Layer 2 now automatically fetches article HTML for sources where:
 
 ## Layer 2: Content Aggregation - COMPLETE
 
-### Summarization Improvements - IMPLEMENTED (2026-01-05)
+### Mandatory English Summaries - IMPLEMENTED (2026-01-05)
 
-**Previous limitation:** Only articles with `full_content` (RSS `<content:encoded>`) were summarized.
+**All articles now get LLM-generated English summaries** (1-2 sentences).
 
-**Fixes implemented:**
+**Changes:**
 
-1. **Long descriptions now summarized** (`generate_summaries.py`)
-   - Threshold: descriptions > 500 chars are treated as full content
-   - VentureBeat (puts full articles in description) now gets summarized
-
-2. **HTTP fetch provides content** (`fetch_rss_content.py`)
-   - Sources without RSS content but with working HTTP fetch now have full articles
-   - These articles then get summarized
-
-3. **Prompt enhanced** (`generate_summary_system_prompt.md`)
-   - Added requirement: "Always explain what the company/product does"
-   - Example: "Nigerian firm Peaq raised $10M" → BAD
-   - Example: "Nigerian firm Peaq raised $10M. The startup uses AI to generate cartoon illustrations from text prompts." → GOOD
+1. **Removed `evaluate_content_sufficiency` node** - No longer needed since we always summarize
+2. **Always generate summaries** (`generate_summaries.py`)
+   - All articles processed through LLM summarization
+   - Non-English sources (e.g., 36Kr) are translated to English
+   - Summaries are 1-2 sentences, under 80 words
+3. **Model changed to Haiku 4.5** - Cost-optimized from Sonnet 4
+4. **Adaptive batch retry** - On JSON parse errors, retries with smaller batches (10→7→5)
+5. **Prompt enhanced** (`generate_summary_system_prompt.md`)
+   - Must output in English (translate if source is non-English)
+   - Exactly 1-2 sentences
+   - Must include: company name, action, key numbers, geography
+   - Must explain what the company/product does
 
 ### Pipeline Flow
 
 ```
 load_available_feeds → fetch_rss_content → filter_business_news
-→ evaluate_content_sufficiency → extract_metadata → generate_summaries
-→ build_output_dataframe → save_aggregated_content
+→ extract_metadata → generate_summaries → build_output_dataframe
+→ save_aggregated_content
 ```
 
 ### Latest Test Run (2026-01-05)
@@ -176,11 +176,12 @@ load_available_feeds → fetch_rss_content → filter_business_news
 
 | Node | Model | Est. Cost per Run |
 |------|-------|-------------------|
-| filter_business_news | Haiku 4.5 | ~$0.18 |
-| extract_metadata | Haiku 4.5 | ~$0.13 |
-| evaluate_content_sufficiency | Haiku 4.5 | ~$0.02 |
-| generate_summaries | Haiku 4.5 | ~$0.08 (if needed) |
-| **Total** | | **~$0.34** |
+| filter_business_news | Haiku 4.5 | ~$0.15 |
+| extract_metadata | Haiku 4.5 | ~$0.05 |
+| generate_summaries | Haiku 4.5 | ~$0.19 (always runs) |
+| **Total** | | **~$0.39** |
+
+*Note: `evaluate_content_sufficiency` removed from pipeline (2026-01-05)*
 
 ## Configuration
 

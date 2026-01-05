@@ -1,44 +1,44 @@
 {
   "metadata": {
-    "timestamp": "2026-01-05T04:47:56.908615",
-    "total_articles": 131,
+    "timestamp": "2026-01-05T05:34:34.620207",
+    "total_articles": 136,
     "content_source": "descriptions",
-    "sufficiency_score": 3.5,
+    "sufficiency_score": 0,
     "cost": {
-      "total_cost": "$1.6021",
-      "input_tokens": 208373,
-      "output_tokens": 65135,
-      "llm_calls": 43
+      "total_cost": "$2.2439",
+      "input_tokens": 337780,
+      "output_tokens": 82037,
+      "llm_calls": 59
     },
     "by_category": {
       "Funding": 40,
-      "Other": 6,
-      "Product Launch": 38,
-      "IPO": 11,
-      "Executive": 1,
-      "Expansion": 9,
-      "Partnership": 8,
-      "Earnings": 4,
-      "Acquisition": 14
+      "Earnings": 6,
+      "Product Launch": 42,
+      "Acquisition": 15,
+      "Executive": 2,
+      "Expansion": 8,
+      "Partnership": 9,
+      "IPO": 10,
+      "Other": 4
     },
     "by_region": {
-      "East Asia": 27,
-      "North America": 59,
-      "Europe": 13,
+      "East Asia": 26,
+      "North America": 62,
+      "Global": 12,
       "Middle East": 8,
       "Southeast Asia": 2,
-      "Global": 9,
-      "South Asia": 5,
-      "Africa": 6,
+      "Europe": 12,
+      "South Asia": 4,
       "Unknown": 1,
-      "Oceania": 1
+      "Oceania": 1,
+      "Africa": 8
     },
     "by_layer": {
       "Fine-tuning & MLOps": 9,
-      "B2B Applications": 53,
-      "Consumer Applications": 15,
-      "Foundation Models": 33,
-      "Chips & Infrastructure": 21
+      "Chips & Infrastructure": 25,
+      "B2B Applications": 50,
+      "Consumer Applications": 19,
+      "Foundation Models": 33
     }
   },
   "articles": [
@@ -48,7 +48,7 @@
       "region": "East Asia",
       "category": "Funding",
       "layer": "Fine-tuning & MLOps",
-      "contents": "作者 | 林晴晴 编辑 | 袁斯来 硬氪获悉，近日，AI智能自动化平台提供商「九科信息」完成B2轮融资，本轮融资由深圳市特区建发战略新兴产业私募创业投资基金（以下简称“特建发亚商基金”）独家领投，融资金额累计过亿元人民币。此前公司已获得包括招商局创投、金沙江创投、深创投索斯福在内的多轮投资。本轮融资将主要用于产品研发、市场拓展及出海业务布局。 「九科信息」成立于2020年，孵化于招商局集团内部，是一家专注于为国央企提供企业级Agent智能体平台与智能自动化解决方案的科技企业。公司基于云原生架构，将AI、RPA、低代码与流程挖掘技术融合，形成了以企业级智能体bit-Agent为核心的产品矩阵，覆盖金融、能源、制造、政府、军工等多个领域。目前，其平台已通过百家大型国央企复杂场景验证，在央企市场渗透率超过30%。 （图源/企业） 当前，企业自动化领域正迎来深刻变革。随着大模型技术推动AI智能体进入规模化应用阶段，传统RPA基于规则执行、无法应对非标准化场景的局限性日益凸显。在能源、金融、制造等国央企核心业务中，存在大量重复但执行逻辑动态变化的流程，例如运维巡检、保险核保、采购审批等，传统自动化方案需预设所有异常处理规则，导致开发成本高、维护频繁、灵活度不足。这一痛点使得具备自主感知与决策能力的新一代智能自动化工具成为市场刚需。 硬氪了解到，针对这一空白，「九科信息」在今年实现了从“流程自动化”到“决策自动化”的关键突破。其核心产品bit-Agent通过融合多模态大模型与RPA执行能力，构建了“认知与操作分离”的独特架构。该架构不依赖单一模型，可同时支持DeepSeek、通义千问、GPT-4o等国内外主流大模型，并通过对界面元素的语义理解与操作抽象，有效规避了大模型幻觉带来的执行偏差。在实际应用中，bit-Agent能自主处理未预设的交互变化，例如在税务申报中自动识别新增协议并完成签署，在安全运维中根据实时告警调整巡检路径，大幅降低了人工干预成本。 企业供图 在产品演进方面，「九科信息」进一步强化了智能体在复杂组织中的协同能力。通过智能组织管控平台bit-Crew，企业可调度多个智能体与RPA机器人组成“数字员工团队”，实现跨系统、跨部门的端到端业务流程自动化。在某头部车企的落地案例中，该方案将安全巡检模板开发成本从30人天压缩至1人天，效率提升超10倍，错误率从15%降至1%以下。此外，公司去年推出的bit-IDP智能文档处理平台与bit-Bot智能知识助手，进一步拓展了其在非结构化数据处理与私有知识调用方面的能力边界。 「九科信息」CEO万正勇告诉硬氪，在竞争格局方面，国内智能自动化赛道仍处于早期阶段。部分传统RPA厂商受限于技术路径，难以摆脱对特定模型的强依赖；而一些从大模型端切入的厂商，则因缺乏对企业业务流程与界面操作的理解，在产品落地与规模化应用上遇到阻力。「九科信息」核心产品bit-Agent则支持企业私有知识库的嵌入与流程固化机制，前者允许导入业务规则、产品说明书等私域知识以指导自动化决策，后者可将验证过的任务执行逻辑固化以减少大模型幻觉带来的不确定性。这两项能力既保障了任务执行的可控性与安全性，又满足了信创环境下国产化部署的要求，形成了差异化壁垒。 （图源/企业） 市场拓展方面，「九科信息」已实现从单一工具输出向行业解决方案的转型。公司近期在汽车、金融、能源等领域落地了多个整体解决方案，例如为车企提供从安全巡检到异常处置的全链路运维自动化，为金融机构搭建全链路风控流程自动化系统。在信创替代方面，公司在兴业银行项目中，针对原UiPath平台下2000余个存量流程，已完成1000+个机器人的国产化迁移，覆盖800+业务场景，项目首年投资回报率超过1300%。目前，公司客户复购率超过80%，平均客单价超百万元。 （图源/企业） 团队方面，「九科信息」核心成员来自中金、甲骨文、华为、百度、腾讯等企业，具备超20年超大型企业服务经验。「九科信息」创始人万正勇毕业于北京大学，曾任招商金科高级总监、中金海外研发中心负责人，拥有丰富的企业级系统研发与团队管理经验；产品VP傅恺主导过多款亿元级商业化产品落地，其打造的低代码平台在建信金科实现单客户创造性营收超千万元；首席算法科学家邓彦博士曾任谷歌AI团队科学家，其研发的视觉模型与强化学习算法为bit-Agent带来更强的界面理解与响应能力。 据悉，在本轮近亿元B2轮融资交割后，九科信息已正式启动IPO筹备工作。 投资方观点： 特建发亚商基金投资负责人表示： 九科信息作为从招商局孵化的智能自动化领军企业，以全云原生架构构建的产品矩阵，精准切中了国央企数字化转型的核心需求。其融合“AI+RPA+低代码+流程挖掘”的技术路径，不仅打破传统自动化局限，更凭借企业级智能体产品bit-Agent实现赛道创新突破，在企业智能办公等场景形成差异化优势。公司通过百家国央企验证，央企渗透率超30%，高复购率与客单价印证市场认可度。我们看好其在信创浪潮下的成长潜力，相信本轮融资将助力其深化技术研发与市场拓展，持续引领国央企智能自动化升级。",
+      "contents": "Jiuke Information, an AI enterprise automation platform spun out from China Zhongjin Group, completed over 100 million yuan in Series B2 funding led by Shenzhen's special economic zone development fund. The startup provides intelligent agent platforms for central state-owned enterprises, with products deployed across 30% of China's central SOEs.",
       "url": "https://36kr.com/p/3625896773240067?f=rss",
       "title": "前中金、甲骨文团队再创业，其AI智能自动化平台渗透三成央企，再获亿元融资 | 硬氪首发"
     },
@@ -57,8 +57,8 @@
       "source": "36Kr",
       "region": "East Asia",
       "category": "Funding",
-      "layer": "B2B Applications",
-      "contents": "作者｜黄楠 编辑｜袁斯来 硬氪获悉，上海织识智能科技有限公司（以下简称“尧乐科技”）已完成近亿元Pre-A轮融资，云道资本担任长期独家财务顾问。我们总结了本轮融资信息和该公司几大亮点： 融资金额及投资机构 融资轮次： Pre-A轮 融资规模： 近亿元；此前已获得小米集团投资的首轮融资 投资方： 科沃斯参股的隐峰揽秀基金领投，硅港资本、初辉资本跟投 资金用途： 本轮资金将重点投向核心技术迭代、出海市场扩展以及硬件规模化量产 公司基本信息 成立时间： 2015年 注册地址： 上海市徐汇区 企业定位： 尧乐科技是一家专注于柔性织物压力传感器研发与解决方案提供商，基于平台化的“柔性触觉感知”技术，向B端客户提供传感器设计、软硬件及算法的一站式智能感知解决方案，并面向C端与海外市场，自主打造覆盖人体高频接触场景的“1+N”健康感知产品矩阵。 团队背景： 创始人兼CEO吕莉蕴曾任职于国际汽车电子头部企业Harman担任首席架构工程师，主导多模态传感器融合计算平台研发，在车载感知系统与硬件架构领域经验深厚。核心团队多来自中科院、密歇根大学等知名机构，具备从底层传感材料到上层智能算法的全链条研发能力。 技术亮点： 尧乐科技以自主研发的柔性织物传感技术为核心，构建了从纤维纱线到传感器成品的全产业链垂直整合能力。公司创新性地提出“织物即传感器”概念，将导电纱线直接织入织物基底，形成具备压敏效应的智能材料，可以实现传感结构的无感化与高贴合性。 基于柔性织物基底的压力分布测试技术，其核心采用“三明治”结构压阻式设计，电极层呈横纵正交排布于压敏层两侧，能实现高密度、高一致性的压力点阵测量，并具备高灵敏、可拉伸、耐疲劳等类皮肤特性，可紧密贴合复杂曲面，适用于动态穿戴与长期使用场景。同时，通过进一步融合压力分布、动态姿态、接触识别等多模态感知能力，结合其自研算法，能实现对行为的精准分析与状态监测。 “三明治”结构（图源/企业） 市场体量 Grand View Research报告显示，全球智能传感器市场规模在2023年达514.2亿美元，预计2024-2030年将以19.0%的复合年增长率持续扩张。其中，柔性传感器作为极具潜力的细分领域，市场需求呈现出井喷式增长。中商产业研究院相关报告预测，2024-2030年期间，全球柔性传感器市场规模的复合年增长率约为18.5%。 业务进度 尧乐科技已形成清晰的B端+C端双业务模式。 B端市场方面，公司作为核心供应商进入了多家头部车企供应链，为多款月销过万的车型提供智能座舱压力感知方案。业务已覆盖智能汽车、医疗康复、机器人等超百家客户，产品在汽车、两轮车等领域实现稳定量产，并拓展至意大利、韩国、北美等海外市场。 在C端，公司已建立海外团队，构建从垂直产品到全景人体健康感知的生态，近期计划在北美市场首发系列智能健康产品。 消费级应用场景（图源/企业） 创始人思考 硬氪：从业务端来看，目前柔性智能传感器的增长点主要集中在哪些板块？ 吕莉蕴： 从客户结构来看，汽车制造商跨界入局成为重要趋势，其供应链体系与机器人行业具备较高重叠度。当前柔性智能传感器的爆发式增长中，汽车领域已成为技术落地与商业化验证的“高阶考场”。其严苛的供应链标准、性能要求与规模化量产压力，实质上为触觉传感器行业树立了严苛且清晰的技术标准和筛选机制。 当前，主机厂在选择技术方案时主要关注三个维度；包括性能表现，即传感器的准确性、可靠性及一致性；其次是成本控制，需要满足大规模量产的经济性要求；此外，是否具备实际量产经验也是关键决策因素。已量产的方案通常会优先进入供应商名单。 下半年以来，尧乐科技在汽车、智能家居、电动车及儿童安全座椅等重点行业均已完成量产落地，业务进入规模化阶段。其中，汽车领域有多个项目已处于量产交付阶段，另有约十个项目预计于明年内量产。 硬氪：市场上主流的机器人触觉感知方案有哪些？相比之下，织物传感器具备哪些独特性？ 吕莉蕴： 当前机器人触觉感知领域，主流方案多依赖薄膜、TPU或硅胶类弹性体��材质，这类材料凭借天然的弹性特质，能为机器人表面赋予亲和且柔和的触感反馈，因此在手部灵巧操作等对交互细腻度要求较高的关键部位应用尤为普遍。 机器人触觉感知场景（图源/企业） 尧乐科技采用的织物触觉传感器方案有其独特性。其一，在安装与维护层面，以“织物覆盖”的模块化设计，能实现灵活替换，给机器人“穿戴定制衣物”，适配性更强且无需对机器人本体结构进行改造，解决了传统薄膜、弹性体方案拆装繁琐的痛点。 其二，感知响应层面，传感层与织物表面直接集成的设计，这种设计消除了中间传导环节，不仅带来了更快速、直接的信号捕捉，其响应速度可媲美人类皮肤，更重要的是能同时感知垂直压力与物体滑移趋势。这一能力正是机器人实现精准、稳定抓握的关键。同时，其感知性能不受表面覆盖物影响，稳定性更高。 其三，规模化应用层面独特的可扩展性。织物方案支持大面积无缝覆盖，可直接包裹复杂曲面，解决了传统薄膜方案在关节等部位易产生信号盲区、连接断裂的问题，从而降低了系统集成的复杂度与长期维护风险。 总结来看，织物传感器并非单纯的材料或工艺的替代，而是通过织物本身的柔性、可穿戴性和可扩展性，重新构建机器触觉的系统设计范式，能够使机器人触觉从“点”的精确测量走向“面”的智能交互，实现从实验室级走向工业耐用。随着机器人产业逐步从技术演示迈向规模化交付，兼顾性能、成本与可靠性的织物方案已经得到越来越多的机器人客户关注与认可。 从“点”到“面”（图���/企业） 硬氪：随着具身智能向实际场景落地，不同技术路线是否会逐步收敛？未来触觉传感器在不同部位如手部、躯干的应用将呈现怎样的差异化趋势？ 吕莉蕴： 在汽车行业，客户订单从导入到量产通常需要较长的周期，这构成了较高的行业准入壁垒。自适应座椅等领域的市场需求往往提前两年左右即开始集中释放，当前市场格局已基本稳定。新进方案商若想进入供应链，需经历一至两年的认证与验证流程，导致目前行业对新方案商的准入机会较为有限。 从上游产业链视角看，目前具身智能领域的技术路线尚未完全收敛，预计未来不同传感器方案将在不同应用场景中形成差异化优势。比如某些方案可能在灵巧手或指尖触觉上表现突出，而我们则专注于躯干部位的大面积柔性传感。 随着机器人逐步进入家庭陪伴、康复护理、工业产线等实际应用场景，其对触觉感知的需求将显著提升，尤其在需与人频繁交互的环境中，触觉能力将成为刚需，尤其是躯干等大面积的触觉覆盖。这也是接下来我们重点布局的方向。 投资人思考 隐峰揽秀基金表示，隐峰揽秀基金长期关注触觉这一机器人上游核心部件，这也是机器人提高感知和泛化能力的关键，目前各种技术路线百花齐放。尧乐的织物触觉方案在稳定性、耐用性和成本上具备明显的竞争优势，且产品经过多年打磨，已经得到众多汽车产业客户的认证和批量化采购，期待尧乐领先的技术和成熟的产品在汽车、机器人、消费等场景加速落地，推动柔性触觉真正可用，打开更大的市场空间。 硅港资本表示，尧乐科技充分展示了其在柔性织物传感器领域的源头创新与稀缺性，其核心材料与结构设计兼备高灵敏度与耐用性，结合独特的算法优势形成一站式智能感知解决方案，构筑了显著的技术壁垒，团队不仅技术扎实，更展现出将前沿研发与汽车、医疗、机器人等重大产业需求精准对接的商业化能力。我们相信，随着智能汽车交互、健康监测、以及具身智能场景需求的爆发，公司将成为推动物理世界数字化、实现感知层升级的关键赋能者与引领者。 初辉资本表示，柔性传感器作为各类智能硬件触觉感知及闭环调节的关键底层能力，正处于下游应用场景加速验证与规模化落地的拐点。尧乐科技长期深耕织物级柔性传感方案研发，在材料与结构设计及量产工艺上积累深厚，产品具备高可靠性、高耐用性与高性价比等综合优势。尧乐的产品方案已在车载座椅、智能家居等消费场景实现规模化落地，并向具身智能等高成长赛道加速拓展。我们相信，尧乐将持续以底层传感技术赋能下游应用，有望充分享受硬件智能化带来的广阔市场机遇。",
+      "layer": "Chips & Infrastructure",
+      "contents": "Shanghai Zhinuo Technology, a flexible textile pressure sensor developer, raised nearly 100 million yuan in Pre-A funding led by Sequoia Capital's Hidden Gem Fund. The startup uses woven pressure sensing technology for robotics and smart home applications.",
       "url": "https://36kr.com/p/3618139468923911?f=rss",
       "title": "科沃斯参股基金投了一家柔性触觉感知公司，产品已上车头部新势力｜硬氪首发"
     },
@@ -66,19 +66,29 @@
       "date": "2026-01-05",
       "source": "36Kr",
       "region": "East Asia",
-      "category": "Other",
-      "layer": "B2B Applications",
-      "contents": "36氪获悉，爱企查App显示，近日，浙江娃哈哈智能机器人有限公司登记状态由存续变更为注销。浙江娃哈哈智能机器人有限公司成立于2019年3月，法定代表人为宗庆后，注册资本4000万人民币，经营范围包括智能机器人、机器设备及零部件的研发、制造、销售等。股东信息显示，该公司由娃哈哈商业股份有限公司、浙江数脉科技有限公司、鲍成乐共同持股。",
-      "url": "https://36kr.com/newsflashes/3626012114207745?f=rss",
-      "title": "浙江娃哈哈智能机器人公司近日注销"
+      "category": "Earnings",
+      "layer": "Chips & Infrastructure",
+      "contents": "Taiwan Semiconductor Manufacturing Company's 2nm (N2) advanced chip manufacturing process ramped production to 35,000 wafers monthly in early production, with plans to increase to 140,000 wafers monthly by end of 2025.",
+      "url": "https://36kr.com/newsflashes/3626066184635648?f=rss",
+      "title": "台积电2nm量产初期月产能约3.5万片晶圆，2026年底有望达14万片"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "36Kr",
+      "region": "East Asia",
+      "category": "Earnings",
+      "layer": "Chips & Infrastructure",
+      "contents": "Low-altitude economy stocks gained investor attention in 2025 as the industry matured, with 5 mid-cap companies including Aerospace Electronics and Aviation Dynamics each receiving over 100 million yuan in institutional investment.",
+      "url": "https://36kr.com/newsflashes/3626053219206409?f=rss",
+      "title": "低空经济站上风口，融资资金出手加仓5股"
     },
     {
       "date": "2026-01-05",
       "source": "36Kr",
       "region": "East Asia",
       "category": "Product Launch",
-      "layer": "Consumer Applications",
-      "contents": "36氪获悉，微信小程序正式推出“AI应用及线上工具小程序成长计划”。该计划将提供云开发资源、AI算力、数据分析、广告变现及流量激励等全方位支持。本次成长计划的激励期为2026年1月1日至2026年12月31日，所有线上类应用均可参与计划，包括线上工具、AI原生及娱乐类小程序等。",
+      "layer": "B2B Applications",
+      "contents": "WeChat launched an AI mini-app growth program providing cloud development resources, AI computing power, data analytics, advertising monetization, and traffic incentives through December 2026.",
       "url": "https://36kr.com/newsflashes/3626011045970952?f=rss",
       "title": "腾讯启动AI小程序成长计划"
     },
@@ -87,40 +97,40 @@
       "source": "36Kr",
       "region": "East Asia",
       "category": "Product Launch",
+      "layer": "B2B Applications",
+      "contents": "Tencent's ima AI work platform launched PowerPoint generation features, allowing users to create presentations using personal knowledge bases with one click.",
+      "url": "https://36kr.com/newsflashes/3625991860765704?f=rss",
+      "title": "腾讯ima上线PPT生成功能"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "36Kr",
+      "region": "East Asia",
+      "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "36氪获悉，近日，网易有道旗下AI原生学习硬件“有道AI答疑笔Space X”完成重要升级，正式推出国内首个AI“视频答疑”功能，标志着AI学习硬件从“文本推理”迈向了“生成式视频讲解”的新阶段，实现了从静态图文到动态板书视频的体验跨越。",
+      "contents": "NetEase's Youdao launched China's first AI video explanation feature in its learning device Youdao AI Answer Pen, enabling AI-generated video lectures from static educational content.",
       "url": "https://36kr.com/newsflashes/3625981003400449?f=rss",
       "title": "国内首个生成式视频讲解功能上线有道AI答疑笔"
     },
     {
       "date": "2026-01-05",
-      "source": "36Kr",
-      "region": "East Asia",
-      "category": "Product Launch",
-      "layer": "B2B Applications",
-      "contents": "36氪获悉，爱企查App显示，近日，乐聚通力（北京）机器人技术有限公司成立，经营范围包括智能机器人的研发、工业机器人销售、软件开发、人工智能应用软件开发等。股东信息显示，该公司由乐聚机器人关联公司乐聚智能（深圳）股份有限公司等共同持股。",
-      "url": "https://36kr.com/newsflashes/3625966900970505?f=rss",
-      "title": "乐聚机器人等在北京新设机器人技术公司"
-    },
-    {
-      "date": "2026-01-05",
-      "source": "36Kr",
-      "region": "East Asia",
-      "category": "Product Launch",
-      "layer": "Foundation Models",
-      "contents": "从知情人士处获悉，阿里巴巴旗下高德已布局世界模型，并计划基于世界模型推出一项新的产品应用。目前，该模型已在空间智能评测基准WorldScore中，取得多项指标第一的成绩。此外，高德内部已成立具身业务部。在招聘平台上，高德放出了具身业务部的多个招聘岗位，包括具身智能产品专家、数据/算法工程师等方向。知情人士表示，机器人、机器狗等产品形态都在具身业务部的探索方向之中。（新浪科技）",
-      "url": "https://36kr.com/newsflashes/3625936917873923?f=rss",
-      "title": "高德正式布局世界模型，即将发布相关新产品"
-    },
-    {
-      "date": "2026-01-05",
       "source": "Caixinglobal",
-      "region": "East Asia",
-      "category": "IPO",
-      "layer": "B2B Applications",
-      "contents": "China&rsquo;s Unitree Robotics is on track for a domestic IPO that is expected to be completed by the end of the second quarter, said a source, who denied recent media reports that an approval process to fast-track its IPO has been suspended.... Read more",
-      "url": "https://www.caixinglobal.com/2026-01-05/robot-maker-unitrees-ipo-expected-by-mid-2026-source-says-102400282.html?originReferrer=Feedly",
-      "title": "Robot-Maker Unitree’s IPO Expected by Mid-2026, Source Says"
+      "region": "North America",
+      "category": "Acquisition",
+      "layer": "Chips & Infrastructure",
+      "contents": "President Trump ordered a Chinese-controlled company to divest its acquisition of Emcore Corp.'s aerospace and defense chip assets, citing national security concerns. The action reflects escalating U.S. restrictions on Chinese semiconductor acquisitions.",
+      "url": "https://www.caixinglobal.com/2026-01-05/trump-orders-chinese-controlled-firm-to-unwind-purchase-of-us-chip-assets-102400291.html?originReferrer=Feedly",
+      "title": "Trump Orders Chinese-Controlled Firm to Unwind Purchase of U.S. Chip Assets"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "Financial Times",
+      "region": "Global",
+      "category": "Product Launch",
+      "layer": "Consumer Applications",
+      "contents": "Unable to generate summary—article content behind paywall.",
+      "url": "https://www.ft.com/content/5d566029-6aee-4627-a665-81108a1eb70e",
+      "title": "AI start-ups take on Google in fight to reshape web browser market"
     },
     {
       "date": "2026-01-04",
@@ -128,7 +138,7 @@
       "region": "East Asia",
       "category": "Funding",
       "layer": "Consumer Applications",
-      "contents": "硬氪获悉，专注于智能体感游戏外设的企业「Action&Link」近日完成数百万元种子轮融资。「Action&Link」成立于2023年，其创始人戎思佳是95后，此次创业对他来说是兴趣、思考和技术的结合。我们总结了本轮融资信息和该公司几大亮点： Action&Link Portal体感控制器 1. 融资金额及投资机构 融资轮次： 种子轮 融资规模： 数百万元人民币 投资方： 真格基金 资金用途： 扩张团队，重点补充软件算法研发人员、运营人员。建立供应链，实现产品量产。 2. 公司基本信息 成立时间： 2023年 注册地址： 上海 产品和技术亮点： Action&Link Portal体感控制器是一款创新的体感交互设备，不管在PC端还是Switch上还是手机平台上，不管是3A大作还是休闲小游戏，能将大家熟悉的游戏，比如《原神》《黑神话：悟空》等，转化为全身参与的体感体验。简单来说，当你挥动手臂，游戏里的角色也会同步挥剑，你的身体就是最自然的操作器。公司目前通过3D打印的1000个产品已全部售完，正在开模量产中。 3. 团队背景 创始人戎思佳本科毕业于四川大学，大一就拿到教育部全国机器人大赛二等奖，后转学去了匹兹堡大学，主修机械工程和计算机科学。回国后，戎思佳加入了小鹏汽车 Robotaxi 项目，参与远程驾驶程序编写。随后，戎思佳又去了初创公司 Fitplay做开放世界体感游戏，主要负责体感引擎算法。 4.创始人问答 硬氪：您最初为什么想做这样一款产品？ 戎思佳： 我本身就比较喜欢玩游戏，尤其是RPG类游戏和开放世界这类游戏的忠实粉丝，这些年一直在关注体感游戏。加上我之前也是程序员，下班回家已经很晚，一方面我很想玩游戏，比如刷一下当时比较火的《原神》的每日任务，另一方面我的体重也在日益增加，健康是个问题。当时我就想，能不能把玩游戏和锻炼结合起来。 技术方面我也受之前在小鹏做Robotaxi的启发，发现自动驾驶的核心框架是图像信号进来，控制信号输出，车辆被控制。而体感游戏本质上也类似，通过视觉感知人类动作，再转化为控制信号去驱动游戏。 最开始我刚做出来demo，给朋友看，他们都很感兴趣。所以我在没有收入的情况下又坚持做了一段时间，还在 b 站上面发了一个用demo玩游戏的视频，有40多万播放量，一下就火了。我意识到，市场还是有很多人对此感兴趣的，所以就做了下来。 硬氪：相比起传统的体感外设，Action&Link Portal体感控制器有什么样的特点？ 戎思佳： 首先传统体感外设走特化路径，做专门的体感引擎，配上专门的体感游戏，比如说切水果、《舞力全开》（Just Dance）这类。但我们的判断是这个方向的市场天花板有限，因为整体来说，玩家正在往自由度更高的游戏上迁移，从2D转向3D，到现在 3D 游戏也有越来越多的开放世界。而现有的主要依赖于感知的传统体感游戏引擎越来越难以支撑当前高自由度高复杂度游戏的操控。因此，我想引入自动驾驶中已经相当成熟的预测与规控概念来解决这个复杂操控场景的问题 所以我们想做的事情就是给原来以低自由度游戏为主的体感游戏行业，引入更多高自由度的游戏内容。同时，让玩家能够低成本体验到高自由度的体感游戏。这是我们给这个行业带来的新东西。 另外我们的产品不另起炉灶，不做独立封闭体系，而是主动兼容市面上可兼容的游戏，就像是iPhone也会有诺基亚的所有功能一样。相比 VR 等方案会更容易普及。开放的平台、开放的协议、开放的标准这些才是能真正做大的。 硬氪：从直播无人观看到参加小红书的开发者大会并且获得了第一名，可以聊聊当时的经历吗？ 戎思佳： 我们从去年的 12 月 26 号开始做直播带货，当时前一周还是很难熬的，因为直播间人数常常是个位数。后来我想到直播用体感外设打《黑神话》这个游戏，没想到一下就变成细分区的流量第一，后来流量也都一直不错，有很多人看我打觉得很有意思就下单买了。慢慢地，有基础销量后，转化率也在上升，大家点进评论区可以看到很多好评，我们也会拍视频教大家怎么去玩。于是后面两个月一下子就卖掉剩下全部库存，大概是八九百台。 最开始也是机缘巧合，我们在一个展会上看到了小红书的这个活动。当时主要看中了它的奖金，普通奖项能有5万元，最大的奖有50万元，所以我们就去参加了。在比赛上，我拿出Action&Link Portal控制游戏里面角色的时候，全场都是欢呼。当时我还是很开心的，就觉得这一两年的时间真的没有白费。 硬氪：未来有什么样的计划？ 戎思佳： 我们一直都秉持着精益创业的精神，所以全职人数非常精简。接下来我们会再扩张一下团队规模，主要是软件算法研发这一块，也会随着运营节奏逐渐补充运营人员。同时，我们也在研发下一代产品，会在更早期就引入成熟的供应链厂商来和我们一起优化整个的产品设计。随着团队的完善，我希望能给我们的老用户提供更多有价值的软件更新， 也希望能给更多新用户带去前所未有的高自由度体感游戏体验。 5.投资人观点 真格基金投资人表示： 用体感的方式实现更沉浸的交互、与虚拟世界打交道，是许多人的共同愿景，但长期以来并没有真正意义上低门槛、价格也合适的硬件出现。Action&Link正是在做这样一件事。戎思佳在小鹏期间从事视觉传感相关工作，离开后一直投入体感游戏创业，经历过只有一个人坚守的阶段，展现出难得的毅力与生命力。同时，他对体感游戏有更深一层的理解，不止步于“体感”本身，而是长期追求更沉浸的体验。",
+      "contents": "Action&Link, a company specializing in AI-powered immersive gaming controllers, completed a multi-million yuan seed round led by Zhengge Fund. The 28-year-old founder won first place at Xiaohongshu's developer conference with an innovative motion-sensing gaming device.",
       "url": "https://36kr.com/p/3624605578675206?f=rss",
       "title": "28岁拿下小红书开发者大会头奖，种子轮获真格投资｜硬氪首发"
     },
@@ -137,8 +147,8 @@
       "source": "36Kr",
       "region": "East Asia",
       "category": "Executive",
-      "layer": "B2B Applications",
-      "contents": "文｜邱晓芬 编辑｜苏建勋 朱森华是个把严谨刻进骨子里的人。 作为脑神经科学的博士后，在我们访谈当天，他将我们提供的一份访谈提纲，写成了一份七页纸、近万字的回复，当中还用字母、数字把观点分门别类，并做了图辅助理解，像是在完成一篇道地的学术论文。 研究大脑，就是研究人，这从朱森华的聊天习惯就能看出，他不会一直单方面的滔滔不绝，而是会停下来，询问我们对某些问题的看法，也会因为我的“文科出身、媒体背景”，调整回答方式。 在华为的六年时间里，朱森华曾担任华为云AI算法创新Lab主任，也是华为云AI部门智能机器人业务的开创者，同时还是“华为天才少年”们的面试官之一。 他曾带领一支“博士军团”，从零到一构建了华为云的脑与类脑AI云平台、华为云智能机器人业务，还孵化了华为云的首个具身大模型。 在这波具身智能浪潮中，华为不算高调。但如果对2023 年的华为HDC（开发者大会）有印象，应该会记得华为云抢在国内一众大厂之前发布了首个可真人交互的“具身工匠”能力原型。 △华为在2023年的HDC大会上首次发布具身大模型 这一原型搭载的便是朱森华主导研发的华为云首代盘古具身大模型。从当时的效果来看，这一具身大脑已经具备了真人能力，能对复杂任务进行自主规划，并自主生成动作指令等等。 2025年10月份，朱森华离职，创立具身大脑公司“具脑磐石”。选在此时创业，朱森华形容为“万事具备”。 成立两个月后，“具脑磐石”核心团队已搭建完毕，公司联合创始人之一是极智嘉智能叉车&极智链产品事业部总经理刘晋宇，其他成员来自华为、联想、旷视、极智嘉，具备10年以上的Al+机器人研发交付经验。 《智能涌现》独家获悉，由朱森华创立的“具脑磐石”，近期已完成数千万元的种子轮融资，资方为乐聚机器人、上海道禾长期投资、四川科创投集团、东方精工等。 在技术储备上，和过去大众熟知的端到端、分层等完全基于深度学习的具身智能技术路线不一样的是，朱森华想要走一条更特别的路径——用 脑认知启发（Nerual AI）的范式 来改进具身智能VLA。 《智能涌现》了解到，「具脑磐石」将借鉴人脑的认知神经机制，给具身智能VLA做算法架构的改造，比如 引进人脑特有的抽象概念学习、选择性注意力等 。通过这些算法“外挂”，减少机器人数据和算力的依赖，提升泛化性。 AI与NI的转化关系 未来，随着脑启发算法工程实践积累和迭代，朱森华预计在3-5年后完成深度学习算法范式更迭，彻底走向脑启发的技术范式。 “人类的大脑是世界上唯一实现的最强具身智能大脑，我们没有理由不以它为蓝本进行技术迭代呢？”，朱森华表示。 这并不是朱森华的一家之言。在具身智能的架构设计中借鉴“人”，也是近期行业一大风向。 比如，前Meta首席科学家、图灵奖得主杨立昆（Yann Lecun）近期就向行业发出提醒，现有的 LLM架构是通往AGI的“死胡同” 。他认为，AI应该向人类一样学习，构建内部的“世界模型”。 让具身智能学习人，难度要比以前更进一步，这要求设计者既懂AI和计算机，又了解人脑神经机制。而朱森华正是这样的稀缺角色。 “万事具备”的另一面，是商业资源。 具脑磐石 朱森华告诉我们，「具脑磐石」已经和国内汽车零部件领域的龙头上市公司纽泰格、另一智能制造上市公司达成合作。他将公司战略定位为全球化，落地首站，他们选择了亚太地区的商业服务和工业场景。 朱森华判断，目前具身智能最大的矛盾在于，“半吊子”的具身机器人与人们过高期望之间的鸿沟。要落地，最难的是找到愿意为不够成熟的具身智能买单的客户。 在国内，“机器人完全替人”的商业模式短期内还没法大规模走通，而但不同于国内的是，国外发达国家面临的“事实性劳动力短缺”尤为严重。 以日本的便利店为例，其核心竞争力之一是在提供7×24小时服务，而当下日本店员的老龄化严重、劳动力供给不足，制约了这一服务模式。在便利店夜班场景里，为了正常的服务运转，具身机器人便能发挥作用，承担起夜间值守、门店理货等基础性工作。 朱森华表示，在人力客观供给不足的情况下，客户就愿意为当下仅有六七十分能力的具身机器人付费，况且，机器人也在保持持续进化。 以下是《智能涌现》与朱森华的交流记录：（略经摘编） 深度学习，“有多少人工，就有多少智能” 《智能涌现》： 当前的具身智能技术范式并不收敛，你认为应该怎么分类？你们的路线又有什么差异化？ 朱森华：AI或具身智能当前主要有三个大的技术范式—— ①压缩即智能的联结主义 深度学习 范式（DNN），这也是当前LLM-based AI的主流范式，以OpenAI等为代表。 该范式下大致有Transformer和Diffusion两大技术方案。其中，快慢系统、分层、端到端，都只是这个技术范式下不同技术方案的排列组合或局部优化变种。 ②Trial-and-Error的行为主义 强化学习 范式（RL），强调Learn from Experience（从经验中学习），以Richard Sutton（理查德·萨顿，强化学习奠基人、图灵奖得主）等为代表 ③ 脑认知启发 的Neural AI范式（Brain Inspired Neural AI），强调Learn from Neuroscience(从神经科学中学习)，以杨立昆等为代表。 我们是属于第三类。 《智能涌现》： 现在大多数具身智能厂商主流的技术方案是端到端、分层等，这些路线可能存在什么问题？ 朱森华： 这些技术方案整体上都继承了深度学习技术范式上限的约束， 比如存在高数据、高功耗、低泛化性、低可解释性、低在线学习等难题。 这也是为什么这两年基于深度学习的大模型工程优化，确让局部应用体验更佳了，但却仍然难以大规模推广应用的原因。 你肯定听说过一句话， “有多少人工就有多少智能” 。今天的大模型也不例外，只是领域众多玩家把大多数注意力放在了持续寻找如何更快捷、便宜地构建数据集的技术方案。 《智能涌现》： 这些技术路线未来是否走向收敛，哪一种范式会胜出？ 朱森华： 我认为当今无论是AI还是具身智能，全人类已经进入一片没有确定答案的技术黑森林。每种技术主张的成熟周期不同，技术突破也再难线性预测。 在黑森林里，需要有众多路径分头探索，所以，对于任何一个技术团队而言，只要有清晰的技术主张和相匹配的人才投入，都值得被支持。 《智能涌现》： 你们选择的脑认知启发路径，还有哪些厂商或者科学家在沿用？ 朱森华： 如果非要跟业界做个对标，我认为“具脑磐石”采用的脑启发具身智能，和图灵奖得主、Meta前AI首席科学家杨立昆（Yann Lecun）的世界模型架构设计理念是高度一致的。 我们曾深入分析研究过：杨立昆的JEPA-based World Model的底层认知神经科学，指导极大地借鉴了“自由能最小原则”（Free Energy Principle，FEP），两者之间有众多理论概念相近。 另外，北京通研院朱松纯教授 “小数据、大任务” 的AI技术主张从根源上就是认知神经科学的理论。 朱教授认为，人类的大脑并不是通过“背诵海量数据”而学习，而是通过极少量的观察和尝试，就能快速建立对世界规律的理解。 （《智能涌现》注：FEP自由能由认知神经科学领域科学家Karl Friston提出，它指的是，任何活下来的系统都在不断减少对环境的预测错误，比如走路时，大脑会预测下一步地面在哪里，如果预测错了下次就会调整姿势，这个过程就是最小化自由能。） 机器人大脑，如何向人脑学习？ 《智能涌现》： 为什么你们要向人类大脑学习，进而对具身智能进行改造？ 朱森华： 具身智能的根本目标，是希望机器人可以像人一样。人类大脑就是世界上唯一实现的最强“具身智能大脑”，也是“人工智能”这个概念提出的起源，我们没有理由不以它为蓝本进行技术迭代。 所以我们主张的是，用清晰的脑启发思想去替代盲目的计算。 《智能涌现》： 人脑有什么最值得机器人学习的部分，你们是从哪几个维度去升级？ 朱森华： 对具身机器人的能力而言，有关键的两个部分： 操作技能和自主移动 。 在“操作技能”的这个维度，以“教会机器人用杯子喝水”这一任务为例，大多数具身智能公司的做法是，用尽可能多种类的杯子去采集足量的数据，比如采集圆的、扁的、方的、蓝的、绿的、大的、小的...... 当机器人见过足够多种类的数据，下次遇到没见过但类似的，机器人仍可能通过关联推理，完成喝水的动作，实现泛化能力。 但如果是人脑，你设想一下，在人类小的时候，家长并不需要这样无穷无尽的方式来教小孩，甚至把你扔到森林里，你还能把椰子壳当容器去取水喝，展现出更高维度的泛化能力。 所以，人脑智能的一大特性就有着强大的 概念抽象能力 ，能够实现举一反三的小样本学习。 《智能涌现》： 如何实现“自由移动”呢？ 朱森华： 在“自主移动”的维度，不管是现在的送餐机器人、扫地机器人，去到一个陌生的环境都有提前采集环境地图的环节。 但是人类并不需要这个过程，仅仅凭借眼睛感知的视觉认知，就可以指导人在从来没有到过的开放空间里自由行动。这是人脑智能的另一大特性，有强大的开放环境 自由探索能力 。 《智能涌现》： 这两个部分你们是不是已经运用到了机器人领域了？ 朱森华： 我们已分别在开放环境的自由移动、脑启发小样本操作，开展了算法原型验证。 具体而言，在移动方面，我们基于“栅格和位置细胞模拟”的方式，搭建了类人认知地图（cognitive mapping）机制，让机器人实现跨室内外 开放场景的自由探索 ，部署效率提升了40%。 小样本学习方面，我们验证的结果是 ，数据相较此前降低90%。未来也有望走出具身智能堆算力的“暴力美学”。 《智能涌现》： 不堆算力是怎么做到的？ 朱森华： 大模型里有一个核心词叫注意力，Attention，朴素地借鉴了人类大脑的认知神经机制。但计算机收到的每一张图片，每一个像素点的权重都是一样的，所以就需要极其巨量的GPU算力。 但是人类每秒都在接受海量视觉信息，大脑却不会崩溃，是因为人脑注意力有重点的，能动态根据关注点，聚焦于局部信息。 比如我刚刚进门的时候，你只会关注我来没来，但是其他的信息你都忽略了。 人一天吃三顿饭补能，成人大脑的功耗也就25瓦，就能维持860亿神经元的运转。 大脑通过注意力机制，极大减少了处理信息的代价，最后实现了低功耗。 这也是机器人大脑未来需要借鉴的。 《智能涌现》： 你们具体是怎么把人类的抽象思维和引进到机器人上的？ 朱森华： 我们在模型里引入了抽象概念表征Encoder来实现，引导和使得模型不再是Learn from Tokens，而是Learn from Concept（从概念中学习）。在具身智能领域里，我们也看到有团队采用了类似的技术方式。 （作者注：抽象概念表征Encoder，是一种从具体数据中自动提取并编码出核心抽象特征的神经网络模块） 智能涌现： 怎么理解类人认知地图机制？ 朱森华： 我们把人脑中由视觉细胞、栅格细胞、位置细胞联合构成的“自由探索认知神经机制”，抽象成一套全新的算法架构，让机器人实现不需要提前预置环境地图，就可实现类人的自由探索。 《智能涌现》： VLA在一些场景里还是有用的，你们是直接抛弃VLA，直接用全新的技术范式做具身智能吗？ 朱森华： 我们认可VLA是可用的工具，只是局部不可用，所以我们会给他“外挂”做优化改造。比如VLA现在像是个五六岁的孩子不够高，我们会给他加一副增高鞋垫。 举个例子，你上了大学的时候就会发现，解一道“鸡兔同笼”的题，有无数种方程的解法，比如矩阵计算。但你在小学时，你只会假设法，没上过大学，就绝对想不到有别的方法来解决。 今天计算机科学的人，大部分人不知道脑和类脑科学是什么，但是我们能从更高维解决具身智能问题。 具体路径上，在 1-3 年内，我们还是会基于VLA的工程实践，但是会用一系列认知神经机制，对具身智能的各个环节进行系统性的优化改造。 随着我们系统性的脑启发算法迭代， 预计3-5年后更迭掉深度学习范式 。 《智能涌现》： 这种范式的差异，会产生方法论上的差异化吗，比如数据上的不同？ 朱森华： 我们的具身大脑要解决的问题，和其它玩家是没区别的，都是想让机器人能像人一样游刃有余地应对开放世界环境下的任务。 我们跟其他家最大的不同，在于“指导理论”根基不同。我们的指导理论来自系统性的认知神经科学，而非大模型堆砌Scale的算法工程实验。 数据方面，我们的数据需求跟行业一致，也是VLA真机数据。但随着AI算法范式的升级，所需的数据结构与数据标注未来也会动态变化。 《智能涌现》： 你觉得现在具身智能领域，或者深度学习领域在技术上最大的痛点是什么？ 朱森华： 这个问题业界其实都非常清楚，就是 缺乏系统性的清晰理论指导 。我们回望Hinton引爆的深度学习发展这十年，大家都笑称模型训练是门玄学。 这个领域的工程师经常会说一句话，“我得回去炼丹了”。 深度学习模型训练就是炼丹 ，没有明确的配方，大家都是试一试，今天你用10B的，明天他用30B的，最后业界汇总发现100B开始的模型才可以。 深度学习的发展过程中，怎么样堆数据、怎么样搭网络结构、怎么样定义优化函数，全靠算法工程师的“试错经验”来推动演化。 《智能涌现》： 那脑认知启发的范式有理论指导吗？ 朱森华： 我们的指导理论来自认知神经学。现在全世界的科学家都在试图理解大脑的神经机制。以中国自2021年起、10年投入500亿的“中国脑计划”为例，核心研究目标被概括为“一体两翼”。 一体，是研究大脑的宏观、介观、微观结构与神经机制。左翼，是医学临床应用，用于指导临床帕金森在内的脑疾病治疗与大脑保护； 右翼，是类脑转化，用于指导把大脑结构与智能的优秀特性转化成服务于人类应用的计算机技术。 《智能涌现》： 用脑认知启发来改造机器人，背后的难点在哪里？ 朱森华： 首先，在人类大脑研究这件事情上，研究还是相对缓慢的，受限于人类的物理学水平。因为我们不能用失活、异常的大脑去研究大脑的功能神经机制，所以科学家们发明了核磁共振（MRI）等工具去研究正常人类的活体大脑。 其次，大脑的智能（NI）和人工智能(AI)之间正在互相促进的。大脑的神经机制研究能启发算法，算法逐步的进步又能够加速大脑研究的进展。 但背后最难的是，我的算法该怎么设计、优化与迭代？站在脑与类脑研究的视角，领域里脑科学的人才相比于计算机人才很少，而能同时懂计算机科学，又懂脑科学的专家就更是稀缺。 具身智能落地，无法绕开的矛盾 《智能涌现》： 你们现在会怎么落地自己的机器人？ 朱森华： 当前具身智能产业最大的矛盾是，半吊子的具身智能能力，与人们过高期望之间的Gap。 而机器人产业落地最困难的点是，如何为当前半吊子的具身智能能力，找到合适的场景和愿意为之付费的客户。 短期内，在国内，具身智能“机器人完全替人”的商业模式还没法大规模走通，客户算不过账来。 我们从成立的第一天，就立足出海去解决发达国家和地区“事实性劳动力短缺”的核心问题，包括 商服、工业、康养 等主要场景。 《智能涌现》： 为什么出海的第一站会选择亚太地区？ 朱森华： ①亚太地区离中国近、有地理优势，有一定的文化相近性； ②亚太发达地区的市场规范、商业标准能对接欧美地区。 ③亚太地区的发达国家不但人力成本更高，更是陷入了 事实性劳动力短缺 的情况。 比如像日本的7-11，由于全民老龄化导致严重的劳动力不足，核心的7×24小时服务模式难以持续，因此已经有一定数量门店缩减为16-20h的运营时间，减少夜班班次。而具身机器人如果能在店里完成夜间班次的巡店、理货、导购等工作内容，就可以让整个服务可持续。 目前已经有不少海外客户向我们明确表示，愿意为仅能替代人类50-70%的具身能力买单。 《智能涌现》： 这几个月实际推动落地下来，发现机器人落地有哪些难点？ 朱森华： 从实验室技术到客户应用，中间需要应对很多变化，比如环境变化、人员操作、机器磨损等异常带来的种种corner case。 对客户场景的理解、技术原型的提炼，是坐在实验室想不明白的。产业化和商业化是个系统工程，需要干好脏活累活，而不是不切实际活在技术愿景里。 《智能涌现》： corner case有没有一些例子？ 朱森华： 举个例子，实验室的不透明格挡环境内可用的大脑模型，到了有玻璃墙、反光条的工厂环境，就会变得极不可靠。 《智能涌现》： 很多具身智能公司都在“补脑”，本体厂商也在“补本体”，为什么你们坚持不做本体只做脑？ 朱森华： 我们希望通过聚焦大脑技术，攻克具身大脑“一脑多机”、“一脑多形”的能力上限。 每个团队都有自己的核心基因，眉毛胡子一把抓，要么有足够豪华的钱和凝聚力去做好软硬件人才储备，否则就会不聚焦、精力耗散。 《智能涌现》： 但是现在具身智能行业里，似乎软硬的界限在逐渐模糊？ 朱森华： 我并不认同这个说法。大家有这种观感，主要原因是现在具身大脑算法还很难做到“一脑多机”、 “一脑多形”，导致大家都是在 做“特定本体+特定技能大脑” 的强绑定交付，很难解耦和泛化迁移。 这种形态很明显不会是最终的技术交付形态，因为它产品分工不够明确，也没有能体现具身大脑的能力。 《智能涌现》： 你们直到2025年下半年才开启创业，会不会太晚了? 朱森华： 坦诚地说，从融资拿热钱的角度来看，确实偏晚了，但是从产业化落地的角度来看，整个具身智能产业才刚刚开始。 封面来源｜视觉中国 end end",
+      "layer": "Foundation Models",
+      "contents": "Zhu Senhua, former head of Huawei Cloud's robotics AI business, founded NeuroGeometry to develop brain-inspired AI for humanoid robots. The startup completed multi-million yuan seed funding from investors including Lean Venture and raised additional Series A from over 10 AI and robotics investors.",
       "url": "https://36kr.com/p/3624490892461057?f=rss",
       "title": "华为云具身机器人负责人离职创业，想用脑认知“改造”机器人大脑丨智能涌现独家"
     },
@@ -148,7 +158,7 @@
       "region": "East Asia",
       "category": "Funding",
       "layer": "Chips & Infrastructure",
-      "contents": "作者｜黄楠 编辑｜袁斯来 硬氪获悉，深圳市无穹创新科技有限公司（以下简称“无穹创新”）近期连续完成三轮融资，累计金额达数千万元，Maple Pledge枫承资本长期出任独家私募融资顾问。我们总结了本轮融资信息和该公司几大亮点： 融资金额及投资机构 融资轮次： 天使+轮、Pre-A及Pre-A+轮 融资规模： 数千万元 投资方： 李泽湘教授旗下的XBOTPARK基金、零以创投、元禾原点广州基金、元禾原点杭州基金、金沙江联合、晨晖创投及甘洁教授旗下的知行基金 资金用途： 将主要用于技术研发投入、核心团队人才扩充与全球商业化拓展 公司基本信息 成立时间： 2020年12月 注册地址： 深圳市南山区 企业定位： 无穹创新是一家聚焦空间智能基础设施的硬科技企业，聚焦全自研跨本体空间智能通用硬件MetaCam，为人、机器人及智能系统提供与空间深度交互的感知与理解能力。 技术亮点： 基于“通用硬件+整机产品”的双业务布局，无穹创新构建了从算法层、硬件层到整机层的完整空间智能体系。 算法层面，公司自研并开源了一套多传感器融合算法，覆盖空间定位、环境感知、语义理解、决策规划与自主控制等环节。通过海量真实场景数据的持续训练与优化，其跨场景适应能力强，具备良好的泛化性与鲁棒性。 这段算法目前已在公司的MetaCam空间智能硬件平台中落地应用。该平台集成了激光雷达、鱼眼相机、RTK模组与IMU等多模态传感器，具备强大的跨平台适配能力，可灵活部署于轮式、足式、人形机器人及无人机等多类陆空本体形态，覆盖空间相机、机器人空间感知与理解、真实空间数据采集、传统机器人智能化部署等需求。 MetaCam空间智能硬件（图源/企业） 它不仅支持机器人整机厂进行前装集成，也适用于对已有设备的后续智能化升级。通过该算法与平台的结合，能够显著增强机器人在无GPS信号环境下的自主导航能力，使其在室内等复杂、动态场景中实现高精度定位与智能路径规划。 在整机层，无穹创新全栈自研的空间相机MetaCam Air 2在INTERGEO展正式首发，除了实时高精度的实景三维重建能力，结合环境理解与语义建模能力，不仅能够完成几何环境的重建，更能理解场景语义信息，为空间智能应用提供支撑。 市场体量 弗若斯特沙利文数据显示，2025年，全球空间智能解决方案行业市场规模有望突破1754亿元，同比增长68%，智慧交通、智慧制造、智慧医疗等领域呈现快速增长态势。 技术发展趋势方面，AI自主导航、集群控制等创新正推动无人机向智能化、场景化方向演进。无穹拟切入的无GPS自主导航飞行机器人所面向的全球无人机市场，据Frost&Sullivan等数据，2025年规模达3800亿元，其中消费级无人机占35%，工业级占65%。 团队背景 创始人潘杰来自港科大3126实验室，曾获大疆全额奖学金。 核心团队均来自香港科技大学、清华大学等头部院校，多人曾参与并获得RoboMaster等机器人顶级赛事冠亚军，具备多年大厂智能硬件开发与产品落地经验。 业务进度 公司感知模组产品正同数十家具身智能公司接洽合作，在陆地空间智能领域轮式机器人、四足机器人等头部客户的产品中量产装配；在人形机器人头部客户的产品中获采购用于导入验证，为无人机平台定制的无GPS导航套件已完成工程样机验证，获得数十家客户意向订单，预计2026年下半年正式交付。 可部署在多种具身机器人上（图源/企业） 整机产品方面，MetaCam Air系列产品已累计交付数千台，为国内外行业头部客户提供空间智能标准化解决方案。 创始人思考 硬氪：了解到无穹团队最早的想法是做室内无人机，为什么后面是以手持3D扫描设备开始商业化应用？ 潘杰： 我们的技术起点是室内完全自主飞行，但在2019年左右，团队发现无人机的整机解决方案面临三大现实挑战，一是下游的规模化需求尚未爆发；二是相关的供应链与成本控制不够成熟；三是市场渠道和客户认知需要长期培育。这使得产品在当时难以快速落地和实现商业闭环。 因此，我们果断调整策略，从整个复杂的自主飞行系统中，抽取出最核心、最具通用性的子模块——高精度的3D空间定位与环境感知能力。我们将其产品化为手持式3D扫描设备，切入了一个现存的、为建筑测绘、工业数字孪生、游戏、VR内容等领域提供数据采集工具的成熟市场，得以快速完成商业化验证并建立现金流。 这个设备本质上是一个“机器人的大脑”，它封装了核心的空间感知算法，可以通过标准接口与各种机器人本体，如机器狗、轮式、人形机器人、无人机等进行集成，为它们提供定位、感知环境和决策控制的能力；同时通过手持设备在真实场景中持续运行，我们也在不断积累的现实世界数据。 硬氪：MetaCam设备带来“效率提升”具体有哪些可量化价值？ 潘杰： 直接效率和数据价值两个维度。 在直接作业效率上，以传统的测绘建模工作为例，工人需要使用尺子或激光测距仪对空间进行单点测量，过程繁琐且极易出错。使用我们的MetaCam后，操作者只需手持设备在现场行走一圈，就能完成对整个空间全貌、所有细节的高精度三维重建，数据采集效率可以提升15至20倍。 其次是它所创造的数据完备性与可回溯性价值。传统方式下，测量往往是选择性的、有目标的。你可能只测量了主体结构，却忽略了某个家具的精确位置、或者一根管线的隐蔽走向。一旦后期设计或施工需要这些被遗漏的细节数据，就必须花费巨大成本返回现场重新测量，造成返工。 提供可回溯数据（图源/企业） 我们的设备提供的是空间的全量（纹理+3D）、无差别、永久性数据存档。一次扫描，所有细节信息都被完整、精确地记录下来。客户可以随时在数字模型中调取、测量任何位置的数据，相当于为实体空间建立了一个可随时查询的“数字孪生档案”。实现了从“选择性测量”到“全息记录”的质变。 硬氪：你们现在又做回了无人机，看到了什么需求？ 潘杰： 在很多室内场景，空中机器人比地面机器人有天然的优势。各类工业场景都有“go and see”的需求，然而地面机器人要解决这类问题，除了要解决跨越地形的问题，还要加装机械臂、升降云台等装置解决“看不到”的难题，这就使得机器人系统面临非标、成本高、系统鲁棒性差等一系列问题。 而空中机器人则完全不同，因为它可以在3D空间自由运动，只要解决好定位、感知和避障的问题，我们可以等效的认为所有的环境对无人机都是标准化的。 凭借MetaCam模组在3D空间实时定位、感知与决策的能力，我们以前、后装的形式为不同无人机平台提供室内智能导航的改造升级，使他们可以覆盖大多数室内巡检场景。 无人机导航模组（图源/企业） 硬氪：如何看待空间智能与具身智能，无穹还在做哪些事情？ 潘杰： 空间智能与具身智能，无非就是人或者机器人与空间进行更加智能的交互。这些都离不开对于3D世界的感知与理解，也是无穹创新一直专注在做的事情。 MetaCam除了作为2B的工具外，还能作为2C的空间相机。过去我们记录世界的方式是平面的，而未来我们记录世界的形式是3D的甚至是4D的。全景相机给大家带来的颠覆性体验是“先拍摄，后取景”，而MetaCam带来的则是“先记录，后探索”的全新体验，我们记录的是全方位全时域的信息。 换个视角看世界（图源/企业） 具身智能的另一个痛点是真实空间数据的获取成本高且有效数据匮乏，基于真实数据炼丹已成为行业发展的共识，MetaCam能为这类客户提供高效低成本的数据采集工具，并且支持导入Issac Sim等平台，生成多视角、多模态的仿真数据。无论对于机器人公司还是生成数据公司，都能提供高性价比的真实数据采集工具。",
+      "contents": "Deepshenzhen Boundless Innovation, a spatial intelligence hardware company, completed over 10 million yuan across multiple funding rounds with backing from Li Zexi's XBOTPARK Fund, Gan Jie's Zhixing Fund, and others. The startup develops MetaCam spatial intelligence hardware for robots and autonomous systems.",
       "url": "https://36kr.com/p/3590661917212678?f=rss",
       "title": "李泽湘、甘洁和金沙江投了一家空间智能硬件公司，港科大系出身｜硬氪首发"
     },
@@ -158,7 +168,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "Plaud is going after the likes of Granola to launch a desktop app that records online meetings",
+      "contents": "Hardware maker Plaud launched the NotePin S, a $179 AI recording pin with 64GB storage and 20-hour battery life, alongside a desktop transcription app for virtual meetings that competes with Granola and Fathom. The company has sold over 1.5 million AI notetaking devices and is expanding from in-person meeting capture into digital meeting transcription.",
       "url": "https://techcrunch.com/2026/01/04/plaud-launches-a-new-ai-pin-and-a-desktop-meeting-notetaker/",
       "title": "Plaud launches a new AI pin and a desktop meeting notetaker"
     },
@@ -168,17 +178,17 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "Subtle's new $199 earbuds will also let you dictate in any app on desktop or phone",
+      "contents": "Voice AI startup Subtle launched $199 wireless earbuds with proprietary noise isolation models that enable hands-free voice dictation and AI chat across any app, claiming five times fewer transcription errors than AirPods Pro 3 with OpenAI's model. The buds include a one-year iOS/Mac app subscription and target users seeking privacy-preserving voice interfaces.",
       "url": "https://techcrunch.com/2026/01/04/subtle-releases-ear-buds-with-its-noise-cancelation-models/",
-      "title": "Subtle releases ear buds with its noise cancelation models"
+      "title": "Subtle releases ear buds with its noise isolation models"
     },
     {
       "date": "2026-01-03",
       "source": "Financial Times",
-      "region": "Europe",
+      "region": "Global",
       "category": "Expansion",
       "layer": "B2B Applications",
-      "contents": "Waymo and Baidu prepare to launch autonomous ride-hailing vehicles in UK capital as soon as 2026",
+      "contents": "Unable to generate summary—article content behind paywall.",
       "url": "https://www.ft.com/content/a507f9d0-c0b2-43e3-9e2b-7ea04dbdb8d4",
       "title": "London emerges as frontline in US-China battle over robotaxis"
     },
@@ -188,7 +198,7 @@
       "region": "North America",
       "category": "Partnership",
       "layer": "Chips & Infrastructure",
-      "contents": "Nvidia’s $20 billion strategic licensing deal with Groq represents one of the first clear moves in a four-front fight over the future AI stack. 2026 is when that fight becomes obvious to enterprise builders. For the technical decision-makers we talk to every day — the people building the AI applications and the data pipelines that drive them — this deal is a signal that the era of the one-size-fits-all GPU as the default AI inference answer is ending. We are entering the age of the disaggregated inference architecture , where the silicon itself is being split into two different types to accommodate a world that demands both massive context and instantaneous reasoning. Why inference is breaking the GPU architecture in two To understand why Nvidia CEO Jensen Huang dropped one-third of his reported $60 billion cash pile on a licensing deal, you have to look at the existential threats converging on his company’s reported 92% market share . The industry reached a tipping point in late 2025: For the first time, inference — the phase where trained models actually run — surpassed training in terms of total data center revenue , according to Deloitte. In this new \"Inference Flip,\" the metrics have changed. While accuracy remains the baseline, the battle is now being fought over latency and the ability to maintain \"state\" in autonomous agents. There are four fronts of that battle, and each front points to the same conclusion: Inference workloads are fragmenting faster than GPUs can generalize. 1. Breaking the GPU in two: Prefill vs. decode Gavin Baker, an investor in Groq (and therefore biased, but also unusually fluent on the architecture), summarized the core driver of the Groq deal cleanly: “Inference is disaggregating into prefill and decode.” Prefill and decode are two distinct phases: The prefill phase: Think of this as the user’s \"prompt\" stage. The model must ingest massive amounts of data — whether it&#x27;s a 100,000-line codebase or an hour of video — and compute a contextual understanding. This is \"compute-bound,\" requiring massive matrix multiplication that Nvidia’s GPUs are historically excellent at. The generation (decode) phase: This is the actual token-by-token \"generation.” Once the prompt is ingested, the model generates one word (or token) at a time, feeding each one back into the system to predict the next. This is \"memory-bandwidth bound.\" If the data can&#x27;t move from the memory to the processor fast enough, the model stutters, no matter how powerful the GPU is. (This is where Nvidia was weak, and where Groq’s special language processing unit (LPU) and its related SRAM memory, shines. More on that in a bit.) Nvidia has announced an upcoming Vera Rubin family of chips that it’s architecting specifically to handle this split. The Rubin CPX component of this family is the designated \"prefill\" workhorse, optimized for massive context windows of 1 million tokens or more. To handle this scale affordably, it moves away from the eye-watering expense of high bandwidth memory (HBM) — Nvidia’s current gold-standard memory that sits right next to the GPU die — and instead utilizes 128GB of a new kind of memory, GDDR7 . While HBM provides extreme speed (though not as quick as Groq’s static random-access memory (SRAM)), its supply on GPUs is limited and its cost is a barrier to scale; GDDR7 provides a more cost-effective way to ingest massive datasets. Meanwhile, the \"Groq-flavored\" silicon, which Nvidia is integrating into its inference roadmap, will serve as the high-speed \"decode\" engine. This is about neutralizing a threat from alternative architectures like Google&#x27;s TPUs and maintaining the dominance of CUDA, Nvidia’s software ecosystem that has served as its primary moat for over a decade. All of this was enough for Baker, the Groq investor, to predict that Nvidia’s move to license Groq will cause all other specialized AI chips to be canceled — that is, outside of Google’s TPU, Tesla’s AI5, and AWS’s Trainium. 2. The differentiated power of SRAM At the heart of Groq’s technology is SRAM . Unlike the DRAM found in your PC or the HBM on an Nvidia H100 GPU, SRAM is etched directly into the logic of the processor. Michael Stewart, managing partner of Microsoft’s venture fund, M12, describes SRAM as the best for moving data over short distances with minimal energy. \"The energy to move a bit in SRAM is like 0.1 picojoules or less,\" Stewart said. \"To move it between DRAM and the processor is more like 20 to 100 times worse.\" In the world of 2026, where agents must reason in real-time, SRAM acts as the ultimate \"scratchpad\": a high-speed workspace where the model can manipulate symbolic operations and complex reasoning processes without the \"wasted cycles\" of external memory shuttling. However, SRAM has a major drawback: it is physically bulky and expensive to manufacture, meaning its capacity is limited compared to DRAM. This is where Val Bercovici, chief AI officer at Weka, another company offering memory for GPUs, sees the market segmenting. Groq-friendly AI workloads — where SRAM has the advantage — are those that use small models of 8 billion parameters and below, Bercovici said. This isn’t a small market, though. “It’s just a giant market segment that was not served by Nvidia, which was edge inference, low latency, robotics, voice, IoT devices — things we want running on our phones without the cloud for convenience, performance, or privacy,\" he said. This 8B \"sweet spot\" is significant because 2025 saw an explosion in model distillation , where many enterprise companies are shrinking massive models into highly efficient smaller versions . While SRAM isn&#x27;t practical for the trillion-parameter \"frontier\" models, it is perfect for these smaller, high-velocity models. 3. The Anthropic threat: The rise of the ‘portable stack’ Perhaps the most under-appreciated driver of this deal is Anthropic’s success in making its stack portable across accelerators. The company has pioneered a portable engineering approach for training and inference — basically a software layer that allows its Claude models to run across multiple AI accelerator families — including Nvidia’s GPUs and Google’s Ironwood TPUs . Until recently, Nvidia&#x27;s dominance was protected because running high-performance models outside of the Nvidia stack was a technical nightmare. “It’s Anthropic,” Weka’s Bercovici told me. “The fact that Anthropic was able to … build up a software stack that could work on TPUs as well as on GPUs, I don’t think that’s being appreciated enough in the marketplace.” (Disclosure: Weka has been a sponsor of VentureBeat events.) Anthropic recently committed to accessing up to 1 million TPUs from Google, representing over a gigawatt of compute capacity. This multi-platform approach ensures the company isn&#x27;t held hostage by Nvidia&#x27;s pricing or supply constraints. So for Nvidia, the Groq deal is equally a defensive move. By integrating Groq’s ultra-fast inference IP, Nvidia is making sure that the most performance-sensitive workloads — like those running small models or as part of real-time agents — can be accommodated within Nvidia’s CUDA ecosystem, even as competitors try to jump ship to Google&#x27;s Ironwood TPUs. CUDA is the special software Nvidia provides to developers to integrate GPUs. 4. The agentic ‘statehood’ war: Manus and the KV Cache The timing of this Groq deal coincides with Meta’s acquisition of the agent pioneer Manus just two days ago . The significance of Manus was partly its obsession with statefulness . If an agent can’t remember what it did 10 steps ago, it is useless for real-world tasks like market research or software development. KV Cache (Key-Value Cache) is the \"short-term memory\" that an LLM builds during the prefill phase. Manus reported that for production-grade agents, the ratio of input tokens to output tokens can reach 100:1 . This means for every word an agent says, it is \"thinking\" and \"remembering\" 100 others. In this environment, the KV Cache hit rate is the single most important metric for a production agent, Manus said. If that cache is \"evicted\" from memory, the agent loses its train of thought, and the model must burn massive energy to recompute the prompt. Groq’s SRAM can be a \"scratchpad\" for these agents — although, again, mostly for smaller models — because it allows for the near-instant retrieval of that state. Combined with Nvidia&#x27;s Dynamo framework and the KVBM, Nvidia is building an \"inference operating system\" that enables inference servers to tier this state across SRAM, DRAM, HBM, and other flash-based offerings like that from Bercovici’s Weka. Thomas Jorgensen, senior director of Technology Enablement at Supermicro, which specializes in building clusters of GPUs for large enterprise companies, told me in September that compute is no longer the primary bottleneck for advanced clusters. Feeding data to GPUs was the bottleneck, and breaking that bottleneck requires memory. \"The whole cluster is now the computer,\" Jorgensen said. \"Networking becomes an internal part of the beast … feeding the beast with data is becoming harder because the bandwidth between GPUs is growing faster than anything else.\" This is why Nvidia is pushing into disaggregated inference. By separating the workloads, enterprise applications can use specialized storage tiers to feed data at memory-class performance, while the specialized \"Groq-inside\" silicon handles the high-speed token generation. The verdict for 2026 We are entering an era of extreme specialization. For decades, incumbents could win by shipping one dominant general-purpose architecture — and their blind spot was often what they ignored on the edges. Intel’s long neglect of low-power is the classic example, Michael Stewart, managing partner of Microsoft’s venture fund M12, told me. Nvidia is signaling it won’t repeat that mistake. “If even the leader, even the lion of the jungle will acquire talent, will acquire technology — it’s a sign that the whole market is just wanting more options,” Stewart said. For technical leaders, the message is to stop architecting your stack like it’s one rack, one accelerator, one answer . In 2026, advantage will go to the teams that label workloads explicitly — and route them to the right tier: prefill-heavy vs. decode-heavy long-context vs. short-context interactive vs. batch small-model vs. large-model edge constraints vs. data-center assumptions Your architecture will follow those labels. In 2026, “GPU strategy” stops being a purchasing decision and becomes a routing decision. The winners won’t ask which chip they bought — they’ll ask where every token ran, and why.",
+      "contents": "Nvidia's $20 billion strategic licensing deal with Groq signals the end of general-purpose GPUs as the default AI inference solution, reflecting a shift toward specialized silicon optimized for distinct workloads like context-heavy prefill and fast token-generation decode phases. Inference surpassed training in data center revenue for the first time in late 2025, fragmenting demand across specialized architectures.",
       "url": "https://venturebeat.com/infrastructure/inference-is-splitting-in-two-nvidias-usd20b-groq-bet-explains-its-next-act",
       "title": "Nvidia just admitted the general-purpose GPU era is ending"
     },
@@ -198,7 +208,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Chips & Infrastructure",
-      "contents": "Biren Technology, a Chinese developer of graphics processing units, nearly doubled in value on its first day of trading in Hong Kong, reflecting red-hot investor demand for artificial intelligence hardware&mdash;even as the company continues to post steep financial losses.... Read more",
+      "contents": "Biren Technology, a Chinese GPU developer, nearly doubled in value on its Hong Kong IPO debut despite posting steep financial losses. The stock surge reflects intense investor appetite for AI hardware amid global chip demand.",
       "url": "https://www.caixinglobal.com/2026-01-02/chinese-ai-chipmaker-biren-skyrockets-in-hong-kong-trading-debut-102399603.html?originReferrer=Feedly",
       "title": "Chinese AI Chipmaker Biren Skyrockets in Hong Kong Trading Debut"
     },
@@ -208,7 +218,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Chips & Infrastructure",
-      "contents": "Baidu Inc. has confidentially filed for an initial public offering in Hong Kong for its artificial intelligence chip subsidiary, Kunlunxin (Beijing) Technology Co. Ltd., as it seeks to benefit from China’s accelerating push for homegrown semiconductor technology amid tightened U.S. export controls. ... Read more",
+      "contents": "Baidu confidentially filed its AI chip subsidiary Kunlunxin for a Hong Kong IPO to capitalize on China's push for homegrown semiconductors amid U.S. export controls. The listing aims to accelerate development of chips for large language models.",
       "url": "https://www.caixinglobal.com/2026-01-02/baidus-chip-unit-kunlunxin-files-for-hong-kong-ipo-to-tap-ai-investment-boom-102399601.html?originReferrer=Feedly",
       "title": "Baidu’s Chip Unit Kunlunxin Files for Hong Kong IPO to Tap AI Investment Boom"
     },
@@ -218,9 +228,29 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Foundation Models",
-      "contents": "Jan. 5: Domestic air-fuel surcharges cut ... Read more",
+      "contents": "Multiple Chinese AI startups are preparing Hong Kong IPO filings in early January as investor demand for AI infrastructure companies accelerates. The listing wave reflects a competitive push among Chinese firms to secure capital amid geopolitical constraints.",
       "url": "https://www.caixinglobal.com/2026-01-02/the-week-ahead-jan-511-chinese-ai-startups-line-up-for-hong-kong-ipos-102399599.html?originReferrer=Feedly",
       "title": "The Week Ahead (Jan. 5–11): Chinese AI Startups Line Up for Hong Kong IPOs"
+    },
+    {
+      "date": "2026-01-02",
+      "source": "Financial Times",
+      "region": "North America",
+      "category": "Other",
+      "layer": "Consumer Applications",
+      "contents": "Elon Musk's AI chatbot has been found to generate child sexual abuse material, raising serious concerns about content moderation and safety guardrails in the platform.",
+      "url": "https://www.ft.com/content/0747a53c-19b6-4ed9-8eea-88c327f27fe6",
+      "title": "Elon Musk’s AI chatbot generates child sexual images"
+    },
+    {
+      "date": "2026-01-02",
+      "source": "Financial Times",
+      "region": "North America",
+      "category": "Executive",
+      "layer": "Foundation Models",
+      "contents": "Meta's Chief AI Scientist Yann LeCun discussed his philosophy on machine intelligence, emphasizing that learning mechanisms are fundamental to developing truly intelligent systems.",
+      "url": "https://www.ft.com/content/e3c4c2f6-4ea7-4adf-b945-e58495f836c2",
+      "title": "Computer scientist Yann LeCun: ‘Intelligence really is about learning’"
     },
     {
       "date": "2026-01-02",
@@ -228,7 +258,7 @@
       "region": "North America",
       "category": "Earnings",
       "layer": "B2B Applications",
-      "contents": "Three-year-old startup&#160;Mercor&#160;has become a&#160;$10 billion&#160;middleman&#160;in AI&#8217;s data gold rush. The company connects AI labs like OpenAI and Anthropic with former employees of Goldman Sachs, McKinsey, and white-shoe law firms, paying them up to $200 an hour to share their industry&#160;expertise&#160;and train the AI models that could eventually automate their former employers out of business.&#160;&#160; Today&#160;we&#8217;re&#160;bringing [&#8230;]",
+      "contents": "Three-year-old AI data contractor platform Mercor reached a $10 billion valuation by connecting OpenAI and Anthropic with elite former employees from Goldman Sachs, McKinsey, and law firms who earn up to $200/hour to train AI models. CEO Brendan Foody explained how the company's top 10-20% of contractors drive majority model improvements and positions knowledge work training as the economy's future.",
       "url": "https://techcrunch.com/podcast/how-ai-is-reshaping-work-and-who-gets-to-do-it-according-to-mercors-ceo/",
       "title": "How AI is reshaping work and who gets to do it, according to Mercor’s CEO"
     },
@@ -236,9 +266,9 @@
       "date": "2026-01-02",
       "source": "TechCrunch",
       "region": "North America",
-      "category": "Other",
+      "category": "Partnership",
       "layer": "Chips & Infrastructure",
-      "contents": "Over the last two years, Nvidia has used its ballooning fortunes to invest in over 100 AI startups. Here are the giant semiconductor's largest investments.",
+      "contents": "Nvidia invested in 67 VC deals in 2025 (versus 54 in 2024), including a $100 million check into OpenAI's $6.6 billion Series C round at $157 billion valuation, as the $4.6 trillion GPU chipmaker expands its AI ecosystem influence beyond hardware. The company's corporate VC arm NVentures completed 30 deals in 2025, far exceeding prior years.",
       "url": "https://techcrunch.com/2026/01/02/nvidias-ai-empire-a-look-at-its-top-startup-investments/",
       "title": "Nvidia’s AI empire: A look at its top startup investments"
     },
@@ -248,7 +278,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "Last year, OpenAI acquired ex-Apple design chief Jony Ive's AI hardware startup io for $6.5 billion. The post OpenAI Building New Voice Model Ahead of AI Device Launch: Report appeared first on Analytics India Magazine .",
+      "contents": "OpenAI is developing a new audio model architecture launching in Q1 2026 designed for conversational AI devices, featuring improved accuracy, natural emotion, and real-time interruption handling. The effort follows OpenAI's $6.5 billion acquisition of Jony Ive's hardware firm io in May 2025 and positions standalone audio-first devices as the company's next major consumer product.",
       "url": "https://analyticsindiamag.com/ai-news-updates/openai-building-new-voice-model-ahead-of-ai-device-launch-report/",
       "title": "OpenAI Building New Voice Model Ahead of AI Device Launch: Report"
     },
@@ -258,7 +288,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Saudi B2B SaaS platform Ballurh has raised a strategic investment from Falak Angels Network. Founded in 2020 by Abdulelah Alkesaiberi, Abdulwahab AlZaidi and Abdullah Alhawsawi, Ballurh operates an AI-powered SaaS platform designed to help restaurants and cloud kitchens optimise pricing, menus, and operational decisions through advanced analytics. The investment will support Ballurh&rsquo;s expansion and its ambition to become the core operating system for restaurant growth across delivery platforms in the region. In September 2025, Ballurh received an investment from Saudi Arabia's Value Makers Studio (VMS), as part of its VMS Bridge 2025 programme. Press release: Falak Angels Network has announced a strategic investment in Ballurh, a technology platform using artificial intelligence to improve profitability and operational performance across the food and beverage sector. The investment provides fresh capital to support Ballurh&rsquo;s growth as demand accelerates for data-driven tools in the region&rsquo;s expanding food-tech market. Ballurh operates an AI-powered SaaS platform designed to help restaurants and cloud kitchens optimise pricing, menus, and operational decisions through advanced analytics. By transforming raw performance data into actionable insights, the platform enables operators to improve margins, reduce inefficiencies, and make faster, more informed business decisions. The platform currently serves more than 400 restaurants and manages customer orders with a gross merchandise value exceeding SAR 1 billion, reflecting both its scale and its growing role within the restaurant ecosystem. Ballurh&rsquo;s ability to process high transaction volumes while delivering consistent insights has positioned it as a trusted operating partner for F&B businesses. Looking ahead, Ballurh aims to become the core operating system for restaurant growth across the region, acting as a central hub for managing performance and presence across multiple food delivery platforms. The company&rsquo;s vision is to move beyond analytics into becoming foundational infrastructure for the future of food delivery. The investment aligns with Falak Angels&rsquo; strategy of backing technology-driven startups that are reshaping traditional industries. By supporting Ballurh, Falak is doubling down on food-tech solutions that bring efficiency, scalability, and sustainability to restaurant operations. Falak Investment, the parent platform of Falak Angels, was founded in Riyadh in 2018 and operates through four pillars: Falak Angels, Falak Programs, Falak Spaces, and Falak Products. With more than 300 startups supported to date, Falak continues to play a central role in building Saudi Arabia&rsquo;s innovation ecosystem.",
+      "contents": "Saudi B2B SaaS startup Ballurh raised strategic investment from Falak Angels Network to expand its AI-powered restaurant optimization platform that helps cloud kitchens and restaurants improve pricing and operations. The platform serves over 400 restaurants and manages orders worth more than SAR 1 billion in gross merchandise value.",
       "url": "http://wamda.com/2025/12/ballurh-secures-investment-falak-angels",
       "title": "Ballurh secures investment from Falak Angels"
     },
@@ -268,7 +298,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "xAI has launched Grok Business and Grok Enterprise , positioning its flagship AI assistant as a secure, team-ready platform for organizational use. These new tiers offer scalable access to Grok’s most advanced models — Grok 3, Grok 4, and Grok 4 Heavy, already among the most performant and most cost-effective models available in the world — backed by strong administrative controls, privacy guarantees, and a newly introduced premium isolation layer called Enterprise Vault . But it wouldn’t be a new xAI launch without another avoidable controversy detracting from powerful and potentially helpful new features for enterprises. As Grok’s enterprise suite debuts, its public-facing deployment is under fire for enabling — and at times posting — non-consensual, AI-generated image manipulations involving women, influencers, and minors. The incident has sparked regulatory scrutiny, public backlash, and questions about whether xAI’s internal safeguards can match the demands of enterprise trust. Enterprise-readiness: Admin control, Vault isolation, and structured deployment Grok Business, priced at $30 per seat/month , is designed for small to mid-sized teams. It includes shared access to Grok’s models, centralized user management, billing, and usage analytics. The platform integrates with Google Drive for document-level search, respecting native file permissions and returning citation-backed responses with quote previews. Shared links are restricted to intended recipients, supporting secure internal collaboration. For larger organizations, Grok Enterprise — price not listed publicly — expands the administrative stack with features such as custom Single Sign-On (SSO), Directory Sync (SCIM), domain verification, and custom role-based access controls. Teams can monitor usage in real time from a unified console, invite new users, and enforce data boundaries across departments or business units. The new Enterprise Vault is available as an add on exclusively for Grok Enterprise customers, and introduces physical and logical isolation from xAI’s consumer infrastructure. Vault customers gain access to: Dedicated data plane Application-level encryption Customer-managed encryption keys (CMEK) According to xAI, all Grok tiers are compliant with SOC 2, GDPR, and CCPA, and user data is never used to train models. Comparison: Enterprise-grade AI in a crowded field With this release, xAI enters a field already populated by well-established enterprise offerings. OpenAI’s ChatGPT Team and Anthropic’s Claude Team are both priced at $25 per seat per month, while Google’s Gemini AI tools are included in Workspace tiers starting at $14/month — with enterprise pricing undisclosed. What sets Grok apart is its Vault offering, which mirrors OpenAI’s enterprise encryption and regional data residency features but is presented as an add-on for additional isolation. Anthropic and Google both offer admin controls and SSO, but Grok’s agentic reasoning via Projects and its Collections API enable more complex document workflows than typically supported in productivity-focused assistants. While xAI’s tooling now aligns with enterprise expectations on paper, the platform’s public handling of safety issues continues to shape broader sentiment. AI image misuse resurfaces as Grok faces renewed scrutiny The launch of Grok Business comes just as its public deployment is facing mounting criticism for enabling non-consensual AI image generation. At the center of the backlash is a surge of prompts issued to Grok via X (formerly Twitter), in which users successfully instructed the assistant to alter photos of real women — including public figures — into sexually explicit or revealing forms. The issue first appeared in May 2025, as Grok’s image tools expanded and early users began sharing screenshots of manipulated photos. While initially confined to fringe use cases, reports of bikini edits, deepfake-style undressing, and “spicy” mode prompts involving celebrities steadily increased. By late December 2025, the problem had intensified. Posts from India, Australia, and the U.S. highlighted Grok-generated images targeting Bollywood actors, influencers, and even children under age 18 . In some cases, the AI’s official account appeared to respond to inappropriate prompts with generated content, triggering outrage from both users and regulators. On January 1, 2026, Grok appeared to have issued a public apology post acknowledging it had generated and posted an image of two underage girls in sexualized attire, stating the incident represented a failure in safeguards and potentially violated U.S. laws on child sexual abuse material (CSAM) . Just hours later, a second post also reportedly from Grok’s account walked back that claim, asserting that no such content had ever been created and the original apology was based on unverified deleted posts. This contradiction — paired with screenshots circulating across X — fueled widespread distrust. One widely shared thread called the incident “suspicious,” while others pointed out inconsistencies between Grok’s trend summaries and public statements. Public figures, including rapper Iggy Azalea, called for Grok’s removal . In India, a government minister publicly demanded intervention . Advocacy groups like the Rape, Abuse & Incest National Network (RAINN) criticized Grok for enabling tech-facilitated sexual abuse and have urged passage of legislation such as the Take It Down Act to criminalize unauthorized AI-generated explicit content. A growing Reddit thread from January 1, 2026 , catalogues user-submitted examples of inappropriate image generations and now includes thousands of entries. Some posts claim over 80 million Grok images have been generated since late December, with a portion clearly created or shared without subject consent. For xAI’s enterprise ambitions, the timing couldn’t be worse. Implications: Operational fit vs reputational risk xAI’s core message is that Grok Enterprise and Business tiers are isolated, with customer data protected and interactions governed by strict access policies. And technically, that appears accurate. Vault deployments are designed to run independently of xAI’s shared infrastructure. Conversations are not logged for training, and encryption is enforced both at rest and in transit. But for many enterprise buyers, the issue isn’t infrastructure — it’s optics. Grok’s X chatbot appears to be a totally separate product, but while it generates headlines about CSAM risks and sexualized edits of public figures, enterprise adoption becomes a branding liability as much as a tooling question. The lesson is familiar: technical isolation is necessary, but reputational containment is harder. For Grok to gain traction in serious enterprise environments — especially in finance, healthcare, or education — xAI will need to restore trust not just through feature sets, but through clearer moderation policies, transparency in enforcement, and visible commitments to harm prevention. I reached out to the xAI media team via email to ask about the launch of Grok Business and Enterprise in light of the deepfakes controversy, and to provide further information and assurances against misuse to potential customers. I&#x27;ll update when I receive a response. Forward Look: Technical momentum, cautious reception xAI is continuing to invest in Grok’s enterprise roadmap, promising more third-party app integrations, customizable internal agents, and enhanced project collaboration features. Teams adopting Grok can expect ongoing improvements across admin tooling, agent behavior, and document integration. But alongside that roadmap, xAI now faces the more complex task of regaining public and professional trust, especially in an environment where data governance, digital consent, and AI safety are inseparable from procurement decisions. Whether Grok becomes a core enterprise productivity layer or a cautionary tale about safety lagging behind scale may depend less on its features — and more on how its creators respond to the moment.",
+      "contents": "xAI launched Grok Business ($30/seat/month) and Grok Enterprise tiers with advanced models (Grok 3, 4, 4 Heavy) and an \"Enterprise Vault\" isolation layer for SOC 2/GDPR-compliant data protection and customer-managed encryption. The enterprise launch competes with OpenAI and Anthropic offerings but faces regulatory scrutiny over deepfake concerns on xAI's consumer platform.",
       "url": "https://venturebeat.com/technology/musks-xai-launches-grok-business-and-enterprise-with-compelling-vault-amid",
       "title": "Musk's xAI launches Grok Business and Enterprise with compelling vault amid ongoing deepfake controversy"
     },
@@ -278,7 +308,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Foundation Models",
-      "contents": "MiniMax, a Chinese artificial intelligence startup, launched its initial public offering in Hong Kong on Wednesday, aiming to raise as much as HK$4.2 billion ($540 million) in a critical test of investor appetite for the capital-hungry sector. ... Read more",
+      "contents": "Chinese AI startup MiniMax launched a $540 million Hong Kong IPO, seeking to raise HK$4.2 billion for its language model and AI services platform. The listing tests investor appetite for capital-intensive AI firms amid growing market competition.",
       "url": "https://www.caixinglobal.com/2026-01-01/minimax-kicks-off-540-million-hong-kong-ipo-amid-ai-gold-rush-102399390.html?originReferrer=Feedly",
       "title": "MiniMax Kicks Off $540 Million Hong Kong IPO Amid AI Gold Rush"
     },
@@ -288,7 +318,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Chips & Infrastructure",
-      "contents": "ChangXin Memory Technologies Inc., China’s leading maker of memory chips, is seeking to raise 29.5 billion yuan ($4.2 billion) in a Shanghai initial public offering — a bid to challenge industry titans Samsung Electronics Co. Ltd., SK Hynix Inc. and Micron Technology Inc. ... Read more",
+      "contents": "ChangXin Memory Technologies, China's leading memory chipmaker, is raising 29.5 billion yuan ($4.2 billion) in a Shanghai IPO to compete against Samsung, SK Hynix, and Micron. The funding will expand capacity for DRAM and NAND chips needed for AI systems.",
       "url": "https://www.caixinglobal.com/2026-01-01/memory-chipmaker-changxin-seeks-42-billion-in-ipo-amid-ai-boom-102399386.html?originReferrer=Feedly",
       "title": "Memory Chipmaker ChangXin Seeks $4.2 Billion in IPO Amid AI Boom"
     },
@@ -298,7 +328,7 @@
       "region": "East Asia",
       "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Chinese artificial intelligence firm Moonshot AI is in no rush to go public, its founder said, after closing a major new round of fundraising that strengthens its balance sheet even as rivals prepare to list in Hong Kong. ... Read more",
+      "contents": "Moonshot AI raised $500 million in funding but ruled out an imminent IPO, prioritizing financial stability over rushing to public markets amid competition from rivals launching Hong Kong listings. The Chinese LLM company maintains focus on product development and profitability.",
       "url": "https://www.caixinglobal.com/2026-01-01/moonshot-ai-rules-out-quick-ipo-after-raising-500-million-102399382.html?originReferrer=Feedly",
       "title": "Moonshot AI Rules Out Quick IPO After Raising $500 Million"
     },
@@ -307,20 +337,10 @@
       "source": "Financial Times",
       "region": "North America",
       "category": "IPO",
-      "layer": "B2B Applications",
-      "contents": "Three biggest US private tech groups plan listings as early as this year, raising hopes of windfall for banks, lawyers and investors",
+      "layer": "Foundation Models",
+      "contents": "SpaceX, OpenAI, and Anthropic are preparing landmark initial public offerings, signaling major shifts in the private AI and space technology sectors toward public capital markets.",
       "url": "https://www.ft.com/content/bf607829-dca5-497d-b1a1-ca945d32a8c6",
       "title": "SpaceX, OpenAI and Anthropic prepare to launch landmark IPOs"
-    },
-    {
-      "date": "2026-01-01",
-      "source": "Financial Times",
-      "region": "Europe",
-      "category": "Acquisition",
-      "layer": "Chips & Infrastructure",
-      "contents": "Finnish company that brought the world the 3310 has reinvented itself for the AI revolution",
-      "url": "https://www.ft.com/content/0a07cbc3-dac4-4b89-9f26-038deb833060",
-      "title": "How Nokia went from iPhone victim to $1bn Nvidia deal"
     },
     {
       "date": "2026-01-01",
@@ -328,7 +348,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "The form factors may differ, but the thesis is the same: audio is the interface of the future. Every space -- your home, your car, even your face -- is becoming an interface.",
+      "contents": "OpenAI unified engineering teams to develop an advanced audio model launching in early 2026 that handles interruptions, speaks naturally mid-conversation, and will power an audio-first personal device launching in about a year. The move reflects broader industry shift toward voice interfaces, with Meta, Google, Tesla, and startups like Sandbar also betting on screenless AI companions.",
       "url": "https://techcrunch.com/2026/01/01/openai-bets-big-on-audio-as-silicon-valley-declares-war-on-screens/",
       "title": "OpenAI bets big on audio as Silicon Valley declares war on screens"
     },
@@ -338,7 +358,7 @@
       "region": "East Asia",
       "category": "Earnings",
       "layer": "B2B Applications",
-      "contents": "A surge in enterprise adoption of artificial intelligence is expected to arrive in early 2026, with corporate AI budgets projected to swell to 10 times the size of current IT spending in the next few years, according to a senior executive at Alibaba Cloud Intelligence Group. ... Read more",
+      "contents": "Alibaba Cloud Intelligence Group expects enterprise AI adoption to surge in early 2026, with corporate AI budgets projected to reach 10 times current IT spending within years. The forecast signals massive growth in cloud infrastructure and AI services demand.",
       "url": "https://www.caixinglobal.com/2025-12-31/enterprise-ai-budgets-to-swell-tenfold-alibaba-cloud-exec-says-102399370.html?originReferrer=Feedly",
       "title": "Enterprise AI Budgets to Swell Tenfold, Alibaba Cloud Exec Says"
     },
@@ -347,8 +367,8 @@
       "source": "Caixinglobal",
       "region": "East Asia",
       "category": "IPO",
-      "layer": "B2B Applications",
-      "contents": "OneRobotics (Shenzhen) Co., Ltd., a smart-home device maker, debuted flat in Hong Kong trading on Tuesday after raising HK$1.64 billion ($206 million) in its initial public offering. ... Read more",
+      "layer": "Consumer Applications",
+      "contents": "OneRobotics, a smart-home AI device maker, raised HK$1.64 billion ($206 million) in a Hong Kong IPO, with the stock debuting flat. The company is betting on AI-powered home robots to capture growth in the connected home market.",
       "url": "https://www.caixinglobal.com/2025-12-31/smart-home-startup-onerobotics-lands-206-million-in-hk-ipo-bets-big-on-ai-bots-102398920.html?originReferrer=Feedly",
       "title": "Smart-Home Startup OneRobotics Lands $206 Million in HK IPO, Bets Big on AI Bots"
     },
@@ -358,7 +378,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Chips & Infrastructure",
-      "contents": "Chinese AI startup Shanghai Iluvatar CoreX Semiconductor Co. Ltd. launched its Hong Kong initial public offering on Tuesday, seeking to raise around HK$3.7 billion ($475 million) in a listing that tests investor appetite for Chinese chipmakers navigating U.S. sanctions. ... Read more",
+      "contents": "Shanghai Iluvatar CoreX, a Chinese GPU chipmaker, launched a $475 million Hong Kong IPO amid U.S. sanctions pressures. The AI hardware company is raising capital to expand GPU production for training and inference workloads.",
       "url": "https://www.caixinglobal.com/2025-12-30/chinese-gpu-maker-iluvatar-corex-seeks-475-million-in-hong-kong-listing-102398766.html?originReferrer=Feedly",
       "title": "Chinese GPU-Maker Iluvatar CoreX Seeks $475 Million in Hong Kong Listing"
     },
@@ -368,7 +388,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "Foundation Models",
-      "contents": "Chinese artificial-intelligence startup Zhipu AI has set the price for its Hong Kong initial public offering, valuing the company at HK$51.8 billion ($6.7 billion) in a listing that serves as a critical test for China&rsquo;s capital-hungry artificial intelligence sector.... Read more",
+      "contents": "Chinese AI startup Zhipu AI launched its Hong Kong IPO seeking up to $640 million, valuing the large language model developer at HK$51.8 billion ($6.7 billion). The listing marks a significant test for China's capital-intensive AI sector.",
       "url": "https://www.caixinglobal.com/2025-12-30/zhipu-ai-seeks-up-to-640-million-in-hong-kong-ipo-102398696.html?originReferrer=Feedly",
       "title": "Zhipu AI Seeks Up to $640 Million in Hong Kong IPO"
     },
@@ -378,7 +398,7 @@
       "region": "Southeast Asia",
       "category": "Acquisition",
       "layer": "B2B Applications",
-      "contents": "Meta Platforms Inc. has acquired Manus, a Singapore-based AI-agent startup founded by Chinese entrepreneurs that has experienced explosive growth, according to announcements from both companies. ... Read more",
+      "contents": "Meta acquired Manus, a Singapore-based AI agent startup founded by Chinese entrepreneurs that experienced rapid growth. The acquisition terms were not disclosed.",
       "url": "https://www.caixinglobal.com/2025-12-30/meta-acquires-chinese-founded-ai-agent-startup-manus-102398592.html?originReferrer=Feedly",
       "title": "Meta Acquires Chinese-Founded AI Agent Startup Manus"
     },
@@ -387,8 +407,8 @@
       "source": "TechCrunch",
       "region": "North America",
       "category": "Acquisition",
-      "layer": "Foundation Models",
-      "contents": "Meta says it'll keep Manus running independently while weaving its agents into Facebook, Instagram, and WhatsApp, where Meta's own chatbot, Meta AI, is already available to users.",
+      "layer": "B2B Applications",
+      "contents": "Meta acquired Singapore-based AI agent startup Manus for $2 billion, which generates over $100 million in annual recurring revenue just eight months after launch by automating complex tasks like job screening and portfolio analysis. The acquisition gives Meta a proven AI product generating real revenue to integrate into Facebook, Instagram, and WhatsApp.",
       "url": "https://techcrunch.com/2025/12/29/meta-just-bought-manus-an-ai-startup-everyone-has-been-talking-about/",
       "title": "Meta just bought Manus, an AI startup everyone has been talking about"
     },
@@ -398,7 +418,7 @@
       "region": "East Asia",
       "category": "Acquisition",
       "layer": "Chips & Infrastructure",
-      "contents": "SoftBank intends to capitalise on the surge in digital infrastructure driven by AI advancements. The post Softbank Buys DigitalBridge for $4 Bn to tap Data Centre Infrastructure appeared first on Analytics India Magazine .",
+      "contents": "SoftBank Group agreed to acquire DigitalBridge, a digital infrastructure investment firm, for $4 billion to build AI data center capacity and expand its ASI (Artificial Super Intelligence) platform vision. The deal values DigitalBridge at $16 per share and closes in H2 2026, positioning SoftBank to capitalize on surging data infrastructure demand from AI.",
       "url": "https://analyticsindiamag.com/ai-news-updates/softbank-buys-digitalbridge-for-4-bn-to-tap-data-centre-infrastructure/",
       "title": "Softbank Buys DigitalBridge for $4 Bn to tap Data Centre Infrastructure"
     },
@@ -407,8 +427,8 @@
       "source": "Analytics India Mag",
       "region": "North America",
       "category": "Acquisition",
-      "layer": "Foundation Models",
-      "contents": "Meta said that Manus’s team will join the company to help develop general-purpose AI agents across Meta’s products. The post Manus Skips Funding at $2 Bn Valuation to Join Meta: Report appeared first on Analytics India Magazine .",
+      "layer": "B2B Applications",
+      "contents": "Meta acquired Singapore-based AI agent platform Manus, which generated $100 million annual recurring revenue just eight months after launch, in a deal completed in under ten days while the startup was raising at $2 billion valuation. Manus automates complex workflows including web navigation, data analysis, and integrations with Google Workspace and Notion tools.",
       "url": "https://analyticsindiamag.com/ai-news-updates/manus-skips-2-billion-funding-to-join-meta-report/",
       "title": "Manus Skips Funding at $2 Bn Valuation to Join Meta: Report"
     },
@@ -418,7 +438,7 @@
       "region": "Global",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "OpenAI has unveiled a broad suite of curated “Prompt Packs” designed to transform ChatGPT from a general-purpose chatbot into a default productivity tool for professionals across industries. These Prompt Packs are structured libraries of ready-to-use prompts tailored to specific roles — such as sales, engineering, product management, HR, IT, leadership, education, nonprofits, and government — [&#8230;]",
+      "contents": "OpenAI launched Prompt Packs through its Academy platform—curated, role-specific prompt libraries for sales, engineering, HR, government, and education professionals to standardize ChatGPT usage without trial-and-error. The packs contain dozens of ready-to-use workflow templates and are freely available for immediate deployment.",
       "url": "https://www.itnewsafrica.com/2025/12/openai-unveils-curated-prompt-packs-for-sales-it-hr-government-and-more/",
       "title": "OpenAI Unveils Curated Prompt Packs for Sales, IT, HR, Government and More"
     },
@@ -428,7 +448,7 @@
       "region": "East Asia",
       "category": "Other",
       "layer": "Foundation Models",
-      "contents": "At the close of 2025, China’s artificial intelligence (AI) market has become an arena of fierce competition. What began as a race to train ever-larger AI models has evolved into a multi-front struggle over users, hardware, talent and capital —pitting the country’s internet giants against one another while forcing once-celebrated startups into difficult strategic choices. ... Read more",
+      "contents": "China's AI market intensified competition in 2025 as internet giants and startups battle for control of users, hardware, talent, and capital, with the competition evolving beyond model training to broader ecosystem dominance.",
       "url": "https://www.caixinglobal.com/2025-12-29/cover-story-chinas-ai-titans-escalate-battle-for-control-of-digital-gateways-102398121.html?originReferrer=Feedly",
       "title": "Cover Story: China’s AI Titans Escalate Battle for Control of Digital Gateways"
     },
@@ -438,7 +458,7 @@
       "region": "Southeast Asia",
       "category": "Funding",
       "layer": "Consumer Applications",
-      "contents": "GameByte,an AI-powered game creation platform, has raised $1 million at a $10 million valuation from Webrazzi GSYF, the venture arm of Tech.eu’sparent company, Webrazzi. The investment adds GameByte t...",
+      "contents": "GameByte, an AI-powered platform enabling mobile game studios to create playable games from text prompts in minutes, raised $1 million at a $10 million valuation from Webrazzi GSYF. The startup eliminates manual coding to accelerate game prototyping and testing.",
       "url": "https://tech.eu/2025/12/29/webrazzi-gsyf-invested-1m-in-gamebyte/",
       "title": "Webrazzi GSYF invested $1M in GameByte"
     },
@@ -446,19 +466,19 @@
       "date": "2025-12-26",
       "source": "Caixinglobal",
       "region": "East Asia",
-      "category": "Other",
+      "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Chen Tianqiao, 52, once the richest man in China and a pioneer of the country’s digital economy, now spends much of his day in conversation with artificial intelligence. ... Read more",
+      "contents": "Chen Tianqiao, former China's richest man, is investing $1 billion to develop advanced AI systems that simulate human-like intelligence and behavior.",
       "url": "https://www.caixinglobal.com/2025-12-26/qa-gaming-tycoon-chen-tianqiao-on-his-1-billion-bet-to-build-living-ai-102397253.html?originReferrer=Feedly",
       "title": "Interview: Gaming Tycoon Chen Tianqiao on His $1 Billion Bet to Build ‘Living’ AI"
     },
     {
       "date": "2025-12-26",
       "source": "Analytics India Mag",
-      "region": "South Asia",
+      "region": "North America",
       "category": "Acquisition",
-      "layer": "B2B Applications",
-      "contents": "Coforge said Encora deal strengthens AI-led engineering, cloud and data capabilities. The post Coforge to Acquire Encora in $2.35 Bn All-Stock Mega Deal to Strengthen AI Engineering appeared first on Analytics India Magazine .",
+      "layer": "Fine-tuning & MLOps",
+      "contents": "Coforge acquired AI software engineering firm Encora in a $2.35 billion all-stock deal, creating a $2.5 billion technology services company with AI-led engineering, data, and cloud capabilities. The acquisition, which includes Encora's AIVA agentic AI platform and 3,100+ Latin American engineers, projects AI-led product engineering to become a $1.25 billion business by fiscal 2027.",
       "url": "https://analyticsindiamag.com/ai-news-updates/coforge-to-acquire-encora-in-2-35-bn-all-stock-mega-deal-to-strengthen-ai-engineering/",
       "title": "Coforge to Acquire Encora in $2.35 Bn All-Stock Mega Deal to Strengthen AI Engineering"
     },
@@ -468,7 +488,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Saudi Arabia-based Ai startup Newera.ai has raised $2.1 million (SAR 8m) in a pre-seed round led by Embark, with participation from angel investors. Founded in 2023 by Abdulrhman alsuliman, Newera.ai enables enterprises to leverage agentic and generative AI by transforming complex business challenges into deployed, production-ready solutions. The funding will support local expansion, R&D, and product development, with a focus on generative AI solutions tailored to Saudi enterprises. Press release: Newera.ai, a Saudi-based startup specialising in generative AI solutions for enterprises, has secured $2.1 million (SAR 8 million) in a pre-seed funding round to support its expansion across the Kingdom. The round was led by Embark, with participation from a group of angel investors. The funding will be used to scale Newera.ai&rsquo;s AI-driven solutions locally, strengthen its research and development capabilities, and launch products tailored specifically to the Saudi market. Founded in 2023, Newera.ai focuses on enterprise applications of generative AI, offering tools designed to boost productivity, enhance collaboration, and accelerate innovation. The company positions its technology as a day-to-day AI partner for organisations undergoing digital transformation. A core pillar of Newera.ai&rsquo;s strategy is data localisation within Saudi Arabia, ensuring compliance with local regulations and safeguarding customer information. The company views regulatory alignment and data sovereignty as critical to building trust with enterprise clients. Looking ahead, Newera.ai plans to deepen partnerships with local organisations and integrate seamlessly with existing enterprise systems across sectors such as finance, logistics, and operations. The investment will also support the development of next-generation AI tools, including automation, predictive analytics, and personalised enterprise solutions, in line with Saudi Arabia&rsquo;s Vision 2030 agenda.",
+      "contents": "Saudi Arabia-based Newera.ai raised $2.1 million in pre-seed funding led by Embark to scale generative AI solutions for enterprise customers in the region. The startup focuses on transforming complex business challenges into production-ready AI solutions with data localization in Saudi Arabia.",
       "url": "http://wamda.com/2025/12/newera-ai-raises-2-1-million-pre-seed-scale-generative-ai-saudi-arabia",
       "title": "Newera.ai raises $2.1 million pre-seed to scale generative AI in Saudi Arabia"
     },
@@ -478,7 +498,7 @@
       "region": "East Asia",
       "category": "Acquisition",
       "layer": "B2B Applications",
-      "contents": "UBTech Robotics Corp. Ltd. agreed to acquire a controlling stake in Shenzhen-listed Zhejiang Fenglong Electric Co. Ltd. for 1.665 billion yuan ($237 million), a strategic move to secure a listing platform on the Chinese mainland for the Hong Kong-traded humanoid robot manufacturer.... Read more",
+      "contents": "Hong Kong-listed robot maker UBTech agreed to acquire controlling stake in Zhejiang Fenglong Electric for 1.665 billion yuan ($237 million) to secure a mainland China listing platform for its humanoid robot business.",
       "url": "https://www.caixinglobal.com/2025-12-25/robot-maker-ubtech-tries-for-a-share-foothold-with-takeover-of-auto-parts-firm-102397205.html?originReferrer=Feedly",
       "title": "Robot-Maker UBTech Tries for A-Share Foothold With Takeover of Auto Parts Firm"
     },
@@ -488,7 +508,7 @@
       "region": "East Asia",
       "category": "IPO",
       "layer": "B2B Applications",
-      "contents": "Hangzhou Deep Robotics Technology Co. Ltd., a Chinese maker of quadrupedal and humanoid robots, has kicked off the mandatory tutoring process for a domestic listing, joining a growing cohort of hardware startups rushing to tap a buoyant capital market. ... Read more",
+      "contents": "Hangzhou Deep Robotics, a Chinese maker of quadrupedal and humanoid robots, began IPO preparation for a mainland listing as hardware startups rush to access China's buoyant capital markets.",
       "url": "https://www.caixinglobal.com/2025-12-25/deep-robotics-starts-ipo-tutoring-for-mainland-listing-102396926.html?originReferrer=Feedly",
       "title": "Deep Robotics Starts IPO Tutoring for Mainland Listing"
     },
@@ -498,7 +518,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "The UK’s AI sector continued its remarkable growth in 2025. Venture capital data from DWF Group shows AI&#8230;",
+      "contents": "UK AI startups raised £1.8 billion in the first half of 2025, with Nscale leading the charge by securing $1.1 billion in a record European Series B to build sovereign AI data centers powered by renewable energy. Other major deals include Isomorphic Labs raising $600 million for AI-driven drug discovery and Nothing securing $200 million for consumer electronics development.",
       "url": "https://techfundingnews.com/2b-raised-ranking-the-biggest-uk-ai-deals-in-2025/",
       "title": "£2B+ raised: Ranking the biggest UK AI deals in 2025"
     },
@@ -508,7 +528,7 @@
       "region": "North America",
       "category": "Partnership",
       "layer": "Chips & Infrastructure",
-      "contents": "Groq has entered into a non-exclusive license agreement with NVIDIA, with CEO Jonathan Ross and president Sunny Madra joining Jensen Huang and co. The post Groq to Now Help NVIDIA Build Inference Tech appeared first on Analytics India Magazine .",
+      "contents": "Groq, a US chipmaker specializing in AI inference hardware, signed a non-exclusive licensing agreement with NVIDIA, with founder Jonathan Ross and other executives joining NVIDIA to advance the licensed LPU (Language Processing Unit) technology. Groq remains independent with new CEO Simon Edwards, following earlier reports of a failed $20 billion acquisition bid.",
       "url": "https://analyticsindiamag.com/ai-news-updates/groq-to-now-help-nvidia-build-inference-tech/",
       "title": "Groq to Now Help NVIDIA Build Inference Tech"
     },
@@ -518,17 +538,17 @@
       "region": "South Asia",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "Coforge aims to enable autonomous IT operations across hybrid cloud environments. The post Coforge Launches EvolveOps.AI, an Agentic AI-Powered IT Operations Platform appeared first on Analytics India Magazine .",
+      "contents": "Coforge launched EvolveOps.AI, an agentic AI platform for autonomous IT operations management across hybrid cloud environments, featuring 28 AI personas and fine-tuned language models. Enterprises using the platform recorded 25% reduction in downtime, 40% reduction in IT costs, and 60% faster incident resolution.",
       "url": "https://analyticsindiamag.com/ai-news-updates/coforge-launches-evolveops-ai-an-agentic-ai-powered-it-operations-platform/",
       "title": "Coforge Launches EvolveOps.AI, an Agentic AI-Powered IT Operations Platform"
     },
     {
       "date": "2025-12-24",
       "source": "IT News Africa",
-      "region": "Africa",
+      "region": "Global",
       "category": "Acquisition",
       "layer": "B2B Applications",
-      "contents": "IHC, a global investment company focused on building dynamic value networks, has announced the successful acquisition of a 70% stake in Peko Holdings Limited, a technology-driven company offering an integrated digital platform designed to simplify and automate core business operations. Peko provides an all-in-one digital solution built to help businesses streamline financial management and essential [&#8230;]",
+      "contents": "Global investment firm IHC acquired 70% of Peko Holdings, an all-in-one digital platform automating financial and administrative processes like payroll, invoicing, and expense management for SMEs and mid-market companies. Peko is integrating AI-powered assistants to automate routine tasks like forecasting and expense management.",
       "url": "https://www.itnewsafrica.com/2025/12/ihc-invests-in-peko-holdings-to-accelerate-ai-powered-automation-for-smes/",
       "title": "IHC Invests in Peko Holdings to Accelerate AI-Powered Automation for SMEs"
     },
@@ -538,7 +558,7 @@
       "region": "Global",
       "category": "Other",
       "layer": "Chips & Infrastructure",
-      "contents": "Finding greener ways to keep giant new data centres cool is a challenge.",
+      "contents": "Liquid cooling firm Iceotope uses oil-based fluid immersion and water circulation systems to cool data center chips, reducing cooling energy consumption by up to 80% compared to traditional air cooling. The approach addresses growing demand for data center infrastructure driven by AI while tackling environmental concerns around energy and water usage.",
       "url": "https://www.bbc.com/news/articles/cp8zd176516o?at_medium=RSS&at_campaign=rss",
       "title": "The showers and baths keeping data centre tech cool"
     },
@@ -548,7 +568,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "UAE-based fintech Lucid Capital has closed a $2.5 million seed funding round, led by Tharawat Holding, with participation from Singular Link Founded in the US in 2022 by Hamad Aldighrir, Ye Gu and San X., Lucid Capital is a quantitative algo fintech specialising in algorithmic trading and quantitative investment strategies. The round will support the expansion of trading strategies, infrastructure, and AI research. In addition to the equity round, Lucid Capital secured $200 million in capital commitments from institutions and accredited investors to deploy its strategies across US equities and digital asset markets. Press release: Lucid Capital, a US-born and now UAE-based fintech company specialising in AI-driven algorithmic trading, has closed a $2.5 million Seed funding round to strengthen its trading infrastructure and advance its artificial intelligence research capabilities. The round was led by Tharawat Holding, with participation from Singular Link, and is aimed at supporting the expansion of Lucid Capital&rsquo;s trading strategies and technology stack as it scales its operations. The newly raised capital will be deployed to advance AI research, expand trading infrastructure, and deepen institutional partnerships, in line with the company&rsquo;s growth plans across global markets. Lucid Capital focuses on applying artificial intelligence to algorithmic trading, combining quantitative strategies with autonomous AI agents to improve execution efficiency and risk management. In parallel with the equity round, Lucid Capital has also secured $200 million in capital commitments from financial institutions and accredited investors to support the deployment and scaling of its strategies across US equities and digital asset markets. Lucid Capital&rsquo;s platform relies on advanced AI models and autonomous agents capable of adaptive frequency control, dynamically responding to market conditions, and optimising real-time trade execution, positioning the company to operate across volatile and fast-moving markets.",
+      "contents": "UAE-based fintech Lucid Capital closed a $2.5 million seed round led by Tharawat Holding and secured $200 million in capital commitments for AI-driven algorithmic trading. The company uses autonomous AI agents and quantitative strategies to optimize trade execution across US equities and digital asset markets.",
       "url": "http://wamda.com/2025/12/lucid-capital-closes-2-5-million-seed-round-led-tharawat-holding",
       "title": "Lucid Capital closes $2.5 million Seed round, led by Tharawat Holding"
     },
@@ -558,7 +578,7 @@
       "region": "Unknown",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "The x402 protocol allows digital agents to use stablecoins so that they can pay for data and products autonomously, moving beyond traditional payment methods.",
+      "contents": "The x402 protocol enables digital AI agents to autonomously pay for data and products using stablecoins, extending agentic AI capabilities beyond traditional payment constraints.",
       "url": "https://aibusiness.com/agentic-ai/x402-agentic-payments-digital-dollars",
       "title": "x402 Aims to Enable Agentic Payments With Digital Dollars"
     },
@@ -568,7 +588,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Lovable, a Swedish AI startup, raised $330 million in a Series B funding round. Its platform enables app creation via text prompts.",
+      "contents": "Swedish AI startup Lovable raised $330 million in Series B funding, reaching a $6.6 billion valuation for its platform that generates full applications from natural language text prompts.",
       "url": "https://aibusiness.com/generative-ai/ai-coding-startup-lovable-series-b",
       "title": "AI Coding Startup Lovable Now Valued at $6.6B"
     },
@@ -578,7 +598,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Saudi Arabia-based AI-powered startup QPioneers has raised its first funding round from Q Fund, the investment arm of Qewam Holding, for an undisclosed value. Founded in 2024 by Hisham Al Mamlouk and Adel Alsaadi, QPioneers is building a Startup Operating System (Startup OS) that brings collaboration tools, operations, and analytics into a single workspace, supported by an AI assistant that automates workflows and delivers strategic insights. Funding proceeds will be used to accelerate product development, recruit key talent, and strengthen engagement with startup communities regionally. Press release: Q Fund, the investment arm of Qewam Holding, announced the successful completion of the first funding round for QPioneers, a technology startup developing an integrated, AI-powered platform designed to manage and operate startups more efficiently. The investment reflects Q Fund&rsquo;s strategy to support technology-driven solutions that enhance operational efficiency and enable scalable growth across regional markets. QPioneers is positioned as an AI-native Startup Operating System (Startup OS) tailored for growth-stage teams, combining collaboration tools, operational management, and intelligent analytics within a single workspace. At the core of the platform is the &ldquo;QP Agent&rdquo;, an intelligent assistant that learns from a company&rsquo;s internal data to automate workflows, support day-to-day operations, and provide data-driven recommendations to founders and teams. By consolidating tools and processes, QPioneers aims to reduce operational complexity and allow startups to focus on execution and scale. Commenting on the investment, Lewa Abukhait, CEO of Q Fund, said that early-stage investments in deep technology are central to building resilient economic ecosystems, noting that platforms focused on multiplying operational efficiency are likely to shape the next phase of startup growth. Hisham Al Mamlouk, Founder of QPioneers, said the partnership with Q Fund goes beyond capital, highlighting the value of joining an integrated investment ecosystem that provides strategic guidance and access to networks needed to scale from the region to global markets.",
+      "contents": "Saudi AI startup QPioneers raised its first funding round from Q Fund (Qewam Holding's investment arm) for an undisclosed amount to develop its Startup OS—an AI-powered workspace combining collaboration tools, operations, and analytics with an intelligent 'QP Agent' assistant. The platform automates workflows and delivers strategic insights for growth-stage startups.",
       "url": "http://wamda.com/2025/12/q-fund-backs-ai-startup-qpioneers-funding-round",
       "title": "Q Fund backs AI startup QPioneers in first funding round"
     },
@@ -588,7 +608,7 @@
       "region": "Oceania",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "Edit on the Spot™ Launches Real-Time Platform and Proves Its Power at SXSW Sydney, Australia. The AI-powered platform built to deliver instant, on-brand video from live events has officially launched its new real-time system and immediately demonstrated its capabilities at scale during SXSW Sydney. The platform transforms long-form recordings into branded, captioned, and shareable video assets within [&#8230;]",
+      "contents": "Australian AI startup Edit on the Spot launched a real-time video editing platform that transforms live event footage into branded, captioned clips within seconds while events are still happening. The platform processed 125 live sessions at SXSW Sydney, using AI for speaker detection, brand-safe templating, and live captioning to replace multi-day post-production workflows.",
       "url": "https://www.itnewsafrica.com/2025/12/australian-ai-event-video-platform-debuts-real-time-editing-at-sxsw-sydney/",
       "title": "Australian AI Event Video Platform Debuts Real-Time Editing at SXSW Sydney"
     },
@@ -598,7 +618,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Scientific research is drowning in data but starved of time. Labs generate vast datasets and face an ever-growing&#8230;",
+      "contents": "Edison Scientific, a San Francisco-based spinout from FutureHouse, raised $70 million at a $250 million valuation to develop Kosmos, an autonomous AI scientist platform that accelerates research in biology and chemistry by automating literature review, data analysis, and experimental design. The round was co-led by Spark Capital and Triatomic Capital with participation from Google's Chief Scientist Jeff Dean.",
       "url": "https://techfundingnews.com/edison-raises-70m-ai-scientist-platform/",
       "title": "FutureHouse spinout Edison lands $70M to build autonomous AI scientists for biology and chemistry"
     },
@@ -608,7 +628,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Swiss-basedNeural Concept has raised a $100 million Series C round led by Growth Equity atGoldman Sachs Alternatives, with participation from existing investors ForestayCapital, Alven, HTGF, D.E. Shaw...",
+      "contents": "Swiss AI engineering platform Neural Concept raised $100 million in Series C funding led by Goldman Sachs Alternatives to scale its CAD-native technology that embeds AI into design and simulation workflows for automotive, aerospace, and semiconductor sectors. The funding will support product development including generative CAD capabilities and expansion of global partnerships.",
       "url": "https://tech.eu/2025/12/18/neural-concept-raises-100m-to-scale-ai-native-engineering/",
       "title": "Neural Concept raises $100M to scale AI-native engineering"
     },
@@ -618,7 +638,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Lovable has raised $330 million in Series B funding at a $6.6 billion valuation, led by CapitalG and Menlo Ventures' Anthology fund. Additional investors in this round include the venture arms of lead...",
+      "contents": "Lovable, an AI platform enabling non-technical users to build web and software applications through natural language prompts, raised $330 million at a $6.6 billion valuation led by CapitalG and Menlo Ventures. The platform has generated 25 million+ projects with 200+ million monthly visits from enterprises including Klarna and Deutsche Telekom.",
       "url": "https://tech.eu/2025/12/18/lovable-raises-330m-at-a-66b-valuation-to-turn-non-developers-into-software-builders/",
       "title": "Lovable raises $330M at a $6.6B valuation to turn non-developers into software builders"
     },
@@ -628,7 +648,7 @@
       "region": "North America",
       "category": "Acquisition",
       "layer": "B2B Applications",
-      "contents": "It's the CRM provider's latest move to build out its Agentforce platform.",
+      "contents": "Salesforce acquired Qualified, a conversational AI platform, to expand its Agentforce suite and enhance autonomous agent capabilities for marketing and sales automation.",
       "url": "https://aibusiness.com/agentic-ai/salesforce-buys-qualified-in-agentic-marketing-push",
       "title": "Salesforce Buys Qualified in Agentic Marketing Push"
     },
@@ -638,7 +658,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "This evolution could grant AI agents greater autonomy to perform tasks independently.",
+      "contents": "Anthropic launched an open Skills standard for Claude, enabling AI agents to independently perform specialized tasks with greater autonomy and flexibility.",
       "url": "https://aibusiness.com/foundation-models/anthropic-launches-skills-open-standard-claude",
       "title": "Anthropic Launches Skills Open Standard for Claude"
     },
@@ -648,7 +668,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "The move is part of Google's strategy to meet diverse enterprise needs while simplifying model selection for users.",
+      "contents": "Google released Gemini 3 Flash, a new enterprise-focused AI model designed to address diverse business needs while simplifying model selection for organizations.",
       "url": "https://aibusiness.com/foundation-models/google-releases-gemini-3-flash-model-enterprise",
       "title": "Google Releases Gemini 3 Flash Aimed at Enterprises"
     },
@@ -658,7 +678,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "Fine-tuning & MLOps",
-      "contents": "Wodan AI, a startup specialised in running artificialintelligence models directly on fully encrypted data, has closed a €2 millionpre-seed round led by Spanish funds JME Ventures, Swanlaab and Adara V...",
+      "contents": "European startup Wodan AI closed a €2 million pre-seed round led by Spanish and Belgian funds to scale its homomorphic encryption technology enabling AI models to run on encrypted data without decryption. The company is relocating its headquarters to Madrid to advance sovereign AI capabilities for finance, defence, and healthcare sectors.",
       "url": "https://tech.eu/2025/12/17/wodan-ai-closes-a-eur2m-round-to-advance-sovereign-ai-development-in-europe/",
       "title": "Wodan AI closes a €2M round to advance sovereign AI development in Europe"
     },
@@ -667,8 +687,8 @@
       "source": "Tech",
       "region": "Europe",
       "category": "Funding",
-      "layer": "Fine-tuning & MLOps",
-      "contents": "A David vs. Goliath shift is emerging in AI as a small Nordic team is challenging Big Tech’s cloud-LLM dominance by bringing Small Language Models (SLM) directly to users’ devices.Copenhagen-based ope...",
+      "layer": "Consumer Applications",
+      "contents": "Copenhagen-based NobodyWho raised €2 million in pre-seed funding to deploy Small Language Models directly on users' devices, eliminating cloud dependency and reducing AI's carbon footprint by up to 500x compared to cloud-based LLMs. The open-source startup enables organizations to run AI locally on laptops and phones while maintaining full data control and privacy.",
       "url": "https://tech.eu/2025/12/17/nobodywho-raises-eur2m-to-challenge-big-techs-cloud-ai-with-slms-for-local-devices/",
       "title": "NobodyWho raises €2M to challenge Big Tech’s cloud AI with SLMs for local devices"
     },
@@ -678,7 +698,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "OpenAI's GPT Image 1.5 focuses on boosting precision, speed and creativity.",
+      "contents": "OpenAI released GPT Image 1.5, an updated image generation tool for ChatGPT that enhances precision, speed, and creative output capabilities.",
       "url": "https://aibusiness.com/generative-ai/openai-updates-chatgpt-images-tool",
       "title": "OpenAI Updates ChatGPT Images Tool"
     },
@@ -688,7 +708,7 @@
       "region": "North America",
       "category": "Acquisition",
       "layer": "Chips & Infrastructure",
-      "contents": "The SchedMD deal comes as Nvidia continues to bolster its open source AI portfolio.",
+      "contents": "Nvidia acquired SchedMD to strengthen its high-performance computing and open source AI portfolio for enterprise workloads.",
       "url": "https://aibusiness.com/data-management/nvidia-focuses-on-hpc-schedmd",
       "title": "Nvidia Aims to Bolster HPC With Acquisition"
     },
@@ -698,7 +718,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "UAE-based Relik has closed a seed funding round with participation from KBW Ventures, Naatt Holding, Fort Holding, and Ayman Sejiny. Founded in 2023 by Walid Tarabih and joined later by John Tsioris, Relik is an AI-powered authentication platform that empowers collectors, brands, and marketplaces to verify authenticity. Funds will allow Relik to roll out other products and expand across various sectors, such as sports, luxury, and heritage markets. Press release: Relik, a UAE-born authentication platform blending AI with advanced security technologies to verify, protect, and preserve the authenticity of collectibles, art and cultural treasures, has announced the closing of its seed investment round. The round, with participation from KBW Ventures, Naatt Holding, Fort Holding, and Ayman Sejiny, will allow Relink to accelerate its expansion across sports, luxury, and heritage markets, bridging the physical and digital worlds with technologies that enable anyone to verify an item's authenticity in a matter of seconds, using only a smart device. As the global counterfeit market surpasses an estimated $467 billion and generative technologies continue to blur the lines between what is real and artificial, Relik is deploying technology to safeguard human legacy and restore trust in authenticity. The investment will accelerate the rollout of the Relik Vault, an AI-powered, tamper-proof authentication platform. This technology allows brands, artists, and institutions to protect their assets and build consumer trust through verifiable provenance. Walid Tarabih, Founder and Chief Executive Officer of Relik, said, &ldquo;We are ensuring authenticity in a fakeable world. &ldquo;Counterfeits don't just impact economies; they erase identity, creativity and truth. Along with our investors, we're building a movement to make the world's stories verifiable again.&rdquo; HRH Prince Khaled bin Alwaleed bin Talal Al Saud, Founder and CEO of KBW Ventures, commented, &ldquo;Relik is creating a new global standard for truth and trust. At a time when counterfeiting and AI-generated content are rising, Relik's mission to protect authenticity carries both cultural and commercial value.&rdquo; Relik&rsquo;s technology gives physical assets a unique &ldquo;digital DNA&rdquo;, permanently binding each item to its rightful story through a transparent, tamper-proof system. It bridges the physical and digital worlds, allowing anyone to verify an item&rsquo;s authenticity within seconds using only a smart device. Crucially, Relik eliminates the need for external hardware such as NFC chips, RFID tags, or QR codes, requiring nothing more than the object itself and a mobile device. The company&rsquo;s foundation is strengthened by the operational expertise of John Tsioris, Founder of InstaShop. Joining as a pre-seed investor and co-founder, Tsioris brings the scaling expertise that built one of the region's most successful digital ventures and has accomplished one of the largest tech exits of the MENA region. The investment will accelerate Relik's expansion across sports, luxury, and heritage markets. The company has already cultivated an ecosystem of partnerships with sports legends, museums, and auction houses bound by the conviction that authenticity matters.",
+      "contents": "UAE-based Relik closed a seed funding round with KBW Ventures and other investors to expand its AI-powered authentication platform that verifies collectibles, art, and cultural assets using a unique 'digital DNA' system. The technology enables verification in seconds without requiring external hardware like NFC chips or QR codes.",
       "url": "http://wamda.com/2025/12/relik-raises-seed-round-backing-kbw-ventures",
       "title": "Relik raises seed round with backing from KBW Ventures"
     },
@@ -708,7 +728,7 @@
       "region": "Africa",
       "category": "Expansion",
       "layer": "B2B Applications",
-      "contents": "Fynd, an AI-native retail technology platform backed by Reliance Retail Ventures Limited, announced its official expansion into South Africa, onboarding Surtee Group—one of the region’s most established luxury and fashion retailers. According to Statista, South Africa is expected to have 11.7 million e-commerce users in 2025, with projections reaching 21.5 million by 2029. This growth [&#8230;]",
+      "contents": "Fynd, an AI-native retail technology platform backed by Reliance Retail, expanded into South Africa by onboarding luxury retailer Surtee Group. The platform unifies offline and online inventory, enables ship-from-store capabilities, and uses AI for personalized customer engagement across channels in a market projected to reach $7.48 billion in e-commerce sales by 2025.",
       "url": "https://www.itnewsafrica.com/2025/12/fynd-launches-in-south-africa-to-accelerate-commerce-adoption/",
       "title": "Fynd Launches in South Africa to Accelerate Commerce Adoption"
     },
@@ -718,7 +738,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "The European platform for deploying safe and governed agentic workflowsin healthcare, Mindoo, has secured €5 million in seed financing from 6DC,Syndicate One and a group of strategic angel investors. ...",
+      "contents": "Mindoo secured €5 million in seed funding from 6DC, Syndicate One, and angel investors to expand its AI healthcare platform that configures agentic workflows for hospital tasks like patient intake, documentation, and follow-up communication. The startup is deployed across Belgium and Germany with plans to expand into the Netherlands and France.",
       "url": "https://tech.eu/2025/12/16/mindoo-raises-eur5m-for-ai-healthcare-workforce-platform/",
       "title": "Mindoo raises €5M for AI healthcare workforce platform"
     },
@@ -728,7 +748,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "The models advance video understanding and underscore the vendor's commitment to open source.",
+      "contents": "AI2 released Molmo 2, open source video understanding models that advance AI's ability to interpret and analyze video content.",
       "url": "https://aibusiness.com/foundation-models/ai2-molmo-open-video-models",
       "title": "Ai2 Introduces Molmo 2 Open Video Models"
     },
@@ -738,7 +758,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "The announcement came the same day that OpenAI launched GPT-5.2.",
+      "contents": "Google released an updated Gemini Deep Research tool that enhances the AI model's ability to conduct comprehensive research tasks.",
       "url": "https://aibusiness.com/agentic-ai/google-releases-updated-gemini-deep-research",
       "title": "Google Releases Updated Gemini Deep Research"
     },
@@ -748,7 +768,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "Fine-tuning & MLOps",
-      "contents": "The startup launched in 2023 and wants to make generative AI more efficient.",
+      "contents": "Runware, a 2023-founded startup building unified API infrastructure for generative AI, secured $50 million in funding to improve AI efficiency and accessibility.",
       "url": "https://aibusiness.com/generative-ai/runware-one-api-startup-funding",
       "title": "Runware Secures $50M in Quest to Build 'One API for All AI'"
     },
@@ -758,7 +778,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "Consumer Applications",
-      "contents": "A Berlin-based audio startup, which leverages its own AI models to let users generate synced sound for video, has raised $41m in a seed round, led by Index Ventures and Andreessen Horowitz. The fundin...",
+      "contents": "Berlin-based Mirelo raised $41 million in a seed round led by Index Ventures and Andreessen Horowitz to advance its AI sound generation platform that automatically creates synchronized music and audio effects for video content in seconds. The startup's models require 50x less compute than typical LLMs and target individual creators, small studios, and enterprises.",
       "url": "https://tech.eu/2025/12/15/ai-sound-generator-startup-mirelo-grabs-41m-seed-round-led-by-index-and-a16z/",
       "title": "AI sound generator startup Mirelo grabs $41M seed round, led by Index and A16z"
     },
@@ -768,7 +788,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "London-based AI startup PolyAI has raised $86 million in a Series D funding round.The funding round in the AI assistant developer for call centres was co-led by existing investors Canadian B2B softwar...",
+      "contents": "London-based PolyAI raised $86 million in Series D funding co-led by Georgian, Hedosophia, and Khosla Ventures to expand its AI voice assistant platform for call centers, which serves over 100 enterprise customers including Hilton, Marriott, and FedEx. The University of Cambridge spinout develops conversational AI that handles customer inquiries, payments, and account information with voices tailored by accent and tone.",
       "url": "https://tech.eu/2025/12/15/polyai-raises-86m/",
       "title": "PolyAI raises $86M"
     },
@@ -778,7 +798,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Investors in Resemble AI include Google's AI Futures Fund, as AI-related fraud surges across the U.S.",
+      "contents": "Resemble AI, which detects and prevents deepfake creation, raised $13 million in funding led by Google's AI Futures Fund amid rising AI-related fraud in the U.S.",
       "url": "https://aibusiness.com/generative-ai/ai-startup-combats-deepfakes",
       "title": "AI Startup Raises $13M to Combat Deepfakes"
     },
@@ -788,17 +808,17 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "Built on a hybrid mixture-of-experts architecture, these models aim to help enterprises implement multi-agent systems.",
+      "contents": "Nvidia released Nemotron 3, open source AI models built on hybrid mixture-of-experts architecture designed to help enterprises deploy multi-agent AI systems.",
       "url": "https://aibusiness.com/foundation-models/nvidia-nemotron-3-open-models",
       "title": "Nvidia Releases Nemotron 3 Open Models"
     },
     {
       "date": "2025-12-15",
       "source": "AI Business",
-      "region": "Global",
-      "category": "Other",
+      "region": "North America",
+      "category": "Expansion",
       "layer": "Chips & Infrastructure",
-      "contents": "Emerging GPU-as-a-service vendors, driven by demand for agentic AI applications and physical AI, such as robots, require increasing amounts of compute power.",
+      "contents": "GPU-as-a-service providers are networking AI data centers to meet surging computational demand from agentic AI applications and physical AI systems like robots.",
       "url": "https://aibusiness.com/data-centers/neocloud-providers-network-ai-data-centers",
       "title": "Neocloud Providers Look to Network AI Data Centers"
     },
@@ -808,7 +828,7 @@
       "region": "South Asia",
       "category": "Expansion",
       "layer": "B2B Applications",
-      "contents": "British AI company Applied Computing, which develops foundational AI for energy operators, today announces the opening of its new office in Bangalore, marking its official expansion into India and dee...",
+      "contents": "British AI company Applied Computing opened its Bangalore office to expand in India's energy market with Orbital, its foundation model built specifically for energy operations optimization. The move includes hiring former Shell VP Dan Jeavons and leverages proven deployments with major refining operators across India.",
       "url": "https://tech.eu/2025/12/12/applied-computing-opens-bangalore-office-as-india-becomes-ground-zero-for-industrialai/",
       "title": "Applied Computing opens Bangalore office as India becomes ground zero for next-gen industrialAI"
     },
@@ -818,7 +838,7 @@
       "region": "North America",
       "category": "Partnership",
       "layer": "Foundation Models",
-      "contents": "Users of the video generation tool, Sora, will be able to draw on a collection of more than 200 characters.",
+      "contents": "OpenAI signed a $1 billion deal with Disney and launched ChatGPT 5.2, enabling its Sora video generation tool to access over 200 Disney characters.",
       "url": "https://aibusiness.com/foundation-models/openai-disney-deal-chatgpt-update",
       "title": "OpenAI Seals $1B Disney Deal, Launches ChatGPT 5.2"
     },
@@ -828,7 +848,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "Impartner announced the release of Aimi (Artificial Impartner Intelligence), a new AI engine embedded in the Impartner platform, designed to improve partner productivity and strengthen the operational foundation supporting enterprise partner revenue motions. Aimi addresses the most requested automations from market leaders, delivering three core capabilities: intelligent content creation and translation, natural-language record creation using text [&#8230;]",
+      "contents": "Impartner released Aimi, an AI engine embedded in its partner relationship management platform that automates content creation, voice-to-text record creation, and knowledge asset retrieval. The AI system is designed to streamline partner program workflows by reducing manual tasks and improving data quality for enterprise partner revenue operations.",
       "url": "https://www.itnewsafrica.com/2025/12/impartner-unveils-aimi-the-enterprise-ai-engine-designed-to-elevate-partner-revenue/",
       "title": "Impartner Unveils Aimi, the Enterprise AI Engine Designed to Elevate Partner Revenue"
     },
@@ -838,7 +858,7 @@
       "region": "Africa",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "The Rundown Studio has launched an AI-powered prompt library designed to help communications teams in emerging markets cut the cost of traditional public relations services.",
+      "contents": "The Rundown Studio, co-founded by former CNN anchor Zain Verjee, launched an AI-powered prompt library with 12 specialized communications tools designed to help African organizations cut PR costs from $1,500-$20,000 monthly to affordable rates. The platform provides newsroom-tested frameworks for media pitches, press releases, and TV scripts, enabling communications teams across Nairobi, Lagos, and Accra to access world-class expertise without expensive agency retainers.",
       "url": "https://techcabal.com/2025/12/11/former-cnn-anchor-launches-ai-prompt-library/",
       "title": "Africa’s PR costs are soaring; ex-CNN anchor Zain Verjee has an AI fix"
     },
@@ -848,7 +868,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Rotterdam-based Lynk, a collaborative AI contract workspacethat helps businesses manage and control their agreements, has closed apre-seed round led by European AI investor Curiosity VC, with particip...",
+      "contents": "Rotterdam-based Lynk closed a pre-seed round led by Curiosity VC to scale its AI contract intelligence platform that automates audit tasks, identifies risks, and manages obligations for enterprises and small businesses managing complex agreements. The platform reduces manual administrative work and is currently deployed in Dutch real estate development and contracting sectors.",
       "url": "https://tech.eu/2025/12/11/pre-seed-funding-fuels-lynks-expansion-of-ai-driven-contract-control-platform/",
       "title": "Pre-seed funding fuels Lynk’s expansion of AI-driven contract control platform"
     },
@@ -858,7 +878,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "Fine-tuning & MLOps",
-      "contents": "UK-based AI workload startup Runware hasraised a $50 million Series A round led by Dawn Capital, with participationfrom Speedinvest, Comcast Ventures, and existing investors including InsightPartners,...",
+      "contents": "UK-based Runware raised $50 million Series A led by Dawn Capital for its unified API platform aggregating multiple AI models for media-creation workflows with lower latency and costs. The startup serves enterprise customers including Wix, Quora, and Together.ai through its Sonic Inference Engine optimized for efficient AI inference.",
       "url": "https://tech.eu/2025/12/11/runware-nets-50m-series-a-for-one-api-for-all-ai-platform/",
       "title": "Runware nets $50M Series A for ‘one API for all AI’ platform"
     },
@@ -868,7 +888,7 @@
       "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Berlin-basedZentio has closed a €1.4 million pre-seed funding round led by HTGF, with additional support from SIVentures. Alongside capital, theinvestors will provide strategic and operational support...",
+      "contents": "Berlin-based Zentio closed €1.4 million pre-seed funding led by HTGF for its AI-native production planning platform that uses agents to optimize real-time manufacturing decisions across interdependent operations. The 2025-founded startup helps factories reduce idle time, improve capacity planning, and respond to disruptions by centralizing operational data through AI systems.",
       "url": "https://tech.eu/2025/12/11/zentio-raises-eur14m-for-ai-native-production-planning/",
       "title": "Zentio raises €1.4M for AI-native production planning"
     },
@@ -878,7 +898,7 @@
       "region": "South Asia",
       "category": "Expansion",
       "layer": "Chips & Infrastructure",
-      "contents": "The tech giant pours more money into building out AI infrastructure and training in the most populous country in the world.",
+      "contents": "Amazon committed an additional $35 billion investment in India to build AI infrastructure and develop AI training capabilities in the world's most populous country.",
       "url": "https://aibusiness.com/data-centers/amazon-to-spend-another-35b-in-india-with-ai-the-focus",
       "title": "Amazon to Spend Another $35B in India, With AI the Focus"
     },
@@ -888,9 +908,19 @@
       "region": "North America",
       "category": "Expansion",
       "layer": "Chips & Infrastructure",
-      "contents": "The investment will expand AI and cloud infrastructure, boost cybersecurity and train workers.",
+      "contents": "Microsoft will invest an additional $5.4 billion in Canada to expand AI and cloud infrastructure, enhance cybersecurity capabilities, and develop local workforce skills in AI technologies.",
       "url": "https://aibusiness.com/data-centers/microsoft-to-spend-another-5-4-billion-to-boost-ai-in-canada",
       "title": "Microsoft to Spend Another $5.4 Billion to Boost AI in Canada"
+    },
+    {
+      "date": "2025-12-09",
+      "source": "AI Business",
+      "region": "Global",
+      "category": "Partnership",
+      "layer": "Chips & Infrastructure",
+      "contents": "Nvidia's sales of AI chips to China generate U.S. revenue, expand Nvidia's market reach, and allow China to access advanced semiconductors while developing its domestic chip capabilities.",
+      "url": "https://aibusiness.com/generative-ai/sale-of-nvidia-ai-chips-to-china",
+      "title": "Sale of Nvidia AI Chips to China Helps All Parties"
     },
     {
       "date": "2025-12-09",
@@ -898,7 +928,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "Google's AI glasses, featuring audio and display options, promise screen-free assistance, live translations, and seamless smartphone integration.",
+      "contents": "Google will launch AI-powered glasses next year featuring audio and display capabilities that deliver screen-free assistance, live translation, and seamless smartphone integration to compete with Meta's Ray-Bans.",
       "url": "https://aibusiness.com/speech-recognition/google-ai-glasses-next-year",
       "title": "Google AI Glasses Set to Take on Meta Ray-Bans Next Year"
     },
@@ -908,7 +938,7 @@
       "region": "North America",
       "category": "Acquisition",
       "layer": "Fine-tuning & MLOps",
-      "contents": "The acquisition highlights a trend toward using streaming rather than static data.",
+      "contents": "IBM acquired data streaming provider Confluent to leverage real-time data processing capabilities, reflecting the industry shift toward streaming data over static datasets for AI applications.",
       "url": "https://aibusiness.com/data-management/in-ai-play-ibm-acquires-confluent",
       "title": "In AI Play, IBM Acquires Data Streaming Provider Confluent"
     },
@@ -918,27 +948,47 @@
       "region": "North America",
       "category": "Acquisition",
       "layer": "Consumer Applications",
-      "contents": "The company, known for its AI-enabled pendant, is the latest step in Meta's quest to bring superintelligence to everyone.",
+      "contents": "Meta acquired wearable AI startup Limitless, known for its AI-enabled pendant device, advancing Meta's strategy to democratize access to superintelligence through consumer hardware.",
       "url": "https://aibusiness.com/speech-recognition/meta-acquires-limitless",
       "title": "Meta Acquires Wearable AI Startup Limitless"
+    },
+    {
+      "date": "2025-12-06",
+      "source": "Techcabal",
+      "region": "Africa",
+      "category": "Other",
+      "layer": "B2B Applications",
+      "contents": "TechCabal identified 23 African AI startups building foundational infrastructure rather than wrapping existing APIs, including companies developing proprietary language models for local languages, offline-capable AI systems, and hardware optimized for low-connectivity environments. Over 2,400 African startups are building AI infrastructure, with focus shifting from AI adoption to African ownership of models, datasets, and compute infrastructure.",
+      "url": "https://techcabal.com/2025/12/06/ai-startups-building-for-africa/",
+      "title": "23 startups laying the groundwork for Africa’s AI growth"
+    },
+    {
+      "date": "2025-12-05",
+      "source": "Techcabal",
+      "region": "Africa",
+      "category": "Product Launch",
+      "layer": "B2B Applications",
+      "contents": "African AI startups launched 10 notable products in 2025 including Gebeya Dala (mobile-first app builder supporting local languages), Curation AI (real-time deepfake detection), and YarnGPT (multilingual dubbing), reflecting a shift toward AI solutions addressing Africa's specific infrastructure constraints and linguistic diversity. These products demonstrate the continent's move from generic AI experimentation to building contextually relevant applications for emerging markets.",
+      "url": "https://techcabal.com/2025/12/05/10-exciting-african-ai-products-launched-in-2025/",
+      "title": "10 exciting African AI products launched in 2025"
     },
     {
       "date": "2025-12-05",
       "source": "AI Business",
       "region": "North America",
-      "category": "Partnership",
+      "category": "Acquisition",
       "layer": "Foundation Models",
-      "contents": "The parallel developments highlight the tension in an AI market in which publishers are seeking compensation for their content being used to train large language models.",
+      "contents": "The New York Times sued AI search startup Perplexity while Meta signed publishing deals, highlighting ongoing disputes over AI companies using publisher content to train large language models without compensation.",
       "url": "https://aibusiness.com/generative-ai/the-nyt-sues-perplexity-meta-partners-with-publishers",
       "title": "The NYT Sues Perplexity as Meta Partners With Publishers"
     },
     {
       "date": "2025-12-05",
       "source": "AI Business",
-      "region": "North America",
+      "region": "Global",
       "category": "Partnership",
       "layer": "Foundation Models",
-      "contents": "The partners will use Nvidia's platforms to optimize Mistral's open-source model family.",
+      "contents": "Nvidia and Mistral AI partnered to launch a new family of open-source language models optimized on Nvidia's computing platforms, expanding accessible AI model options for developers.",
       "url": "https://aibusiness.com/foundation-models/nvidia-mistral-open-models",
       "title": "Nvidia, Mistral AI Partner to Launch New Family of Open Models"
     },
@@ -948,7 +998,7 @@
       "region": "Middle East",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "The large language model was released alongside a platform to create and manage AI agents.",
+      "contents": "A Saudi Arabian AI startup launched an Arabic-language large language model alongside a platform for creating and managing AI agents, addressing AI capabilities for Arabic-speaking markets.",
       "url": "https://aibusiness.com/generative-ai/saudi-ai-startup-launches-arabic-llm",
       "title": "Saudi AI Startup Launches Arabic LLM"
     },
@@ -958,7 +1008,7 @@
       "region": "North America",
       "category": "Earnings",
       "layer": "Foundation Models",
-      "contents": "The $200 million investment highlights the sizeable influence the independent generative AI vendor has achieved, as well as the ongoing efforts of other vendors to integrate its models into their platforms.",
+      "contents": "Anthropic invested $200 million in data platform Snowflake, demonstrating the independent AI company's significant market influence and vendors' strategic adoption of its Claude models.",
       "url": "https://aibusiness.com/generative-ai/snowflake-deal-an-example-of-anthropi-influence",
       "title": "Snowflake Deal Another Example of Anthropic's Influence"
     },
@@ -968,7 +1018,7 @@
       "region": "North America",
       "category": "Acquisition",
       "layer": "Foundation Models",
-      "contents": "Also, Anthropic made its first acquisition this week, acquiring Bun to advance agentic coding assistant Claude Code.",
+      "contents": "OpenAI acquired AI training startup Neptune to enhance model development capabilities, while Anthropic made its first acquisition by purchasing Bun to advance Claude Code, its agentic coding assistant.",
       "url": "https://aibusiness.com/foundation-models/openai-acquire-neptune-model-training",
       "title": "OpenAI to Acquire AI Startup Neptune, in Model Training Boost"
     },
@@ -978,7 +1028,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "Alpamayo-R1 was introduced this week at NeurIPS and aims to achieve Level 4 automation with human-like reasoning.",
+      "contents": "Nvidia released Alpamayo-R1, an open reasoning AI model unveiled at NeurIPS designed to enable Level 4 autonomous driving by combining human-like reasoning capabilities with self-driving vehicle systems.",
       "url": "https://aibusiness.com/automation/nvidia-open-reasoning-ai-self-driving-vehicles",
       "title": "Nvidia Releases Open Reasoning AI for Self-Driving Vehicles"
     },
@@ -988,7 +1038,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Fine-tuning & MLOps",
-      "contents": "The vendor introduced new ways for users to use reinforcement fine-tuning to customize models. It also expanded Strands SDK and introduced Kiro Powers.",
+      "contents": "AWS introduced reinforcement fine-tuning capabilities for users to customize AI models, while expanding its Strands SDK and launching Kiro Powers to simplify agent development.",
       "url": "https://aibusiness.com/agentic-ai/aws-agent-model-customization",
       "title": "AWS Simplifies Agent Building With Model Customization"
     },
@@ -998,7 +1048,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Chips & Infrastructure",
-      "contents": "The cloud provider released significant AI agents, generative AI models and a model service, plus AI factories and new AI chips, among other moves aimed at enterprises.",
+      "contents": "AWS released multiple enterprise AI tools at Re:Invent 2025, including AI agents, generative models, a model service, AI factories, and custom AI chips targeting enterprise deployments.",
       "url": "https://aibusiness.com/generative-ai/aws-steps-up-its-ai-at-re-invent-2025s",
       "title": "AWS Steps up Its AI Game at Re:Invent 2025"
     },
@@ -1008,7 +1058,7 @@
       "region": "East Asia",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "The new models are comparable to other AI models on the market but raise questions about the vendor's business approach.",
+      "contents": "DeepSeek released new AI models comparable to competitors, though their performance raises questions about the company's open-source business strategy and long-term monetization approach.",
       "url": "https://aibusiness.com/generative-ai/deepseek-s-new-models-reveal-open-source-complexities",
       "title": "DeepSeek's New Models Reveal Open Source Complexities"
     },
@@ -1018,7 +1068,7 @@
       "region": "North America",
       "category": "Partnership",
       "layer": "Foundation Models",
-      "contents": "OpenAI will provide ChatGPT Enterprise to Accenture workers; separately, the startup announced it was taking an ownership stake of Thrive Holdings.",
+      "contents": "OpenAI expanded enterprise offerings by deploying ChatGPT Enterprise to Accenture workers and took an ownership stake in healthcare company Thrive Holdings.",
       "url": "https://aibusiness.com/generative-ai/openai-latest-moves-enterprise-ai",
       "title": "OpenAI's Latest Moves Aimed at Enterprise AI"
     },
@@ -1028,7 +1078,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Fine-tuning & MLOps",
-      "contents": "Key among the AI releases is Nova Forge, which lets businesses create custom models that integrate their own data while retaining the foundational capabilities of existing models.",
+      "contents": "AWS released Nova Forge, enabling businesses to create custom AI models that integrate proprietary data while maintaining capabilities from foundational models.",
       "url": "https://aibusiness.com/generative-ai/aws-targets-ai-maturity-with-nova-forge",
       "title": "AWS Targets AI Maturity in Nova Forge Release"
     },
@@ -1038,7 +1088,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "The new agents are autonomous, capable of performing multiple tasks simultaneously, and can complete their work with minimal intervention.",
+      "contents": "AWS launched Frontier Agents, autonomous AI systems capable of executing multiple concurrent tasks with minimal human intervention.",
       "url": "https://aibusiness.com/agentic-ai/aws-launches-frontier-agents",
       "title": "AWS Launches Frontier Agents"
     },
@@ -1048,7 +1098,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "The level of realism that this new model and others can achieve poses some challenges for enterprises and other users.",
+      "contents": "Runway released Gen-4.5, a highly realistic video generation model whose advanced capabilities present authentication and content verification challenges for enterprises.",
       "url": "https://aibusiness.com/generative-ai/runway-releases-gen-4-5-video-model",
       "title": "Generative AI Startup Runway Releases Gen-4.5 Video Model"
     },
@@ -1058,7 +1108,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "The robot, Memo, is trained on data gathered from humans rather than simulations.",
+      "contents": "Sunday Robotics emerged from stealth with Memo, a household robot trained on human-derived behavioral data rather than simulations.",
       "url": "https://aibusiness.com/robotics/sunday-robotics-emerges-stealth-household-robot",
       "title": "Sunday Robotics Emerges From Stealth With Household Robot"
     },
@@ -1068,7 +1118,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Harmonic raised an additional $120 million last month to develop error-free AI, led by its flagship model, Aristotle, for advanced reasoning.",
+      "contents": "Mathematical AI startup Harmonic raised $120 million and achieved unicorn status valued at $1.45 billion, developing its Aristotle model for error-free advanced reasoning AI.",
       "url": "https://aibusiness.com/ml/mathematical-superintelligence-startup-unicorn-status",
       "title": "Mathematical Superintelligence Startup Valued at $1.45B"
     },
@@ -1076,21 +1126,31 @@
       "date": "2025-11-28",
       "source": "Techcabal",
       "region": "Africa",
-      "category": "Expansion",
+      "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "UrSafe, a U.S.-based personal safety technology company founded in 2019 by Anthony Oyogoa and Ruma S. Patel, believes it could overhaul how vulnerable communities in Nigeria detect threats, deter attackers, and activate emergency response.",
+      "contents": "UrSafe, a U.S.-based personal safety startup, signed a memorandum of understanding with Nigeria's Klass Security to deploy drone surveillance as a service rather than requiring schools to purchase expensive drone fleets costing millions of naira. The AI-powered drone system aims to address Nigeria's school kidnapping crisis by providing affordable, scalable threat detection without the infrastructure burden of owning and maintaining autonomous systems.",
       "url": "https://techcabal.com/2025/11/28/can-ai-and-drones-keep-nigerian-schools-safe-ursafe-thinks-so/",
       "title": "Can AI and drones protect Nigeria’s school children? UrSafe thinks so"
     },
     {
       "date": "2025-11-18",
       "source": "Techcabal",
-      "region": "Global",
+      "region": "North America",
       "category": "Product Launch",
       "layer": "Foundation Models",
-      "contents": "Google is ushering in a new era with the launch of Gemini 3, an AI model that the tech giant claims is its most intelligent yet. The company says Gemini 3 represents a new level of reasoning, context awareness, and multimodal understanding, the kind of intelligence that actually plans and builds responses, and adapts as it goes. It is available across a suite of Google products.",
+      "contents": "Google launched Gemini 3, its most advanced AI model featuring improved long-chain reasoning, multimodal understanding of text, images, video, audio, and code, plus a new \"Deep Think\" mode that reasons through complex problems. The model includes generative UI capabilities that create adaptive interfaces like interactive trip itineraries and custom learning dashboards across Google's product ecosystem.",
       "url": "https://techcabal.com/2025/11/18/heres-everything-we-know-about-googles-gemini-3/",
       "title": "Here’s everything we know about Google’s Gemini 3"
+    },
+    {
+      "date": "2025-11-18",
+      "source": "Techcabal",
+      "region": "Africa",
+      "category": "Product Launch",
+      "layer": "B2B Applications",
+      "contents": "African startups Ubenwa and DeepEcho are using AI to address Sub-Saharan Africa's maternal and neonatal mortality crisis, which accounts for two-thirds of global maternal deaths. Ubenwa analyzes infant cries via smartphone to detect birth asphyxia, while DeepEcho automates fetal ultrasounds trained on 150 million African ultrasound images, enabling non-specialists to perform scans in minutes instead of 30 minutes.",
+      "url": "https://techcabal.com/2025/11/18/can-ai-make-childbirth-safer-in-africa-these-startups-think-so/",
+      "title": "Can AI make childbirth safer in Africa? These startups think so"
     },
     {
       "date": "2025-11-18",
@@ -1098,7 +1158,7 @@
       "region": "Africa",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "It&#8217;s not exactly conventional wisdom to pivot from technology that literally saves lives The post The Founder Behind Zap Africa, Tested By Suicides &#038; Battles, Is Going Big On AI appeared first on WeeTracker .",
+      "contents": "Cognito Systems, founded by Moore Dagogo-Hart, launched Martha AI, a customer service platform that applies emotional-intelligence technology originally built for suicide prevention helplines to detect frustrated customers in African markets. The AI reduced average response times from 30 hours to under 30 seconds on Zap Africa's support tickets by fine-tuning on African conversation patterns and dialects.",
       "url": "https://weetracker.com/2025/11/18/cognito-systems-martha-ai-empathy-customer-service-africa/",
       "title": "The Founder Behind Zap Africa, Tested By Suicides & Battles, Is Going Big On AI"
     },
@@ -1106,9 +1166,9 @@
       "date": "2025-11-07",
       "source": "Techcabal",
       "region": "Africa",
-      "category": "Expansion",
+      "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "Blossom Academy was launched to bridge talent gap in Africa, starting in Ghana and expanding to Nigeria and Rwanda",
+      "contents": "Blossom Academy, a Ghanaian startup founded by Jeph Acheampong, trains young Africans in data analytics and AI through fully-funded three-to-four-month courses followed by paid internships, achieving an 85% career placement rate with graduates earning up to $6,500 monthly. The academy has expanded to Nigeria and Rwanda with adapted models targeting unemployed youth, underemployed professionals, and sector-specific training in agriculture, finance, and healthcare.",
       "url": "https://techcabal.com/2025/11/07/africas-next-workforce-may-be-built-in-data-not-degrees/",
       "title": "This Ghanaian startup believes data, not degrees, will transform Africa’s workforce"
     },
@@ -1118,7 +1178,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Nanovate, a Cairo-based artificial intelligence startup, has raised USD 1 M in a The post Egypt’s Nanovate Raises USD 1 M Pre-Seed To Scale Arabic AI Across MENA appeared first on WeeTracker .",
+      "contents": "Cairo-based Nanovate raised $1 million in pre-seed funding led by angel investors to develop Arabic AI solutions supporting 22 regional dialects across MENA, including conversational agents and voice systems integrated with enterprise CRM and ERP tools. The startup plans to expand into Saudi Arabia and the UAE while scaling its localized natural language models.",
       "url": "https://weetracker.com/2025/10/22/nanovate-1m-pre-seed-arabic-ai-mena/",
       "title": "Egypt’s Nanovate Raises USD 1 M Pre-Seed To Scale Arabic AI Across MENA"
     },
@@ -1128,7 +1188,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "Fine-tuning & MLOps",
-      "contents": "Y Combinator&#8216;s Summer 2025 batch shows AI has moved from experimental tools to enterprise-ready business systems. This summer, the accelerator that spotted OpenAI, Airbnb, and Stripe before they became household names focused its funding on the production-ready AI layer that &#8230; The post Y Combinator&#8217;s 2025 Summer Batch reveals focus on production-ready AI appeared first on CB Insights Research .",
+      "contents": "Y Combinator's Summer 2025 batch of 165+ startups reveals AI focus has shifted from experimental tools to production-ready enterprise systems, with 16 companies building specialized voice AI for regulated industries like financial services and 20 focusing on software development agents. Nearly 50% of the cohort offers AI agents, signaling the technology has matured from experimentation to deployment at scale.",
       "url": "https://www.cbinsights.com/research/y-combinator-summer2025/",
       "title": "Y Combinator’s 2025 Summer Batch reveals focus on production-ready AI"
     },
@@ -1138,29 +1198,19 @@
       "region": "Global",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "AI shopping is here, and brands are entering a new battleground. OpenAI&#8216;s September 2025 rollout of in-platform checkout via Shopify and Stripe enables shoppers to search, decide, and buy entirely within ChatGPT. Adobe reports that traffic from generative AI platforms &#8230; The post The GEO companies winning the AI search arms race appeared first on CB Insights Research .",
+      "contents": "Generative engine optimization (GEO) startups are capturing the emerging market for AI search visibility, with native GEO companies founded in 2023-2025 gaining first-mover advantage by offering multi-platform monitoring across ChatGPT, Claude, and Google AI Overviews. Market leaders differentiate through automated content generation, competitive benchmarking, and sentiment analysis as e-commerce traffic from AI platforms surged 4,700% year-over-year.",
       "url": "https://www.cbinsights.com/research/geo-companies-winning-ai-search/",
       "title": "The GEO companies winning the AI search arms race"
     },
     {
       "date": "2025-09-25",
       "source": "CB Insights",
-      "region": "Global",
+      "region": "North America",
       "category": "Acquisition",
       "layer": "B2B Applications",
-      "contents": "Large cyber players are scrambling to own AI security, as demonstrated by their 8 recent acquisitions, including 4 in September alone. This includes Check Point’s acquisition of Lakera, CrowdStrike acquiring Pangea, F5 snapping up Calypso AI, and Cato Networks grabbing &#8230; The post The AI security gold rush: who will be snapped up next? appeared first on CB Insights Research .",
+      "contents": "Large cybersecurity firms completed 8 AI security acquisitions in 2025, including Check Point's acquisition of Lakera and CrowdStrike's purchase of Pangea, targeting early-stage startups that combine red teaming and defensive incident response capabilities. Data pipeline security startups like TrustLogix and Protecto face the highest M&A probability, with acquisition likelihood driven by partnerships with hyperscalers and C-suite talent from Microsoft, Apple, and Google.",
       "url": "https://www.cbinsights.com/research/ai-security-aquisition-matrix/",
       "title": "The AI security gold rush: who will be snapped up next?"
-    },
-    {
-      "date": "2025-09-23",
-      "source": "CB Insights",
-      "region": "Global",
-      "category": "Funding",
-      "layer": "B2B Applications",
-      "contents": "Legal tech has gone AI-native. Since 2022, the share of legal tech equity deals going to AI-focused companies has climbed from 25% to 63% in 2025 YTD. So far this year, over 95% of equity funding going to legal tech &#8230; The post 140+ companies rewriting the legal industry appeared first on CB Insights Research .",
-      "url": "https://www.cbinsights.com/research/legal-tech-market-map/",
-      "title": "140+ companies rewriting the legal industry"
     },
     {
       "date": "2025-09-22",
@@ -1168,7 +1218,7 @@
       "region": "Global",
       "category": "Earnings",
       "layer": "B2B Applications",
-      "contents": "AI agent startups are showing no signs of slowing down. Since we published our first agent revenue ranking in July, the sector has continued to gain significant momentum: Harvey reached the $100M revenue threshold, category leaders like Sana Labs are &#8230; The post The AI agent revenue race — September’s top earners show coding dominates commercialization appeared first on CB Insights Research .",
+      "contents": "Coding AI agents dominate commercialization with Cursor generating $500M in ARR and Replit earning $150M, averaging $1.4M revenue per employee and demonstrating superior capital efficiency. Customer service AI agents command premium valuations at 219x revenue multiples, while the sector's top revenue generators average just 3.8 years old with most already scaling deployments.",
       "url": "https://www.cbinsights.com/research/ai-agent-startups-top-20-revenue-september/",
       "title": "The AI agent revenue race — September’s top earners show coding dominates commercialization"
     },
@@ -1178,7 +1228,7 @@
       "region": "Global",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Brain-computer interfaces (BCIs) are commercializing rapidly in 2025. BCIs, which interpret neural activity to enable direct communication between the brain and external systems like computers or robotic limbs, have attracted record investment this year. Funding tripled to $867M from 2024, &#8230; The post Brain-computer interface startups race toward commercial deployment: Here are the leading players appeared first on CB Insights Research .",
+      "contents": "Brain-computer interface (BCI) funding tripled to $867M in 2025, led by Neuralink's $650M Series E round at a $9.7B valuation, as over 70 clinical studies advance and Precision Neuroscience achieved the first FDA clearance for BCI-assisted neurosurgery in March 2025. The industry is accelerating toward commercial deployment with rapid clinical validation and substantial investor backing.",
       "url": "https://www.cbinsights.com/research/leading-brain-computer-interface-startups/",
       "title": "Brain-computer interface startups race toward commercial deployment: Here are the leading players"
     },
@@ -1188,7 +1238,7 @@
       "region": "Middle East",
       "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Cairo-based AI speech technology company Intella has secured USD 12.5 M in an oversubscribed Series A round The post Egypt’s Intella Raises USD 12.5 M Series A For Arabic Dialect AI appeared first on WeeTracker .",
+      "contents": "Cairo-based Intella raised $12.5 million in a Series A round led by Prosus to scale its Arabic dialect speech recognition technology, achieving 95.73% accuracy across 25+ dialects and serving enterprise contact centers in MENA. The funding accelerates development of Ziila, its AI agent platform that helps businesses improve customer experience by converting conversations into strategic business assets.",
       "url": "https://weetracker.com/2025/09/10/intella-12-5m-arabic-ai-speech-funding/",
       "title": "Egypt’s Intella Raises USD 12.5 M Series A For Arabic Dialect AI"
     },
@@ -1198,7 +1248,7 @@
       "region": "South Asia",
       "category": "Partnership",
       "layer": "B2B Applications",
-      "contents": "Mitti Labs is working with The Nature Conservancy to expand the use of climate-friendly rice farming practices in India. The startup uses its AI to verify reductions in methane emissions.",
+      "contents": "Mitti Labs, a New York-based startup, uses AI-powered models to measure methane emissions from rice paddies and has partnered with The Nature Conservancy to train farmers in climate-friendly practices across India. The company monetizes through carbon credits, delivering approximately 15% income improvements to smallholder farmers while offering measurement, reporting, and verification as a SaaS solution.",
       "url": "https://techcrunch.com/2025/08/26/how-one-ai-startup-is-helping-rice-farmers-battle-climate-change/",
       "title": "How one AI startup is helping rice farmers battle climate change"
     },
@@ -1208,7 +1258,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "After developing a facial-recognition app for Meta’s Ray-Ban glasses and doxing random people, two former Harvard students are now launching a startup that makes smart glasses with an always-on microphone.",
+      "contents": "Harvard dropouts AnhPhu Nguyen and Caine Ardayfio launched Halo, AI-powered smart glasses that continuously record and transcribe conversations while providing real-time contextual information, after raising $1M led by Pillar VC. The $249 glasses, available for preorder, position themselves as privacy-focused competitors to Meta's smart glasses by leveraging AI to enhance memory and decision-making during conversations.",
       "url": "https://techcrunch.com/2025/08/20/harvard-dropouts-to-launch-always-on-ai-smart-glasses-that-listen-and-record-every-conversation/",
       "title": "Harvard dropouts to launch ‘always on’ AI smart glasses that listen and record every conversation"
     },
@@ -1218,7 +1268,7 @@
       "region": "North America",
       "category": "Product Launch",
       "layer": "B2B Applications",
-      "contents": "American streets are incredibly dangerous for pedestrians. A San Carlos, California-based startup called Obvio thinks it can change that by installing cameras at stop signs -- a solution the founders also say won’t create a panopticon.",
+      "contents": "Obvio, a San Carlos startup, raised $22M Series A from Bain Capital Ventures to expand AI-powered cameras at stop signs that detect unsafe driving and improve pedestrian safety. The company uses enforcement technology inspired by successful international models while building privacy protections to limit surveillance risks in five initial U.S. cities.",
       "url": "https://techcrunch.com/2025/06/04/obvios-stop-sign-cameras-use-ai-to-root-out-unsafe-drivers/",
       "title": "Obvio’s stop sign cameras use AI to root out unsafe drivers"
     },
@@ -1228,19 +1278,9 @@
       "region": "North America",
       "category": "Funding",
       "layer": "Chips & Infrastructure",
-      "contents": "Gridcare raised $13.3 million for its data platform that finds underutilized capacity on the electrical grid.",
+      "contents": "Gridcare raised $13.5M seed funding led by Xora to identify and unlock hidden grid capacity for AI data centers by using generative AI to forecast power availability and match utilities with hyperscalers. The Stanford-founded startup maps electrical grids across fiber, water, and permitting factors to solve data center power shortages without requiring years-long utility interconnection waits.",
       "url": "https://techcrunch.com/2025/05/27/gridcare-thinks-more-than-100-gw-of-data-center-capacity-is-hiding-in-the-grid/",
       "title": "Gridcare thinks more than 100 GW of data center capacity is hiding in the grid"
-    },
-    {
-      "date": "2025-04-01",
-      "source": "TechCrunch",
-      "region": "North America",
-      "category": "Product Launch",
-      "layer": "B2B Applications",
-      "contents": "Rather than divide people into demographic buckets, Northwind Climate analyzes survey responses for behavioral clues.",
-      "url": "https://techcrunch.com/2025/04/01/who-are-climate-conscious-consumers-not-who-youd-expect-says-northwind-climate/",
-      "title": "Who are climate-conscious consumers? Not who you’d expect, says Northwind Climate"
     },
     {
       "date": "2025-03-20",
@@ -1248,7 +1288,7 @@
       "region": "North America",
       "category": "Partnership",
       "layer": "Chips & Infrastructure",
-      "contents": "The Open Power AI Consortium says it will use domain-specific AI models to tackle problems in the power industry.",
+      "contents": "Nvidia partnered with EPRI and the Open Power AI Consortium—including PG&E, Con Edison, Microsoft, and Oracle—to develop open-source domain-specific AI models addressing electrical grid challenges created by surging data center demand. The initiative responds to electricity demand expected to grow 4% annually as AI computing power needs intensify.",
       "url": "https://techcrunch.com/2025/03/20/nvidia-thinks-ai-can-solve-electrical-grid-problems-caused-by-ai/",
       "title": "Nvidia thinks AI can solve electrical grid problems caused by AI"
     },
@@ -1258,19 +1298,29 @@
       "region": "North America",
       "category": "Expansion",
       "layer": "Chips & Infrastructure",
-      "contents": "The company recently signed a deal with energy provider AES for three solar projects across the Midwest.",
+      "contents": "Microsoft signed a deal with AES for three solar projects delivering 475 megawatts across Illinois, Michigan, and Missouri to power AI data centers, bringing its renewable portfolio to over 34 GW. The expansion reflects solar's cost-effectiveness and quick deployment advantages over nuclear and natural gas plants for rapidly scaling data center power needs.",
       "url": "https://techcrunch.com/2025/03/20/solar-notches-another-win-as-microsoft-adds-475-mw-to-power-its-ai-data-centers/",
       "title": "Solar notches another win as Microsoft adds 475 MW to power its AI data centers"
     },
     {
       "date": "2025-02-26",
       "source": "TechCrunch",
-      "region": "North America",
+      "region": "Global",
       "category": "Product Launch",
       "layer": "Consumer Applications",
-      "contents": "Voice AI company ElevenLabs is now letting authors publish AI-generated audiobooks on its own Reader app, TechCrunch has learned and the company confirmed. The announcement comes days after the company partnered with Spotify for AI-narrated audiobooks. ElevenLabs, which raised a $180 million mega-round last month, started inviting authors to try out their publishing program through [&#8230;]",
+      "contents": "ElevenLabs, a voice AI company that raised $180 million last month, launched a publishing platform letting authors create and distribute AI-narrated audiobooks through its Reader app, paying roughly $1.10 per listener for 11+ minutes of engagement. The move aims to undercut Audible's royalty rates and democratize audiobook production by eliminating expensive studio costs.",
       "url": "https://techcrunch.com/2025/02/25/elevenlabs-is-now-letting-authors-create-and-publish-audiobooks-on-its-own-platform/",
       "title": "ElevenLabs now lets authors create and publish audiobooks on its own platform"
+    },
+    {
+      "date": "2025-02-11",
+      "source": "TechCrunch",
+      "region": "Global",
+      "category": "Product Launch",
+      "layer": "Consumer Applications",
+      "contents": "YouTube is rolling out auto-dubbing to all Partner Program creators this month, enabling one-click translation into multiple languages, alongside AI age-detection and expanded Content ID tools that identify AI-generated deepfakes of creators' faces and voices. CEO Neal Mohan named AI as one of the platform's four major 2025 bets.",
+      "url": "https://techcrunch.com/2025/02/11/youtube-ai-updates-to-include-expansion-of-auto-dubbing-age-identifying-tech-and-more/",
+      "title": "YouTube AI updates include auto dubbing expansion, age ID tech, and more"
     },
     {
       "date": "2025-02-07",
@@ -1278,7 +1328,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "A number of startups are racing to make vehicle inspections faster, easier, and cheaper. Self Inspection, a startup based in San Diego, thinks it has them all beat with its AI-powered service &#8212; and now it has convinced outside investors. Self Inspection, founded in 2021, is set to announce Thursday it&#8217;s raised $3 million in [&#8230;]",
+      "contents": "San Diego-based Self Inspection raised $3 million in seed funding led by Costanoa Ventures and DVx Ventures to scale its AI-powered vehicle inspection platform, which uses smartphone cameras and OBD2 data to detect damage and generate inspection reports for auto lenders and dealerships. The company already counts Avis and CarOffer as customers in the $30 billion inspection market.",
       "url": "https://techcrunch.com/2025/02/07/self-inspection-raises-3m-for-its-ai-powered-vehicle-inspections/",
       "title": "Self Inspection raises $3M for its AI-powered vehicle inspections"
     },
@@ -1288,7 +1338,7 @@
       "region": "North America",
       "category": "Expansion",
       "layer": "Chips & Infrastructure",
-      "contents": "The announcement comes as Meta CEO Mark Zuckerberg maintains the company’s ambitious AI strategy, which will require hefty capital investments in data centers.",
+      "contents": "Meta signed a 595-megawatt solar power deal with Spanish developer Zelestra in Texas, adding nearly 5% to its 12+ gigawatts of renewable capacity under contract. The purchase supports Meta's $60 billion 2025 capital spending plan focused on AI data center infrastructure needed for its Llama 4 model development.",
       "url": "https://techcrunch.com/2025/01/31/meta-turns-to-solar-again-in-its-data-center-building-boom/",
       "title": "Meta turns to solar — again — in its data center-building boom"
     },
@@ -1298,7 +1348,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "Foundation Models",
-      "contents": "Menlo Ventures launched a new $100 million fund called the Anthology Fund, in partnership with its portfolio company Anthropic. It’s just the latest fund started by or done in partnership with AI and tech giants.",
+      "contents": "Menlo Ventures and Anthropic launched the $100 million Anthology Fund to invest in AI-first applications and infrastructure built on Anthropic's technology across infrastructure, consumer experiences, and trust and safety. The fund, which invests from seed stage onwards with minimum checks of $100,000, reflects growing momentum in creating AI-focused venture vehicles.",
       "url": "https://news.crunchbase.com/ai/menlo-ventures-anthropic-openai-fund/",
       "title": "Menlo Ventures And Anthropic Open $100M Fund"
     },
@@ -1308,7 +1358,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "Chips & Infrastructure",
-      "contents": "DreamBig Semiconductor became the second chip startup this week to raise big — locking up a $75 million equity round, which included an investment from the Samsung Catalyst Fund. The semiconductor industry continues to ride the current AI wave, as the market looks for specialized generative AI chips that are more cost-effective and energy-efficient, but also faster.",
+      "contents": "San Jose-based DreamBig Semiconductor raised $75 million led by Samsung Catalyst Fund to develop chiplet platforms optimized for large language models and generative AI applications. The funding reflects strong venture interest in specialized AI chips as the industry seeks more cost-effective and energy-efficient semiconductor solutions.",
       "url": "https://news.crunchbase.com/semiconductors-and-5g/dreambig-semiconductor-chip-startup-nvidia-halo/",
       "title": "DreamBig Latest Chip Startup To Go Big — Raises $75M"
     },
@@ -1318,17 +1368,17 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Skild AI and Element Biosciences led the way in a strong week of fundraising for U.S.-based startups. Half a dozen rounds hit nine figures, including those in robotics, biotech, healthcare and more.",
+      "contents": "Pittsburgh-based robotics AI startup Skild AI raised $300 million in Series A funding led by Coatue, Lightspeed, SoftBank, and Jeff Bezos at a $1.5 billion valuation. The company develops reusable AI brain models for robots rather than single-application robots, addressing a fundamental need in the robotics industry.",
       "url": "https://news.crunchbase.com/ai/biggest-funding-rounds-ai-biotech-skild-element-regal/",
       "title": "The Week’s 10 Biggest Funding Rounds: Skild AI Grabs $300M To Build Robot Brains"
     },
     {
       "date": "2024-07-11",
       "source": "Crunchbase News",
-      "region": "North America",
+      "region": "Europe",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Defense tech startup Helsing raised approximately $489 million in funding led by General Catalyst that values the company at $5.4 billion. The round is the second biggest ever in the defense tech sector.",
+      "contents": "Germany-based defense tech startup Helsing raised $489 million at a $5.4 billion valuation led by General Catalyst to develop AI software that enhances weapons capabilities in drones and fighter jets while improving battlefield decision-making. The company has become active supporting Ukraine and Baltic nations amid renewed security concerns in Eastern Europe.",
       "url": "https://news.crunchbase.com/ai/defense-tech-helsing-unicorn-anduril/",
       "title": "Defense Tech Startup Helsing Raises at $5.4B Valuation"
     },
@@ -1338,7 +1388,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Hayden AI, a vision AI platform that can spot illegal parking, locked in a $90 million growth equity round led by The Rise Fund, TPG’s impact investing platform. The AI platform uses geospatial data collection sensor systems to give cities insights to improve traffic safety and accessibility.",
+      "contents": "San Francisco-based Hayden AI raised $90 million in a growth equity round led by The Rise Fund to expand its vision AI platform that uses cameras to detect parking violations and collect geospatial data. The platform has demonstrated significant impact in New York City, achieving 5% faster bus speeds and 20% fewer vehicle collisions.",
       "url": "https://news.crunchbase.com/ai/hayden-ai-venture-gotech-opengov/",
       "title": "Hayden AI Raises $90M To Make Sure You Don’t Park There"
     },
@@ -1348,7 +1398,7 @@
       "region": "North America",
       "category": "Funding",
       "layer": "B2B Applications",
-      "contents": "Yet another big round for an AI startup. Hebbia, an AI startup that helps businesses analyze all types of data to answer more complex, multi-step questions, raised a $130 million Series B from a handful of big-name investors, including Andreessen Horowitz and Index Ventures.",
+      "contents": "New York-based AI startup Hebbia raised $130 million in Series B funding led by Andreessen Horowitz, valuing the company at $700 million. The platform helps enterprises analyze structured and unstructured data to answer complex multi-step business questions from regulatory filings and PDFs.",
       "url": "https://news.crunchbase.com/ai/ai-hebbia-venture-a16z-gv-thiel/",
       "title": "AI Startup Hebbia Locks Up $130M Series B Led By a16z"
     }

@@ -1,9 +1,10 @@
 """
 Generate Summaries Node
 
-Generates LLM summaries for articles when RSS descriptions
-are insufficient. This node is conditional - only runs if
-content sufficiency evaluation recommends it.
+Generates LLM summaries for ALL articles. Each summary is:
+- 1-2 sentences (concise)
+- In English (translated if source is non-English)
+- Contains key business facts (company, action, numbers, geography)
 """
 
 import json
@@ -20,22 +21,17 @@ from src.utils import load_prompt
 from src.tracking import track_llm_cost, debug_log, track_time
 
 
-# Batch size for LLM calls (smaller due to larger content)
+# Batch sizes for LLM calls (with fallback on error)
 BATCH_SIZE = 10
-
-# Threshold: descriptions > 500 chars are likely full content (e.g., VentureBeat)
-FULL_CONTENT_THRESHOLD = 500
+FALLBACK_BATCH_SIZES = [7, 5]
 
 
 def generate_summaries(state: dict) -> dict:
     """
-    Generate LLM summaries for articles if needed.
-
-    Uses description by default. Only generates LLM summaries if
-    content_sufficiency.use_descriptions is False.
+    Generate LLM summaries for ALL articles.
 
     Args:
-        state: Pipeline state with 'enriched_articles' and 'content_sufficiency'
+        state: Pipeline state with 'enriched_articles'
 
     Returns:
         Dict with updated 'enriched_articles' (with 'contents' field)
@@ -44,67 +40,44 @@ def generate_summaries(state: dict) -> dict:
         debug_log("[NODE: generate_summaries] Entering")
 
         enriched_articles = state.get("enriched_articles", [])
-        content_sufficiency = state.get("content_sufficiency", {})
+        debug_log(f"[NODE: generate_summaries] Processing {len(enriched_articles)} articles")
 
-        use_descriptions = content_sufficiency.get("use_descriptions", True)
-        debug_log(f"[NODE: generate_summaries] use_descriptions: {use_descriptions}")
-
-        if use_descriptions:
-            # Use RSS descriptions as content
-            debug_log("[NODE: generate_summaries] Using RSS descriptions")
-            for article in enriched_articles:
-                article["contents"] = article.get("description", "")
-                article["content_source"] = "description"
-
-            debug_log(f"[NODE: generate_summaries] Output: {len(enriched_articles)} articles with descriptions")
+        if not enriched_articles:
             return {"enriched_articles": enriched_articles}
 
-        # Generate LLM summaries
-        debug_log("[NODE: generate_summaries] Generating LLM summaries")
+        # Generate summaries for all articles
+        all_summaries = _generate_summaries_with_retry(enriched_articles)
 
-        # Separate articles with/without full content
-        # Also treat long descriptions as full content (e.g., VentureBeat puts full articles in description)
-        def has_summarizable_content(a: dict) -> bool:
-            if a.get("full_content") and len(a.get("full_content", "")) > 100:
-                return True
-            if len(a.get("description", "")) > FULL_CONTENT_THRESHOLD:
-                return True
-            return False
+        # Apply summaries to articles
+        summarized_count = 0
+        fallback_count = 0
 
-        articles_with_content = [a for a in enriched_articles if has_summarizable_content(a)]
-        articles_without_content = [a for a in enriched_articles if not has_summarizable_content(a)]
+        for article in enriched_articles:
+            url = article.get("link", "")
+            if url in all_summaries and all_summaries[url]:
+                article["contents"] = all_summaries[url]
+                article["content_source"] = "llm_summary"
+                summarized_count += 1
+            else:
+                # Fallback to description if summarization failed
+                article["contents"] = article.get("description", "")
+                article["content_source"] = "description_fallback"
+                fallback_count += 1
 
-        debug_log(f"[NODE: generate_summaries] {len(articles_with_content)} articles have full content")
-        debug_log(f"[NODE: generate_summaries] {len(articles_without_content)} articles will use description")
-
-        # Use description for articles without full content
-        for article in articles_without_content:
-            article["contents"] = article.get("description", "")
-            article["content_source"] = "description_fallback"
-
-        # Generate summaries for articles with full content
-        if articles_with_content:
-            summaries = _generate_summaries_batch(articles_with_content)
-
-            for article in articles_with_content:
-                url = article.get("link", "")
-                if url in summaries:
-                    article["contents"] = summaries[url]
-                    article["content_source"] = "llm_summary"
-                else:
-                    article["contents"] = article.get("description", "")
-                    article["content_source"] = "description_fallback"
-
+        debug_log(f"[NODE: generate_summaries] Summarized: {summarized_count}, Fallback: {fallback_count}")
         debug_log(f"[NODE: generate_summaries] Output: {len(enriched_articles)} articles processed")
+
         return {"enriched_articles": enriched_articles}
 
 
-def _generate_summaries_batch(articles: list[dict]) -> dict[str, str]:
+def _generate_summaries_with_retry(articles: list[dict]) -> dict[str, str]:
     """
-    Generate summaries for a batch of articles.
+    Generate summaries for all articles with adaptive batch retry.
+
+    On parse errors, retries with smaller batch sizes (10 -> 7 -> 5).
 
     Args:
-        articles: List of articles with full_content
+        articles: List of articles to summarize
 
     Returns:
         Dict mapping URL to summary
@@ -119,27 +92,72 @@ def _generate_summaries_batch(articles: list[dict]) -> dict[str, str]:
 
         debug_log(f"[NODE: generate_summaries] Processing batch {batch_num}/{total_batches}")
 
-        summaries = _summarize_batch(batch)
+        summaries = _summarize_batch_with_retry(batch)
         all_summaries.update(summaries)
 
     return all_summaries
 
 
-def _summarize_batch(articles: list[dict]) -> dict[str, str]:
+def _summarize_batch_with_retry(articles: list[dict]) -> dict[str, str]:
     """
-    Summarize a single batch of articles using LLM.
+    Summarize a batch with automatic retry on smaller batch sizes.
 
     Args:
-        articles: List of articles with full_content
+        articles: List of articles to summarize
 
     Returns:
         Dict mapping URL to summary
     """
+    # Try with full batch first
+    success, summaries = _summarize_batch(articles, max_tokens=2048)
+
+    if success:
+        return summaries
+
+    # Retry with smaller batch sizes
+    for fallback_size in FALLBACK_BATCH_SIZES:
+        debug_log(f"[NODE: generate_summaries] Retrying with batch size {fallback_size}")
+
+        all_success = True
+        temp_summaries: dict[str, str] = {}
+
+        for i in range(0, len(articles), fallback_size):
+            sub_batch = articles[i:i + fallback_size]
+            # Increase max_tokens for smaller batches
+            max_tokens = 2048 if fallback_size >= 7 else 3072
+
+            success, sub_summaries = _summarize_batch(sub_batch, max_tokens=max_tokens)
+
+            if success:
+                temp_summaries.update(sub_summaries)
+            else:
+                all_success = False
+                break
+
+        if all_success:
+            debug_log(f"[NODE: generate_summaries] Retry with batch size {fallback_size} succeeded")
+            return temp_summaries
+
+    # All retries failed - return empty (will fall back to descriptions)
+    debug_log(f"[NODE: generate_summaries] All retries failed for {len(articles)} articles", "error")
+    return {}
+
+
+def _summarize_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool, dict[str, str]]:
+    """
+    Summarize a single batch of articles using LLM.
+
+    Args:
+        articles: List of articles to summarize
+        max_tokens: Maximum tokens for LLM response
+
+    Returns:
+        Tuple of (success: bool, summaries: dict mapping URL to summary)
+    """
     # Load system prompt
     system_prompt = load_prompt("generate_summary_system_prompt.md")
 
-    # Prepare articles for LLM
-    # Use full_content if available, otherwise fall back to description
+    # Prepare articles for LLM - use full_content if available, else description
     articles_for_llm = [
         {
             "url": a.get("link", ""),
@@ -153,14 +171,14 @@ def _summarize_batch(articles: list[dict]) -> dict[str, str]:
 
     user_message = json.dumps({"articles": articles_for_llm}, indent=2)
 
-    debug_log(f"[LLM INPUT]: Summarizing {len(articles)} articles")
+    debug_log(f"[LLM INPUT]: Summarizing {len(articles)} articles, max_tokens: {max_tokens}")
 
     # Make LLM call
     client = anthropic.Anthropic()
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=2048,
+        model="claude-haiku-4-5-20251001",
+        max_tokens=max_tokens,
         system=system_prompt,
         messages=[
             {"role": "user", "content": user_message}
@@ -188,12 +206,11 @@ def _summarize_batch(articles: list[dict]) -> dict[str, str]:
             if url and summary:
                 summaries[url] = summary
 
-        return summaries
+        return True, summaries
 
     except Exception as e:
         debug_log(f"[NODE: generate_summaries] ERROR parsing response: {e}", "error")
-        # Return empty on error - will fall back to descriptions
-        return {}
+        return False, {}
 
 
 def _clean_and_truncate(content: str, max_length: int = 3000) -> str:

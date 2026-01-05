@@ -3,12 +3,12 @@ Content Orchestrator - Layer 2 Pipeline
 
 This orchestrator aggregates content from RSS feeds discovered in Layer 1.
 It fetches articles, filters for business news, extracts metadata,
-and outputs a structured DataFrame.
+generates English summaries, and outputs a structured DataFrame.
 
 Pipeline Flow:
     load_available_feeds -> fetch_rss_content -> filter_business_news ->
-    evaluate_content_sufficiency -> extract_metadata -> generate_summaries ->
-    build_output_dataframe -> save_aggregated_content
+    extract_metadata -> generate_summaries -> build_output_dataframe ->
+    save_aggregated_content
 """
 
 from typing import TypedDict, Optional
@@ -21,7 +21,6 @@ from src.tracking import debug_log, reset_cost_tracker, cost_tracker
 from src.functions.load_available_feeds import load_available_feeds
 from src.functions.fetch_rss_content import fetch_rss_content
 from src.functions.filter_business_news import filter_business_news
-from src.functions.evaluate_content_sufficiency import evaluate_content_sufficiency
 from src.functions.extract_metadata import extract_metadata
 from src.functions.generate_summaries import generate_summaries
 from src.functions.build_output_dataframe import build_output_dataframe
@@ -48,9 +47,6 @@ class ContentAggregationState(TypedDict):
     # From filter_business_news
     filtered_articles: list[dict]
     discarded_articles: list[dict]
-
-    # From evaluate_content_sufficiency
-    content_sufficiency: dict
 
     # From extract_metadata (and generate_summaries updates this)
     enriched_articles: list[dict]
@@ -80,7 +76,6 @@ def build_graph() -> StateGraph:
     graph.add_node("load_available_feeds", load_available_feeds)
     graph.add_node("fetch_rss_content", fetch_rss_content)
     graph.add_node("filter_business_news", filter_business_news)
-    graph.add_node("evaluate_content_sufficiency", evaluate_content_sufficiency)
     graph.add_node("extract_metadata", extract_metadata)
     graph.add_node("generate_summaries", generate_summaries)
     graph.add_node("build_output_dataframe", build_output_dataframe)
@@ -90,8 +85,7 @@ def build_graph() -> StateGraph:
     graph.add_edge(START, "load_available_feeds")
     graph.add_edge("load_available_feeds", "fetch_rss_content")
     graph.add_edge("fetch_rss_content", "filter_business_news")
-    graph.add_edge("filter_business_news", "evaluate_content_sufficiency")
-    graph.add_edge("evaluate_content_sufficiency", "extract_metadata")
+    graph.add_edge("filter_business_news", "extract_metadata")
     graph.add_edge("extract_metadata", "generate_summaries")
     graph.add_edge("generate_summaries", "build_output_dataframe")
     graph.add_edge("build_output_dataframe", "save_aggregated_content")
@@ -135,7 +129,6 @@ def run(source_filter: Optional[list[str]] = None) -> dict:
         "raw_articles": [],
         "filtered_articles": [],
         "discarded_articles": [],
-        "content_sufficiency": {},
         "enriched_articles": [],
         "output_data": [],
         "save_status": {},
