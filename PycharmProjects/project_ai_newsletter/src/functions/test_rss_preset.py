@@ -6,6 +6,8 @@ Tries common RSS paths like /feed, /rss, /feed.xml, etc.
 """
 
 import re
+from datetime import datetime
+from email.utils import parsedate_to_datetime
 from typing import TypedDict, Optional
 import httpx
 from urllib.parse import urljoin
@@ -46,6 +48,7 @@ class RSSTestResult(TypedDict):
     article_titles: list[str]  # Sample article titles for classification
     has_full_content: bool  # Whether RSS has content:encoded
     http_fetch_works: Optional[bool]  # Whether article URLs are fetchable (None if not tested)
+    latest_article_date: Optional[str]  # ISO format YYYY-MM-DD of most recent article
 
 
 def is_valid_rss(content: str) -> bool:
@@ -131,6 +134,56 @@ def extract_first_article_url(content: str) -> Optional[str]:
     return None
 
 
+def extract_latest_date(content: str) -> Optional[str]:
+    """
+    Extract the most recent publication date from RSS/Atom feed content.
+
+    Args:
+        content: Raw RSS/Atom XML content.
+
+    Returns:
+        ISO format date string (YYYY-MM-DD) or None if no dates found.
+    """
+    all_dates: list[datetime] = []
+
+    # Try RSS <pubDate> format (RFC 2822)
+    pubdates = re.findall(r'<pubDate>([^<]+)</pubDate>', content, re.IGNORECASE)
+    for date_str in pubdates:
+        try:
+            dt = parsedate_to_datetime(date_str.strip())
+            all_dates.append(dt)
+        except Exception:
+            pass
+
+    # Try Atom <published> format (ISO 8601)
+    published = re.findall(r'<published>([^<]+)</published>', content, re.IGNORECASE)
+    for date_str in published:
+        try:
+            # Handle ISO format with timezone
+            clean_date = date_str.strip().replace("Z", "+00:00")
+            dt = datetime.fromisoformat(clean_date[:25])
+            all_dates.append(dt)
+        except Exception:
+            pass
+
+    # Try Atom <updated> format (ISO 8601)
+    updated = re.findall(r'<updated>([^<]+)</updated>', content, re.IGNORECASE)
+    for date_str in updated:
+        try:
+            clean_date = date_str.strip().replace("Z", "+00:00")
+            dt = datetime.fromisoformat(clean_date[:25])
+            all_dates.append(dt)
+        except Exception:
+            pass
+
+    if not all_dates:
+        return None
+
+    # Return the most recent date as ISO string
+    latest = max(all_dates)
+    return latest.strftime("%Y-%m-%d")
+
+
 def test_http_fetch(url: str) -> bool:
     """
     Test if an article URL is fetchable without Cloudflare blocking.
@@ -191,6 +244,7 @@ def test_rss_preset(url: str) -> RSSTestResult:
             "article_titles": [],
             "has_full_content": False,
             "http_fetch_works": None,
+            "latest_article_date": None,
         }
 
         tried_paths = []
@@ -220,6 +274,10 @@ def test_rss_preset(url: str) -> RSSTestResult:
                         result["feed_url"] = feed_url
                         result["notes"] = f"Found at {path}"
                         result["article_titles"] = titles
+
+                        # Extract latest article date for freshness check
+                        result["latest_article_date"] = extract_latest_date(content)
+                        debug_log(f"[NODE: test_rss_preset] latest_article_date: {result['latest_article_date']}")
 
                         # Check for full content availability
                         result["has_full_content"] = has_full_content(content)

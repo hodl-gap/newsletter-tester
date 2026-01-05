@@ -35,9 +35,13 @@ class FinalResult(TypedDict):
     notes: str | None
     has_full_content: bool  # Whether RSS has content:encoded
     http_fetch_works: bool | None  # Whether article URLs are fetchable (None if not tested)
+    main_feed_latest_date: str | None  # ISO date of latest article in main feed
+    ai_feed_latest_date: str | None  # ISO date of latest article in AI feed
+    fallback_reason: str | None  # Why main feed was used instead of AI feed (e.g., "stale_ai_feed")
 
 
 class RSSDiscoveryState(TypedDict):
+    url_filter: list[str] | None  # Optional filter for URLs (substring match)
     input_urls: list[str]
     main_rss_results: list[RSSTestResult]
     ai_category_results: list[AIFeedResult]
@@ -60,7 +64,19 @@ def load_urls(state: RSSDiscoveryState) -> dict:
             data = json.load(f)
 
         urls = data.get("urls", [])
-        debug_log(f"[NODE: load_urls] Loaded {len(urls)} URLs")
+        debug_log(f"[NODE: load_urls] Loaded {len(urls)} URLs from file")
+
+        # Apply URL filter if specified
+        url_filter = state.get("url_filter")
+        if url_filter:
+            debug_log(f"[NODE: load_urls] Applying URL filter: {url_filter}")
+            filtered_urls = [
+                url for url in urls
+                if any(f.lower() in url.lower() for f in url_filter)
+            ]
+            debug_log(f"[NODE: load_urls] Filtered to {len(filtered_urls)} URLs")
+            urls = filtered_urls
+
         debug_log(f"[NODE: load_urls] Output: {urls}")
 
         return {"input_urls": urls}
@@ -247,10 +263,26 @@ def merge_results(state: RSSDiscoveryState) -> dict:
             # Get classification
             is_ai_focused = classification.get(url, False)
 
-            # Determine recommended feed
-            recommended_url, recommended_field = determine_recommended_feed(
-                url, is_ai_focused, main_feed_url, ai_feed_url
+            # Extract latest article dates for freshness check
+            main_feed_latest_date = None
+            ai_feed_latest_date = None
+
+            if main_r.get("status") == "available":
+                main_feed_latest_date = main_r.get("latest_article_date")
+            elif agent_r.get("status") == "available":
+                main_feed_latest_date = agent_r.get("latest_article_date")
+
+            if ai_r.get("status") == "available":
+                ai_feed_latest_date = ai_r.get("latest_article_date")
+
+            # Determine recommended feed with freshness check
+            recommended_url, recommended_field, fallback_reason = determine_recommended_feed(
+                url, is_ai_focused, main_feed_url, ai_feed_url, ai_feed_latest_date
             )
+
+            # Log if fallback occurred
+            if fallback_reason:
+                debug_log(f"[NODE: merge_results] {url}: Fallback to main feed ({fallback_reason}), AI feed date: {ai_feed_latest_date}")
 
             # Determine content availability based on recommended feed
             has_full_content = False
@@ -280,6 +312,9 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                 "notes": notes,
                 "has_full_content": has_full_content,
                 "http_fetch_works": http_fetch_works,
+                "main_feed_latest_date": main_feed_latest_date,
+                "ai_feed_latest_date": ai_feed_latest_date,
+                "fallback_reason": fallback_reason,
             })
 
         debug_log(f"[NODE: merge_results] Output: {len(final_results)} final results")
@@ -287,11 +322,33 @@ def merge_results(state: RSSDiscoveryState) -> dict:
 
 
 def save_results(state: RSSDiscoveryState) -> dict:
-    """Save final results to JSON file."""
+    """Save final results to JSON file, merging with existing results."""
     with track_time("save_results"):
         debug_log("[NODE: save_results] Entering")
 
-        results = state["final_results"]
+        new_results = state["final_results"]
+        output_path = Path("data/rss_availability.json")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Load existing results if file exists
+        existing_results = []
+        if output_path.exists():
+            try:
+                with open(output_path, "r") as f:
+                    existing_data = json.load(f)
+                    existing_results = existing_data.get("results", [])
+                debug_log(f"[NODE: save_results] Loaded {len(existing_results)} existing results")
+            except (json.JSONDecodeError, KeyError):
+                debug_log("[NODE: save_results] Could not load existing results, starting fresh")
+
+        # Merge: update existing or add new (keyed by URL)
+        results_map = {r["url"]: r for r in existing_results}
+        for result in new_results:
+            results_map[result["url"]] = result
+            debug_log(f"[NODE: save_results] Updated/added: {result['url']}")
+
+        # Convert back to list
+        results = list(results_map.values())
 
         # Calculate content availability stats for available feeds
         available_results = [r for r in results if r["status"] == "available"]
@@ -315,9 +372,6 @@ def save_results(state: RSSDiscoveryState) -> dict:
             "with_http_fetch": with_http_fetch,
             "no_content_access": no_content_access,
         }
-
-        output_path = Path("data/rss_availability.json")
-        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(output_path, "w") as f:
             json.dump(output, f, indent=2)
@@ -371,8 +425,14 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run() -> dict:
-    """Run the RSS discovery pipeline."""
+def run(url_filter: list[str] | None = None) -> dict:
+    """
+    Run the RSS discovery pipeline.
+
+    Args:
+        url_filter: Optional list of substrings to filter URLs.
+                   Only URLs containing any of these substrings will be processed.
+    """
     # Reset cost tracker for this run
     reset_cost_tracker()
 
@@ -381,11 +441,14 @@ def run() -> dict:
 
     debug_log("=" * 60)
     debug_log("RSS Discovery Pipeline - Layer 1 (v2)")
+    if url_filter:
+        debug_log(f"URL FILTER: {url_filter}")
     debug_log("=" * 60)
 
     app = build_graph()
 
     initial_state: RSSDiscoveryState = {
+        "url_filter": url_filter,
         "input_urls": [],
         "main_rss_results": [],
         "ai_category_results": [],

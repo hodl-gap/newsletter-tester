@@ -267,3 +267,41 @@ def run():
 | `data/aggregated_news.json` | Layer 2 output: AI business news with metadata |
 | `data/aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
 | `data/discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |
+
+---
+
+## Running the Pipelines
+
+### Layer 1: RSS Discovery
+
+```python
+import rss_orchestrator
+
+# Run full discovery
+rss_orchestrator.run()
+
+# Run for specific URLs only (substring match)
+rss_orchestrator.run(url_filter=['.co.kr', 'techcrunch'])
+```
+
+**Features:**
+- URL filter for testing specific sources
+- Results merge with existing `rss_availability.json` (doesn't overwrite)
+- Freshness check: AI feeds older than 7 days fall back to main feed
+
+### Layer 2: Content Aggregation
+
+```python
+import content_orchestrator
+
+# Run full aggregation
+content_orchestrator.run()
+
+# Run for specific sources only (substring match on source name or URL)
+content_orchestrator.run(source_filter=['techcabal', '36kr'])
+```
+
+**Features:**
+- Source filter for testing specific feeds
+- Discarded articles exported with reasons
+- Adaptive batch retry on LLM parse errors

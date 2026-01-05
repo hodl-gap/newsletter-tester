@@ -310,7 +310,10 @@
       "method": "preset",
       "notes": "Found at /feed",
       "has_full_content": false,
-      "http_fetch_works": true
+      "http_fetch_works": true,
+      "main_feed_latest_date": "2026-01-04",
+      "ai_feed_latest_date": "2026-01-04",
+      "fallback_reason": null
     },
     {
       "url": "https://hai.stanford.edu/ai-index",
@@ -425,7 +428,7 @@
       "recommended_feed": "none",
       "recommended_feed_url": null,
       "method": "agent_browse",
-      "notes": "No RSS feed links found in the website's HTML, and web searches returned no information about available feeds for this Korean news site.",
+      "notes": "No RSS feed links found in the website's HTML and no documentation found through web search. The site does not appear to offer an RSS feed.",
       "has_full_content": false,
       "http_fetch_works": null
     },
@@ -591,12 +594,15 @@
       "main_feed_url": "https://news.crunchbase.com/feed",
       "ai_feed_url": "https://news.crunchbase.com/tag/artificial-intelligence/feed/",
       "is_ai_focused": false,
-      "recommended_feed": "ai_feed_url",
-      "recommended_feed_url": "https://news.crunchbase.com/tag/artificial-intelligence/feed/",
+      "recommended_feed": "main_feed_url",
+      "recommended_feed_url": "https://news.crunchbase.com/feed",
       "method": "preset",
       "notes": "Found at /feed",
       "has_full_content": true,
-      "http_fetch_works": null
+      "http_fetch_works": null,
+      "main_feed_latest_date": "2026-01-02",
+      "ai_feed_latest_date": "2024-07-17",
+      "fallback_reason": "stale_ai_feed"
     },
     {
       "url": "https://www.cbinsights.com/research",
@@ -648,7 +654,10 @@
       "method": "preset",
       "notes": "Found at /feed",
       "has_full_content": false,
-      "http_fetch_works": true
+      "http_fetch_works": true,
+      "main_feed_latest_date": "2025-10-31",
+      "ai_feed_latest_date": null,
+      "fallback_reason": null
     },
     {
       "url": "https://www.wsj.com/news/technology/artificial-intelligence",
@@ -675,16 +684,42 @@
       "notes": "Found at /feed",
       "has_full_content": false,
       "http_fetch_works": true
+    },
+    {
+      "url": "https://www.epnc.co.kr/",
+      "status": "available",
+      "main_feed_url": "https://cdn.epnc.co.kr/rss/gns_allArticle.xml",
+      "ai_feed_url": null,
+      "is_ai_focused": false,
+      "recommended_feed": "main_feed_url",
+      "recommended_feed_url": "https://cdn.epnc.co.kr/rss/gns_allArticle.xml",
+      "method": "agent_browse",
+      "notes": "Found RSS feed link in website HTML. The feed appears to be publicly accessible and contains all articles from the site.",
+      "has_full_content": false,
+      "http_fetch_works": null
+    },
+    {
+      "url": "https://zdnet.co.kr/",
+      "status": "available",
+      "main_feed_url": "https://zdnet.co.kr/feed",
+      "ai_feed_url": null,
+      "is_ai_focused": false,
+      "recommended_feed": "main_feed_url",
+      "recommended_feed_url": "https://zdnet.co.kr/feed",
+      "method": "preset",
+      "notes": "Found at /feed",
+      "has_full_content": true,
+      "http_fetch_works": null
     }
   ],
-  "timestamp": "2026-01-05T03:40:13.461092",
-  "total": 52,
-  "available": 26,
+  "timestamp": "2026-01-05T06:29:06.751687",
+  "total": 54,
+  "available": 28,
   "paywalled": 8,
   "unavailable": 18,
   "ai_focused": 1,
   "has_ai_category": 13,
-  "with_full_content": 8,
+  "with_full_content": 9,
   "with_http_fetch": 8,
-  "no_content_access": 10
+  "no_content_access": 11
 }

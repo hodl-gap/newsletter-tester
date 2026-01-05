@@ -14,6 +14,7 @@ from src.tracking import debug_log, track_time
 from src.functions.test_rss_preset import (
     has_full_content,
     extract_first_article_url,
+    extract_latest_date,
     test_http_fetch,
 )
 
@@ -43,6 +44,7 @@ class AIFeedResult(TypedDict):
     article_titles: list[str]
     has_full_content: bool  # Whether RSS has content:encoded
     http_fetch_works: Optional[bool]  # Whether article URLs are fetchable (None if not tested)
+    latest_article_date: Optional[str]  # ISO format YYYY-MM-DD of most recent article
 
 
 def is_valid_rss(content: str) -> bool:
@@ -105,6 +107,7 @@ def test_ai_category(url: str) -> AIFeedResult:
             "article_titles": [],
             "has_full_content": False,
             "http_fetch_works": None,
+            "latest_article_date": None,
         }
 
         tried_paths = []
@@ -134,6 +137,10 @@ def test_ai_category(url: str) -> AIFeedResult:
                         result["ai_feed_url"] = feed_url
                         result["notes"] = f"Found AI category at {path}"
                         result["article_titles"] = titles
+
+                        # Extract latest article date for freshness check
+                        result["latest_article_date"] = extract_latest_date(content)
+                        debug_log(f"[NODE: test_ai_category] latest_article_date: {result['latest_article_date']}")
 
                         # Check for full content availability
                         result["has_full_content"] = has_full_content(content)
