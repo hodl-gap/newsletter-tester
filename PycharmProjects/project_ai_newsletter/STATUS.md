@@ -1,17 +1,126 @@
 # Project Status
 
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-06
 
 ## Current Phase
 
+Layer 3 - Deduplication: **COMPLETE** (2026-01-06)
 Layer 2 - Content Aggregation: **COMPLETE & TESTED**
+
+## Layer 0: Source Quality Assessment - DISABLED (2026-01-06)
+
+**Status: DISABLED** - Not currently in use due to reliability issues with DuckDuckGo search.
+
+### Original Implementation (2026-01-05)
+
+New Layer 0 runs **before** Layer 1 to assess source credibility using web search.
+
+### Pipeline
+```
+load_urls → fetch_source_reputation → assess_credibility → save_quality_results
+```
+
+### Features
+- Uses DuckDuckGo search (DDGS package) to gather reputation signals
+- Searches for: publication info, Wikipedia page, ownership/history
+- LLM (Claude Sonnet) assesses credibility based on search results + pre-trained knowledge
+- Outputs `source_quality: "quality"` or `"crude"` per source
+- Results saved to `data/source_quality.json`
+
+### Latest Run Results
+- **Total:** 54 sources
+- **Quality:** 41 (76%)
+- **Crude:** 13 (24%)
+- **Cost:** ~$0.57
+
+### Integration with Layer 1
+- Layer 1 reads from `source_quality.json` if it exists
+- Only processes sources marked as `"quality"`
+- Falls back to `input_urls.json` if Layer 0 hasn't been run
+
+### Files Created
+- `layer0_orchestrator.py` - Main orchestrator
+- `src/functions/fetch_source_reputation.py` - Web search for reputation signals
+- `src/functions/assess_credibility.py` - LLM batch assessment
+- `prompts/assess_credibility_system_prompt.md` - Credibility criteria
+
+### Known Limitations
+
+1. **DuckDuckGo search returns regionally-biased results**
+   - DDGS often returns Chinese/Korean search results instead of English
+   - Publication names may match unrelated content (e.g., "Axios" → Axios JS library)
+   - Mitigation: Prompt instructs LLM to ignore irrelevant results and use pre-trained knowledge
+
+2. **Wikipedia detection unreliable**
+   - `site:wikipedia.org` searches often return no results even for major publications
+   - 0/54 Wikipedia pages detected in latest run despite many publications having pages
+   - LLM compensates using its training knowledge
+
+3. **False negatives for lesser-known publications**
+   - Regional/niche publications without strong English web presence may be marked "crude"
+   - Examples: pulsenews.co.kr (Maeil Business), kedglobal.com (Korea Economic Daily)
+   - Manual review recommended for edge cases
+
+4. **Rate limiting**
+   - 2-second delay between searches to avoid DuckDuckGo blocking
+   - Full run takes ~10 minutes for 54 sources (162 searches)
+
+5. **Spam/copypasta detection not implemented**
+   - Would require RSS content analysis (Layer 1 dependency)
+   - Planned as future enhancement
+
+---
 
 ## Layer 1: RSS Discovery - COMPLETE
 
-- **Input:** 51 newsletter URLs
-- **Output:** 27 available feeds discovered
+- **Input:** 58 newsletter URLs
+- **Output:** 31 available feeds discovered
 - **Results:** `data/rss_availability.json`
 - **Cost:** ~$0.025 per run
+
+### RSS Directory Scanning - IMPLEMENTED (2026-01-06)
+
+Layer 1 now scans RSS directory pages (e.g., `/about/rss`, `/feeds`) to discover topic-specific feeds that use non-standard URL patterns.
+
+**Problem Solved:**
+- Fox News tech feed at `moxie.foxnews.com/google-publisher/tech.xml` was not discoverable via standard preset paths
+- Many sites list all available feeds on directory pages
+
+**Implementation:**
+- New node `scan_rss_directories` runs after `test_main_rss`
+- Scans common paths: `/about/rss`, `/about/feeds`, `/feeds`, `/help/rss`, `/rss-feeds`
+- Parses HTML for feed links matching topic keywords (tech, AI, science)
+- Validates discovered feed URLs
+- No LLM cost (pure HTTP + regex)
+
+**New fields in `rss_availability.json`:**
+- `tech_feed_url: string | null` - Technology-specific feed
+- `science_feed_url: string | null` - Science-specific feed
+- `directory_page_url: string | null` - URL where feeds were discovered
+
+**Feed Selection Logic:**
+- For non-AI-focused sites: prefer `tech_feed_url` > `ai_feed_url` > `main_feed_url`
+- For AI-focused sites: use `main_feed_url` (all content is relevant)
+
+**Example (Fox News):**
+```json
+{
+  "url": "https://www.foxnews.com/",
+  "main_feed_url": "https://www.foxnews.com/rss",
+  "tech_feed_url": "https://moxie.foxnews.com/google-publisher/tech.xml",
+  "science_feed_url": "https://moxie.foxnews.com/google-publisher/science.xml",
+  "directory_page_url": "https://www.foxnews.com/about/rss",
+  "recommended_feed": "tech_feed_url",
+  "recommended_feed_url": "https://moxie.foxnews.com/google-publisher/tech.xml",
+  "method": "directory_scan"
+}
+```
+
+**Pipeline Flow (updated):**
+```
+load_urls -> test_main_rss -> scan_rss_directories -> test_ai_category ->
+discover_with_agent -> classify_all_feeds -> merge_results -> save_results
+```
 
 ### Full Content Detection - IMPLEMENTED (2026-01-05)
 
@@ -36,7 +145,7 @@ Layer 1 now validates freshness of AI-specific feeds and falls back to main feed
 
 **Implementation:**
 - `extract_latest_date()` extracts most recent article date from RSS/Atom feeds
-- `is_feed_fresh()` checks if feed is within 7 days (configurable)
+- `is_feed_fresh()` checks if feed is within 7 days (configurable via `max_stale_days`)
 - `determine_recommended_feed()` falls back to main feed if AI feed is stale
 
 **New fields in `rss_availability.json`:**
@@ -53,6 +162,44 @@ Layer 1 now validates freshness of AI-specific feeds and falls back to main feed
   "main_feed_latest_date": "2026-01-02",
   "recommended_feed_url": "https://news.crunchbase.com/feed",
   "fallback_reason": "stale_ai_feed"
+}
+```
+
+### Layer 1 Re-Run Behavior
+
+**Important:** Layer 1 is NOT incremental - it re-checks ALL sources every run.
+
+**Behavior:**
+1. `load_urls` loads ALL URLs from `input_urls.json`
+2. All pipeline nodes (test_main_rss, test_ai_category, etc.) run for every URL
+3. `save_results` **merges** new results with existing `rss_availability.json`:
+   - Existing entries are updated with fresh data
+   - New entries are added
+   - Old entries not in current run are preserved (not deleted)
+4. Use `url_filter` to limit which sources get re-checked
+
+**Why this matters:**
+- Old entries may lack newer fields (e.g., `ai_feed_latest_date`, `fallback_reason`)
+- To get freshness check for old entries, re-run Layer 1 for those sources
+- Example: `rss_orchestrator.run(url_filter=['techcabal'])` to update one source
+
+**Example of stale entry (pre-freshness-check):**
+```json
+{
+  "url": "https://techcabal.com/",
+  "recommended_feed": "ai_feed_url",
+  "ai_feed_latest_date": null,       // Missing - entry is old
+  "fallback_reason": null            // Missing - entry is old
+}
+```
+
+**After re-running Layer 1:**
+```json
+{
+  "url": "https://techcabal.com/",
+  "recommended_feed": "main_feed_url",
+  "ai_feed_latest_date": "2025-12-25",
+  "fallback_reason": "stale_ai_feed"  // AI feed was stale, fell back
 }
 ```
 
@@ -150,33 +297,318 @@ load_available_feeds → fetch_rss_content → filter_business_news
 - `data/aggregated_news.csv` - Tabular format (131 articles)
 - `data/discarded_news.csv` - Discarded articles with reasons (334 articles)
 
+---
+
+## Layer 3: Deduplication - COMPLETE (2026-01-06)
+
+Semantic deduplication system using SQLite + OpenAI embeddings + LLM confirmation.
+
+### Features
+
+1. **URL Deduplication (L2 Integration)**
+   - New node `check_url_duplicates` in L2 pipeline
+   - Checks URLs against historical DB before LLM processing
+   - Saves LLM costs by skipping already-processed articles
+
+2. **Semantic Deduplication (L3 Pipeline)**
+   - Uses OpenAI `text-embedding-3-small` for embeddings
+   - Compares new articles against last 48h of stored articles
+   - Three-tier classification:
+     - Unique: similarity < 0.75 (keep, no LLM)
+     - Ambiguous: 0.75 ≤ similarity < 0.90 (LLM confirmation)
+     - Duplicate: similarity ≥ 0.90 (auto-discard, no LLM)
+   - LLM (Haiku) confirms only ambiguous cases
+
+3. **First Run Behavior**
+   - If DB empty, skips deduplication
+   - Seeds database with all L2 articles + embeddings
+
+### Pipeline Flow
+
+```
+load_new_articles → generate_embeddings → load_historical_embeddings →
+compare_similarities → llm_confirm_duplicates → store_articles →
+export_dedup_report
+```
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `dedup_orchestrator.py` | L3 orchestrator |
+| `src/database.py` | SQLite helper class |
+| `src/functions/check_url_duplicates.py` | L2: URL dedup node |
+| `src/functions/generate_embeddings.py` | OpenAI embeddings |
+| `src/functions/load_historical_embeddings.py` | Load from DB |
+| `src/functions/compare_similarities.py` | Cosine similarity |
+| `src/functions/llm_confirm_duplicates.py` | LLM confirmation |
+| `src/functions/store_articles.py` | Store to SQLite |
+| `src/functions/export_dedup_report.py` | Generate report |
+| `prompts/confirm_duplicate_system_prompt.md` | LLM prompt |
+
+### Output Files
+
+- `data/articles.db` - SQLite database with articles and embeddings
+- `data/aggregated_news_deduped.json` - Deduplicated articles
+- `data/aggregated_news_deduped.csv` - CSV format
+- `data/dedup_report.json` - Deduplication statistics
+
+### Cost Estimate
+
+| Component | Cost per Run |
+|-----------|--------------|
+| Embeddings (OpenAI) | ~$0.001 |
+| LLM confirmation (Haiku) | ~$0.01-0.02 |
+| **Total** | **~$0.02-0.03** |
+
+### Usage
+
+```python
+import dedup_orchestrator
+
+# Run after Layer 2 completes
+dedup_orchestrator.run()
+
+# Custom lookback (e.g., 7 days)
+dedup_orchestrator.run(lookback_hours=168)
+```
+
+---
+
+## Twitter Pipeline - L1/L2 SPLIT (2026-01-06)
+
+Split into two layers following RSS pattern.
+
+### Twitter Layer 1: Account Discovery
+
+```
+load_twitter_accounts → fetch_twitter_content → analyze_account_activity →
+save_twitter_availability
+```
+
+**Features:**
+- Scrapes all configured accounts via Playwright GraphQL interception
+- Analyzes posting frequency (tweets per day, last tweet date)
+- Marks accounts as "active" or "inactive" (no tweets in 14 days)
+- Caches raw tweets for Layer 2 (no re-scraping needed)
+- Results merge with existing `twitter_availability.json`
+
+**Output Files:**
+- `data/twitter_availability.json` - Account status and metrics
+- `data/twitter_raw_cache.json` - Raw tweets for Layer 2
+
+### Twitter Layer 2: Content Aggregation
+
+```
+load_available_accounts → load_cached_tweets → filter_by_date_twitter →
+adapt_tweets_to_articles → filter_business_news → extract_metadata →
+generate_summaries → build_twitter_output → save_twitter_content
+```
+
+**Features:**
+- Reads from L1 output (only active accounts)
+- Uses cached tweets (no re-scraping)
+- Reuses LLM nodes from RSS Layer 2
+- Same 8-field output schema
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `twitter_layer1_orchestrator.py` | L1 orchestrator |
+| `twitter_layer2_orchestrator.py` | L2 orchestrator |
+| `src/functions/analyze_account_activity.py` | L1: Activity analysis |
+| `src/functions/save_twitter_availability.py` | L1: Save status + cache |
+| `src/functions/load_available_twitter_accounts.py` | L2: Load active accounts |
+| `src/functions/load_cached_tweets.py` | L2: Load from cache |
+
+### Test Run (2026-01-06)
+
+**Layer 1:**
+| Account | Status | Last Tweet | Tweets in 14d |
+|---------|--------|------------|---------------|
+| @rohanpaul_ai | inactive | 2025-11-18 | 0 |
+| @TheRundownAI | active | 2026-01-05 | 11 |
+
+**Layer 2:**
+- Skipped @rohanpaul_ai (inactive)
+- Loaded 17 cached tweets for @TheRundownAI
+- After date filter (24h): 2 tweets
+- After LLM filter: 0 (news roundups, not business news)
+- LLM cost: $0.0067
+
+### Usage
+
+```python
+# Step 1: Run Layer 1 (scrape + analyze)
+import twitter_layer1_orchestrator
+twitter_layer1_orchestrator.run()
+
+# Step 2: Run Layer 2 (process cached tweets)
+import twitter_layer2_orchestrator
+twitter_layer2_orchestrator.run()
+```
+
+### Configuration
+
+```json
+{
+  "settings": {
+    "scrape_delay_seconds": 30,
+    "max_age_hours": 24,
+    "inactivity_threshold_days": 14,
+    "cache_ttl_hours": 24
+  }
+}
+```
+
+### Known Limitations
+
+1. **Rate limiting required** - 30s delay between accounts to avoid bans
+2. **Authentication required** - Must provide session cookies from logged-in browser
+3. **Cookie expiration** - Cookies may expire after a few weeks, requiring re-authentication
+4. **Ban risk** - Aggressive scraping may result in account suspension
+5. **Cache must be fresh** - Run L1 before L2
+
+### Twitter Scraper Fixed via CDP Cookie Injection (2026-01-06)
+
+**Status: FIXED** - Twitter pipeline now returns chronological recent tweets.
+
+**Problem (was):**
+- Twitter/X restricts what non-authenticated users can see
+- Profile pages for unauthenticated visitors show only "highlight" or "top" tweets
+- These were old viral tweets (2022-2024), NOT the chronological timeline
+
+**Root Cause Analysis:**
+- Compared with working [x-crawler](https://github.com/factomind-technologies/x-crawler) implementation
+- Key difference: x-crawler used `launch_persistent_context` with session cookies
+- Twitter serves different content based on authentication state
+- Even Playwright's anti-detection flags (`--disable-blink-features=AutomationControlled`) weren't enough
+
+**Solution Implemented:**
+1. **Chrome DevTools Protocol (CDP) cookie extraction**
+   - User launches Chrome manually with `--remote-debugging-port=9222`
+   - User logs in to Twitter in that real browser (no automation detection)
+   - Script connects via CDP and extracts session cookies
+   - Cookies saved to `chrome_data/twitter_cookies.json`
+
+2. **Cookie injection in scraper**
+   - `fetch_twitter_content.py` loads cookies from JSON file
+   - Injects cookies into Playwright context before navigation
+   - Twitter sees authenticated session, returns full chronological timeline
+
+**Files Changed:**
+- `src/functions/fetch_twitter_content.py` - Added persistent context, cookie loading, stealth flags
+- `twitter_cdp_login.py` - New script for CDP cookie extraction
+- `twitter_login.py` - Alternative Playwright-based login (less reliable)
+
+**Test Results (2026-01-06):**
+```
+Before (broken):
+  Oct 11, 2024 - "BREAKING: Tesla's Cybercab..."
+  Jan 18, 2023 - "Boston Dynamics robots..."
+
+After (fixed):
+  Jan 06, 2026 - "NEWS: Elon Musk has confirmed that xAI..."
+  Jan 06, 2026 - "NEWS: All @Tesla Model Ys trims in China..."
+  Jan 06, 2026 - "NEWS: Tesla China has just announced..."
+```
+
+**⚠️ CAUTION: Aggressive scraping may result in account suspension.**
+- Use a secondary/throwaway Twitter account
+- Keep 30+ second delays between accounts
+- Limit to a few scraping sessions per day
+- See CLAUDE.md "Twitter Rate Limiting & Ban Prevention" for details
+
+---
+
 ## Recent Improvements
 
-### 2026-01-05 (Latest)
+### 2026-01-06 (Latest)
 
-1. **Adaptive Batch Retry for JSON Parse Errors**
+1. **Twitter Scraper Fixed**
+   - Root cause: Twitter serves curated "highlights" to non-authenticated users
+   - Solution: CDP (Chrome DevTools Protocol) cookie extraction from logged-in browser
+   - New script `twitter_cdp_login.py` connects to Chrome with remote debugging
+   - Cookies saved to `chrome_data/twitter_cookies.json`, auto-loaded by scraper
+   - Added stealth flags (`--disable-blink-features=AutomationControlled`)
+   - Added `launch_persistent_context` for session state persistence
+   - Test confirmed: Now returns chronological recent tweets (2026-01-06)
+
+2. **Layer 3: Deduplication System Implemented**
+   - New `dedup_orchestrator.py` for semantic deduplication
+   - SQLite database for article storage with embeddings
+   - OpenAI `text-embedding-3-small` for vector embeddings
+   - Three-tier classification: unique (<0.75), ambiguous (0.75-0.90), duplicate (>0.90)
+   - LLM confirmation only for ambiguous cases (cost-optimized)
+   - URL dedup integrated into L2 pipeline (`check_url_duplicates` node)
+   - First run seeds database without deduplication
+   - Cost: ~$0.02-0.03 per run
+
+2. **Twitter Pipeline Split into L1/L2**
+   - Layer 1: Account discovery (scrape, analyze activity, cache tweets)
+   - Layer 2: Content aggregation (read cache, filter, enrich)
+   - Inactive accounts (no tweets in 14 days) are skipped in L2
+   - No re-scraping: L2 uses cached tweets from L1
+   - New files: `twitter_layer1_orchestrator.py`, `twitter_layer2_orchestrator.py`
+   - New functions: `analyze_account_activity`, `save_twitter_availability`, `load_available_twitter_accounts`, `load_cached_tweets`
+
+2. **RSS Directory Scanning Added**
+   - New node `scan_rss_directories` in Layer 1 pipeline
+   - Scans common RSS directory pages (`/about/rss`, `/feeds`, etc.)
+   - Discovers topic-specific feeds (tech, AI, science) from directory pages
+   - No LLM cost (pure HTTP + regex parsing)
+   - For non-AI-focused sites, prefers tech feed over main feed
+   - Example: Fox News tech feed `moxie.foxnews.com/google-publisher/tech.xml` now discovered
+
+2. **Layer 0 Disabled**
+   - Source quality assessment disabled due to DuckDuckGo regional bias issues
+   - Layer 1 now reads directly from `input_urls.json`
+   - Code preserved but not in use
+
+3. **New Sources Added**
+   - Added 4 new URLs: Fox News, FinAI News, Rundown AI, MarkTechPost
+   - Total sources: 58 (31 available, 8 paywalled, 19 unavailable)
+
+### 2026-01-05
+
+1. **Twitter Pipeline Implemented**
+   - New `twitter_orchestrator.py` for scraping Twitter/X accounts
+   - Uses Playwright to intercept GraphQL API responses
+   - 30-second rate limiting between accounts
+   - Reuses existing LLM nodes (filter, metadata, summaries)
+   - Same 8-field output schema as RSS pipeline
+   - Test run: 3 AI business tweets extracted from @rohanpaul_ai
+
+2. **Date Cutoff Filter Added**
+   - New node `filter_by_date` runs before LLM filtering
+   - Drops articles older than `max_age_hours` (default: 24)
+   - Reduces LLM costs by filtering old articles before API calls
+   - Usage: `content_orchestrator.run(max_age_hours=48)`
+
+2. **Adaptive Batch Retry for JSON Parse Errors**
    - `filter_business_news.py` now retries failed batches with smaller sizes
    - Retry sequence: 25 → 15 → 10 articles per batch
    - Increased `max_tokens` for smaller batches (2048 → 3072)
    - **Result:** 100% recovery rate on failed batches (was 45% failure rate)
    - Previously ~225 articles lost to `parse_error_discard`, now 0
 
-2. **Discarded Articles Export**
+3. **Discarded Articles Export**
    - New output file: `data/discarded_news.csv`
    - Contains all filtered-out articles with LLM-generated discard reasons
    - Schema: `source_name, title, url, pub_date, discard_reason`
    - Enables analysis of filtering decisions and potential false negatives
 
-3. **Layer 1 Time Tracking Added**
+4. **Layer 1 Time Tracking Added**
    - Added `track_time` to all Layer 1 node functions
    - `test_rss_preset.py`, `test_ai_category.py`, `discover_rss_agent.py`, `classify_feeds.py`
 
-4. **Excluded General News Sources**
+5. **Excluded General News Sources**
    - Removed RFI and Euronews from available feeds (status → "excluded")
    - These are general news sources that polluted results with non-AI articles
    - Now 26 available feeds
 
-5. **Changed Default Behavior to DISCARD**
+6. **Changed Default Behavior to DISCARD**
    - `filter_business_news.py` now defaults to DISCARD on errors/missing classifications
    - Previously defaulted to KEEP, which let non-AI articles slip through
    - Safer for filtering quality; may lose some valid articles on transient errors
@@ -238,20 +670,44 @@ REQUEST_TIMEOUT = 20  # Request timeout in seconds
 2. ~~Add retry logic for LLM parse errors~~ (Done 2026-01-05 - adaptive batch sizing)
 3. ~~Add feed freshness check~~ (Done 2026-01-05 - stale AI feeds fall back to main)
 4. Add more AI-focused RSS sources (replace excluded general news sources)
+5. ~~**Add news source quality checker**~~ (Done 2026-01-05 - Layer 0 implemented)
+   - Implemented as Layer 0 (runs before Layer 1)
+   - Fetches homepage/about page, LLM assesses credibility
+   - Outputs `source_quality: "quality"` or `"crude"` per source
+   - Layer 1 automatically filters to quality sources only
+6. **Enhance filtering mechanism**
+   - Filter correctly discarded "Grok sexualized photos" scandal stories
+   - Kept business news: "xAI launches Grok Business and Enterprise"
+   - Monitor for edge cases where scandal/controversy slips through
+7. ~~**FIX: Twitter scraper returns old/curated tweets instead of chronological timeline**~~ (Done 2026-01-06)
+   - Fixed via CDP cookie injection from authenticated Chrome browser
+   - See "Twitter Scraper Fixed" section under Twitter Pipeline for details
 
 ### Medium Priority
-5. Consider scheduled runs (cron/GitHub Actions)
-6. Add deduplication across runs (by URL, across multiple pipeline runs)
-7. Build frontend/newsletter output format
+8. **Add alternative content fetching for RSS-unavailable sources**
+   - 18 sources have no RSS (Reuters, SCMP, etc.), 8 are paywalled (Bloomberg, FT, Axios)
+   - Options: web scraping, API access, newsletter email ingestion
+   - Would require new Layer 2 node or parallel pipeline
+   - **Google News RSS investigated (2026-01-05):** Works for any indexed source (incl. paywalled), but only provides title/date/source domain - no article URL (JS redirect) or description. Not usable without additional URL resolution.
+   - **Reuters scraping investigated (2026-01-05):**
+     - Uses DataDome bot protection (enterprise-grade)
+     - All methods blocked: httpx, Playwright headless, Playwright stealth, curl, RSS feeds (401)
+     - CDP approach (Chrome `--remote-debugging-port=9222`) may work (~50% chance) if:
+       - Using Chrome profile with prior manual Reuters visits
+       - Different IP (current IP flagged)
+     - Alternatives: NewsAPI.org (free 100 req/day), Reuters paid API
+     - Test files: `tests/test_reuters_scraping*.py`
+9. Consider scheduled runs (cron/GitHub Actions)
+10. Build frontend/newsletter output format
 
 ### Low Priority
-8. **Add database for historical comparison**
-   - Store aggregated news in SQLite/PostgreSQL
-   - Track articles across runs to detect duplicates
-   - Enable historical analysis and trend tracking
-   - Compare today's news with previous days/weeks
+11. ~~**Add SQLite database for storage, deduplication, and history**~~ (Done 2026-01-06 - Layer 3 implemented)
+    - ~~Store aggregated news in SQLite~~
+    - ~~Deduplicate articles across runs (by URL and semantic similarity)~~
+    - ~~Enable historical analysis and trend tracking~~
+    - ~~Compare today's news with previous days/weeks~~
 
-9. **Add date filter to Layer 2**
-   - Filter articles by publication date (e.g., last 24 hours, last 7 days)
-   - Prevent old articles from stale feeds from being processed
-   - Configurable via `run(max_age_days=7)` parameter
+12. ~~**Add date filter to Layer 2**~~ (Done 2026-01-05)
+   - ~~Filter articles by publication date (e.g., last 24 hours, last 7 days)~~
+   - ~~Prevent old articles from stale feeds from being processed~~
+   - ~~Configurable via `run(max_age_hours=24)` parameter~~

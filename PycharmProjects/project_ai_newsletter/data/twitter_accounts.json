@@ -1,0 +1,17 @@
+{
+  "accounts": [
+    {"handle": "@GoodfireAI", "category": "AI company"},
+    {"handle": "@jeremyakahn", "category": "AI journalist"},
+    {"handle": "@leijun", "category": "Tech executive"},
+    {"handle": "@rohanpaul_ai", "category": "AI news"},
+    {"handle": "@TheRundownAI", "category": "AI news"},
+    {"handle": "@Meer_AIIT", "category": "AI news"},
+    {"handle": "@SawyerMerritt", "category": "Tech news"}
+  ],
+  "settings": {
+    "scrape_delay_seconds": 30,
+    "max_age_hours": 24,
+    "inactivity_threshold_days": 14,
+    "cache_ttl_hours": 24
+  }
+}

@@ -36,3 +36,6 @@ debug.log
 
 # Claude Code
 .claude/
+
+# Browser data (Playwright persistent context)
+chrome_data/

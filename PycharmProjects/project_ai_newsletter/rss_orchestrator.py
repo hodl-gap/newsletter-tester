@@ -16,6 +16,7 @@ from src.functions.test_rss_preset import test_rss_preset, RSSTestResult
 from src.functions.test_ai_category import test_ai_category, AIFeedResult
 from src.functions.discover_rss_agent import discover_rss_agent, RSSDiscoveryResult
 from src.functions.classify_feeds import classify_feeds, determine_recommended_feed
+from src.functions.scan_rss_directory import scan_rss_directory, RSSDirectoryResult
 from src.tracking import track_time, cost_tracker, reset_cost_tracker, get_logger, debug_log
 
 
@@ -28,10 +29,13 @@ class FinalResult(TypedDict):
     status: str  # "available", "paywalled", "unavailable"
     main_feed_url: str | None
     ai_feed_url: str | None
+    tech_feed_url: str | None  # Technology-specific feed from directory scan
+    science_feed_url: str | None  # Science-specific feed from directory scan
+    directory_page_url: str | None  # URL where feeds were discovered
     is_ai_focused: bool
-    recommended_feed: str  # "main_feed_url", "ai_feed_url", "none"
+    recommended_feed: str  # "main_feed_url", "ai_feed_url", "tech_feed_url", "none"
     recommended_feed_url: str | None  # The actual URL to use
-    method: str  # "preset", "agent_search", "agent_browse"
+    method: str  # "preset", "agent_search", "agent_browse", "directory_scan"
     notes: str | None
     has_full_content: bool  # Whether RSS has content:encoded
     http_fetch_works: bool | None  # Whether article URLs are fetchable (None if not tested)
@@ -44,6 +48,7 @@ class RSSDiscoveryState(TypedDict):
     url_filter: list[str] | None  # Optional filter for URLs (substring match)
     input_urls: list[str]
     main_rss_results: list[RSSTestResult]
+    directory_results: list[RSSDirectoryResult]  # Results from RSS directory page scan
     ai_category_results: list[AIFeedResult]
     agent_results: list[RSSDiscoveryResult]
     classification: dict[str, bool]
@@ -55,14 +60,21 @@ class RSSDiscoveryState(TypedDict):
 # =============================================================================
 
 def load_urls(state: RSSDiscoveryState) -> dict:
-    """Load URLs from input file."""
+    """
+    Load URLs from input_urls.json.
+
+    NOTE: Layer 0 integration is disabled due to reliability issues.
+    Previously checked source_quality.json first, now reads directly from input_urls.json.
+    """
     with track_time("load_urls"):
         debug_log("[NODE: load_urls] Entering")
 
         input_path = Path("data/input_urls.json")
+
+        # Load from input_urls.json (L0 disabled)
+        debug_log("[NODE: load_urls] Loading from input_urls.json (L0 disabled)")
         with open(input_path) as f:
             data = json.load(f)
-
         urls = data.get("urls", [])
         debug_log(f"[NODE: load_urls] Loaded {len(urls)} URLs from file")
 
@@ -97,6 +109,27 @@ def test_main_rss(state: RSSDiscoveryState) -> dict:
         debug_log(f"[NODE: test_main_rss] Output: {available}/{len(results)} have main RSS")
 
         return {"main_rss_results": results}
+
+
+def scan_rss_directories(state: RSSDiscoveryState) -> dict:
+    """Scan RSS directory pages for topic-specific feeds (tech, AI, science)."""
+    with track_time("scan_rss_directories"):
+        debug_log("[NODE: scan_rss_directories] Entering")
+        debug_log(f"[NODE: scan_rss_directories] Input: {len(state['input_urls'])} URLs")
+
+        results = []
+        for url in state["input_urls"]:
+            result = scan_rss_directory(url)
+            results.append(result)
+
+        # Count discovered topic feeds
+        with_tech = sum(1 for r in results if r.get("tech_feed_url"))
+        with_ai = sum(1 for r in results if r.get("ai_feed_url"))
+        with_science = sum(1 for r in results if r.get("science_feed_url"))
+
+        debug_log(f"[NODE: scan_rss_directories] Output: tech={with_tech}, ai={with_ai}, science={with_science}")
+
+        return {"directory_results": results}
 
 
 def test_ai_category_feeds(state: RSSDiscoveryState) -> dict:
@@ -215,6 +248,7 @@ def merge_results(state: RSSDiscoveryState) -> dict:
 
         # Use normalized URLs for consistent lookups
         main_map = {normalize_url(r["url"]): r for r in state["main_rss_results"]}
+        directory_map = {normalize_url(r["url"]): r for r in state.get("directory_results", [])}
         ai_map = {normalize_url(r["url"]): r for r in state["ai_category_results"]}
         agent_map = {normalize_url(r["url"]): r for r in state.get("agent_results", [])}
         classification = state.get("classification", {})
@@ -224,6 +258,7 @@ def merge_results(state: RSSDiscoveryState) -> dict:
         for url in state["input_urls"]:
             normalized = normalize_url(url)
             main_r = main_map.get(normalized, {})
+            directory_r = directory_map.get(normalized, {})
             ai_r = ai_map.get(normalized, {})
             agent_r = agent_map.get(normalized, {})
 
@@ -242,11 +277,21 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                 if agent_r.get("status") == "available":
                     main_feed_url = agent_r.get("feed_url")
 
-            # Determine AI feed URL
+            # Get directory scan results (tech, AI, science feeds)
+            tech_feed_url = directory_r.get("tech_feed_url")
+            directory_ai_feed_url = directory_r.get("ai_feed_url")
+            science_feed_url = directory_r.get("science_feed_url")
+            directory_page_url = directory_r.get("directory_page_url")
+
+            # Determine AI feed URL - prefer AI category test, fallback to directory scan
             ai_feed_url = ai_r.get("ai_feed_url") if ai_r.get("status") == "available" else None
+            if not ai_feed_url and directory_ai_feed_url:
+                ai_feed_url = directory_ai_feed_url
 
             # Determine status - check for paywalled from any source
-            if main_feed_url or ai_feed_url:
+            # Also consider tech/science feeds as "available"
+            has_any_feed = main_feed_url or ai_feed_url or tech_feed_url or science_feed_url
+            if has_any_feed:
                 status = "available"
             elif (main_r.get("status") == "paywalled" or
                   ai_r.get("status") == "paywalled" or
@@ -276,9 +321,18 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                 ai_feed_latest_date = ai_r.get("latest_article_date")
 
             # Determine recommended feed with freshness check
+            # For non-AI-focused sites, prefer: tech_feed > ai_feed > main_feed
             recommended_url, recommended_field, fallback_reason = determine_recommended_feed(
                 url, is_ai_focused, main_feed_url, ai_feed_url, ai_feed_latest_date
             )
+
+            # Override: if site is not AI-focused and has tech feed, prefer tech feed
+            if not is_ai_focused and tech_feed_url:
+                recommended_url = tech_feed_url
+                recommended_field = "tech_feed_url"
+                if directory_page_url:
+                    method = "directory_scan"
+                debug_log(f"[NODE: merge_results] {url}: Using tech feed from directory scan")
 
             # Log if fallback occurred
             if fallback_reason:
@@ -299,12 +353,16 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                     # Agent results don't have content detection yet
                     has_full_content = False
                     http_fetch_works = None
+            # Note: tech_feed from directory scan doesn't have content detection yet
 
             final_results.append({
                 "url": url,
                 "status": status,
                 "main_feed_url": main_feed_url,
                 "ai_feed_url": ai_feed_url,
+                "tech_feed_url": tech_feed_url,
+                "science_feed_url": science_feed_url,
+                "directory_page_url": directory_page_url,
                 "is_ai_focused": is_ai_focused,
                 "recommended_feed": recommended_field,
                 "recommended_feed_url": recommended_url,
@@ -359,6 +417,10 @@ def save_results(state: RSSDiscoveryState) -> dict:
             if not r.get("has_full_content") and not r.get("http_fetch_works")
         )
 
+        # Count topic feeds from directory scan
+        has_tech_feed = sum(1 for r in results if r.get("tech_feed_url"))
+        has_science_feed = sum(1 for r in results if r.get("science_feed_url"))
+
         output = {
             "results": results,
             "timestamp": datetime.now().isoformat(),
@@ -366,8 +428,10 @@ def save_results(state: RSSDiscoveryState) -> dict:
             "available": sum(1 for r in results if r["status"] == "available"),
             "paywalled": sum(1 for r in results if r["status"] == "paywalled"),
             "unavailable": sum(1 for r in results if r["status"] == "unavailable"),
-            "ai_focused": sum(1 for r in results if r["is_ai_focused"]),
-            "has_ai_category": sum(1 for r in results if r["ai_feed_url"]),
+            "ai_focused": sum(1 for r in results if r.get("is_ai_focused")),
+            "has_ai_category": sum(1 for r in results if r.get("ai_feed_url")),
+            "has_tech_feed": has_tech_feed,
+            "has_science_feed": has_science_feed,
             "with_full_content": with_full_content,
             "with_http_fetch": with_http_fetch,
             "no_content_access": no_content_access,
@@ -384,6 +448,8 @@ def save_results(state: RSSDiscoveryState) -> dict:
         debug_log(f"  - Unavailable: {output['unavailable']}")
         debug_log(f"  - AI-focused: {output['ai_focused']}")
         debug_log(f"  - Has AI category: {output['has_ai_category']}")
+        debug_log(f"  - Has tech feed: {output['has_tech_feed']}")
+        debug_log(f"  - Has science feed: {output['has_science_feed']}")
         debug_log(f"  - With full RSS content: {output['with_full_content']}")
         debug_log(f"  - With HTTP fetch: {output['with_http_fetch']}")
         debug_log(f"  - No content access: {output['no_content_access']}")
@@ -402,6 +468,7 @@ def build_graph() -> StateGraph:
     # Add nodes
     graph.add_node("load_urls", load_urls)
     graph.add_node("test_main_rss", test_main_rss)
+    graph.add_node("scan_rss_directories", scan_rss_directories)
     graph.add_node("test_ai_category_feeds", test_ai_category_feeds)
     graph.add_node("discover_with_agent", discover_with_agent)
     graph.add_node("classify_all_feeds", classify_all_feeds)
@@ -409,9 +476,11 @@ def build_graph() -> StateGraph:
     graph.add_node("save_results", save_results)
 
     # Define edges
+    # Pipeline: load -> test_main_rss -> scan_directories -> test_ai_category -> agent -> classify -> merge -> save
     graph.add_edge(START, "load_urls")
     graph.add_edge("load_urls", "test_main_rss")
-    graph.add_edge("test_main_rss", "test_ai_category_feeds")
+    graph.add_edge("test_main_rss", "scan_rss_directories")
+    graph.add_edge("scan_rss_directories", "test_ai_category_feeds")
     graph.add_edge("test_ai_category_feeds", "discover_with_agent")
     graph.add_edge("discover_with_agent", "classify_all_feeds")
     graph.add_edge("classify_all_feeds", "merge_results")
@@ -451,6 +520,7 @@ def run(url_filter: list[str] | None = None) -> dict:
         "url_filter": url_filter,
         "input_urls": [],
         "main_rss_results": [],
+        "directory_results": [],
         "ai_category_results": [],
         "agent_results": [],
         "classification": {},

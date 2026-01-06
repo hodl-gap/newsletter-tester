@@ -6,9 +6,9 @@ It fetches articles, filters for business news, extracts metadata,
 generates English summaries, and outputs a structured DataFrame.
 
 Pipeline Flow:
-    load_available_feeds -> fetch_rss_content -> filter_business_news ->
-    extract_metadata -> generate_summaries -> build_output_dataframe ->
-    save_aggregated_content
+    load_available_feeds -> fetch_rss_content -> check_url_duplicates ->
+    filter_by_date -> filter_business_news -> extract_metadata ->
+    generate_summaries -> build_output_dataframe -> save_aggregated_content
 """
 
 from typing import TypedDict, Optional
@@ -25,6 +25,8 @@ from src.functions.extract_metadata import extract_metadata
 from src.functions.generate_summaries import generate_summaries
 from src.functions.build_output_dataframe import build_output_dataframe
 from src.functions.save_aggregated_content import save_aggregated_content
+from src.functions.filter_by_date import filter_by_date
+from src.functions.check_url_duplicates import check_url_duplicates
 
 
 # =============================================================================
@@ -38,11 +40,17 @@ class ContentAggregationState(TypedDict):
     # Optional: filter for specific sources
     source_filter: Optional[list[str]]
 
+    # Optional: maximum article age in hours (default: 24)
+    max_age_hours: Optional[int]
+
     # From load_available_feeds
     available_feeds: list[dict]
 
     # From fetch_rss_content
     raw_articles: list[dict]
+
+    # From check_url_duplicates
+    url_duplicates_dropped: Optional[int]
 
     # From filter_business_news
     filtered_articles: list[dict]
@@ -75,6 +83,8 @@ def build_graph() -> StateGraph:
     # Add nodes
     graph.add_node("load_available_feeds", load_available_feeds)
     graph.add_node("fetch_rss_content", fetch_rss_content)
+    graph.add_node("check_url_duplicates", check_url_duplicates)
+    graph.add_node("filter_by_date", filter_by_date)
     graph.add_node("filter_business_news", filter_business_news)
     graph.add_node("extract_metadata", extract_metadata)
     graph.add_node("generate_summaries", generate_summaries)
@@ -84,7 +94,9 @@ def build_graph() -> StateGraph:
     # Define edges (linear pipeline)
     graph.add_edge(START, "load_available_feeds")
     graph.add_edge("load_available_feeds", "fetch_rss_content")
-    graph.add_edge("fetch_rss_content", "filter_business_news")
+    graph.add_edge("fetch_rss_content", "check_url_duplicates")
+    graph.add_edge("check_url_duplicates", "filter_by_date")
+    graph.add_edge("filter_by_date", "filter_business_news")
     graph.add_edge("filter_business_news", "extract_metadata")
     graph.add_edge("extract_metadata", "generate_summaries")
     graph.add_edge("generate_summaries", "build_output_dataframe")
@@ -99,13 +111,15 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(source_filter: Optional[list[str]] = None) -> dict:
+def run(source_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> dict:
     """
     Run the content aggregation pipeline.
 
     Args:
         source_filter: Optional list of source names/URLs to filter for.
                       If None, all available sources are used.
+        max_age_hours: Maximum article age in hours. Articles older than this
+                      are dropped before LLM filtering. Default: 24.
 
     Returns:
         Final state with aggregated content.
@@ -114,6 +128,7 @@ def run(source_filter: Optional[list[str]] = None) -> dict:
     debug_log("STARTING CONTENT AGGREGATION PIPELINE")
     if source_filter:
         debug_log(f"SOURCE FILTER: {source_filter}")
+    debug_log(f"MAX AGE HOURS: {max_age_hours}")
     debug_log("=" * 60)
 
     # Reset cost tracker
@@ -125,8 +140,10 @@ def run(source_filter: Optional[list[str]] = None) -> dict:
     # Initialize empty state
     initial_state: ContentAggregationState = {
         "source_filter": source_filter,
+        "max_age_hours": max_age_hours,
         "available_feeds": [],
         "raw_articles": [],
+        "url_duplicates_dropped": 0,
         "filtered_articles": [],
         "discarded_articles": [],
         "enriched_articles": [],
