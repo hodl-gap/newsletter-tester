@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS articles (
     title TEXT NOT NULL,
     summary TEXT,
     source TEXT NOT NULL,
+    source_type TEXT DEFAULT 'rss',
     pub_date TEXT NOT NULL,
     region TEXT,
     category TEXT,
@@ -45,6 +46,7 @@ CREATE TABLE IF NOT EXISTS articles (
 CREATE INDEX IF NOT EXISTS idx_url_hash ON articles(url_hash);
 CREATE INDEX IF NOT EXISTS idx_pub_date ON articles(pub_date);
 CREATE INDEX IF NOT EXISTS idx_source ON articles(source);
+-- Note: idx_source_type created via migration for existing DBs
 
 -- Deduplication audit log
 CREATE TABLE IF NOT EXISTS dedup_log (
@@ -107,7 +109,27 @@ class ArticleDatabase:
         with self._connection() as conn:
             conn.executescript(SCHEMA_SQL)
             conn.commit()
+
+            # Migration: Add source_type column if missing (for existing DBs)
+            self._migrate_source_type(conn)
+
         debug_log(f"[DB] Database initialized at {self.db_path}")
+
+    def _migrate_source_type(self, conn):
+        """Add source_type column to existing databases."""
+        try:
+            # Check if column exists
+            cursor = conn.execute("PRAGMA table_info(articles)")
+            columns = [row[1] for row in cursor.fetchall()]
+
+            if "source_type" not in columns:
+                debug_log("[DB] Migrating: Adding source_type column")
+                conn.execute("ALTER TABLE articles ADD COLUMN source_type TEXT DEFAULT 'rss'")
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_source_type ON articles(source_type)")
+                conn.commit()
+                debug_log("[DB] Migration complete: source_type column added")
+        except Exception as e:
+            debug_log(f"[DB] Migration warning: {e}", "warning")
 
     # -------------------------------------------------------------------------
     # URL Deduplication
@@ -176,7 +198,7 @@ class ArticleDatabase:
 
         Args:
             article: Article dict with keys: url, title, contents/summary,
-                     source, date, region, category, layer.
+                     source, source_type, date, region, category, layer.
             embedding: Optional numpy array of embedding vector.
 
         Returns:
@@ -191,15 +213,16 @@ class ArticleDatabase:
             with self._connection() as conn:
                 conn.execute(
                     """INSERT INTO articles
-                       (url, url_hash, title, summary, source, pub_date,
+                       (url, url_hash, title, summary, source, source_type, pub_date,
                         region, category, layer, embedding)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (
                         url,
                         url_hash,
                         article.get("title", ""),
                         article.get("contents", article.get("summary", "")),
                         article.get("source", ""),
+                        article.get("source_type", "rss"),
                         article.get("date", article.get("pub_date", "")),
                         article.get("region"),
                         article.get("category"),
@@ -241,15 +264,16 @@ class ArticleDatabase:
                 try:
                     conn.execute(
                         """INSERT INTO articles
-                           (url, url_hash, title, summary, source, pub_date,
+                           (url, url_hash, title, summary, source, source_type, pub_date,
                             region, category, layer, embedding)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                         (
                             url,
                             url_hash,
                             article.get("title", ""),
                             article.get("contents", article.get("summary", "")),
                             article.get("source", ""),
+                            article.get("source_type", "rss"),
                             article.get("date", article.get("pub_date", "")),
                             article.get("region"),
                             article.get("category"),

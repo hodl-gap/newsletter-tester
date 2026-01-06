@@ -1,12 +1,12 @@
 """
 Deduplication Orchestrator - Layer 3 Pipeline
 
-This orchestrator deduplicates articles from Layer 2 output using:
-1. URL deduplication (exact match against historical DB)
+This orchestrator deduplicates articles from Layer 2 outputs using:
+1. Multi-source merging (RSS, HTML, Twitter with URL dedup)
 2. Semantic deduplication (embeddings + LLM for ambiguous cases)
 
 Pipeline Flow:
-    load_new_articles -> generate_embeddings -> load_historical_embeddings ->
+    merge_pipeline_outputs -> generate_embeddings -> load_historical_embeddings ->
     compare_similarities -> llm_confirm_duplicates -> store_articles ->
     export_dedup_report
 
@@ -14,29 +14,20 @@ First Run Behavior:
     If database is empty, skips deduplication and seeds the DB with all articles.
 """
 
-import json
-from typing import TypedDict, Optional
-from pathlib import Path
+from typing import TypedDict
 
 from langgraph.graph import StateGraph, START, END
 
 from src.tracking import debug_log, reset_cost_tracker, cost_tracker
 
 # Import node functions
+from src.functions.merge_pipeline_outputs import merge_pipeline_outputs
 from src.functions.generate_embeddings import generate_embeddings
 from src.functions.load_historical_embeddings import load_historical_embeddings
 from src.functions.compare_similarities import compare_similarities
 from src.functions.llm_confirm_duplicates import llm_confirm_duplicates
 from src.functions.store_articles import store_articles
 from src.functions.export_dedup_report import export_dedup_report
-
-
-# =============================================================================
-# Configuration
-# =============================================================================
-
-DATA_DIR = Path(__file__).parent / "data"
-INPUT_JSON_PATH = DATA_DIR / "aggregated_news.json"
 
 
 # =============================================================================
@@ -49,9 +40,11 @@ class DeduplicationState(TypedDict):
     """
     # Input configuration
     lookback_hours: int
+    input_sources: list[str]  # ["rss", "html", "twitter"]
 
-    # From load_new_articles
+    # From merge_pipeline_outputs
     articles_to_check: list[dict]
+    merge_stats: dict
 
     # From generate_embeddings
     articles_with_embeddings: list[dict]
@@ -78,38 +71,6 @@ class DeduplicationState(TypedDict):
 
 
 # =============================================================================
-# Node Functions
-# =============================================================================
-
-def load_new_articles(state: dict) -> dict:
-    """
-    Load new articles from Layer 2 output.
-
-    Reads aggregated_news.json and prepares articles for deduplication.
-
-    Args:
-        state: Pipeline state
-
-    Returns:
-        Dict with 'articles_to_check': List of articles
-    """
-    debug_log("[NODE: load_new_articles] Entering")
-
-    if not INPUT_JSON_PATH.exists():
-        debug_log(f"[NODE: load_new_articles] Input file not found: {INPUT_JSON_PATH}", "error")
-        return {"articles_to_check": []}
-
-    with open(INPUT_JSON_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    articles = data.get("articles", [])
-
-    debug_log(f"[NODE: load_new_articles] Loaded {len(articles)} articles from {INPUT_JSON_PATH}")
-
-    return {"articles_to_check": articles}
-
-
-# =============================================================================
 # Graph Definition
 # =============================================================================
 
@@ -124,7 +85,7 @@ def build_graph() -> StateGraph:
     graph = StateGraph(DeduplicationState)
 
     # Add nodes
-    graph.add_node("load_new_articles", load_new_articles)
+    graph.add_node("merge_pipeline_outputs", merge_pipeline_outputs)
     graph.add_node("generate_embeddings", generate_embeddings)
     graph.add_node("load_historical_embeddings", load_historical_embeddings)
     graph.add_node("compare_similarities", compare_similarities)
@@ -133,8 +94,8 @@ def build_graph() -> StateGraph:
     graph.add_node("export_dedup_report", export_dedup_report)
 
     # Define edges (linear pipeline)
-    graph.add_edge(START, "load_new_articles")
-    graph.add_edge("load_new_articles", "generate_embeddings")
+    graph.add_edge(START, "merge_pipeline_outputs")
+    graph.add_edge("merge_pipeline_outputs", "generate_embeddings")
     graph.add_edge("generate_embeddings", "load_historical_embeddings")
     graph.add_edge("load_historical_embeddings", "compare_similarities")
     graph.add_edge("compare_similarities", "llm_confirm_duplicates")
@@ -150,20 +111,30 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(lookback_hours: int = 48) -> dict:
+def run(
+    lookback_hours: int = 48,
+    input_sources: list[str] = None
+) -> dict:
     """
     Run the deduplication pipeline.
 
     Args:
         lookback_hours: Number of hours to look back for historical articles.
                        Default: 48 (compare against last 2 days).
+        input_sources: List of source types to include.
+                       Default: ["rss", "html", "twitter"] (all sources).
+                       Options: "rss", "html", "twitter"
 
     Returns:
         Final state with deduplication results.
     """
+    if input_sources is None:
+        input_sources = ["rss", "html", "twitter"]
+
     debug_log("=" * 60)
     debug_log("STARTING DEDUPLICATION PIPELINE (LAYER 3)")
     debug_log(f"LOOKBACK HOURS: {lookback_hours}")
+    debug_log(f"INPUT SOURCES: {input_sources}")
     debug_log("=" * 60)
 
     # Reset cost tracker
@@ -175,7 +146,9 @@ def run(lookback_hours: int = 48) -> dict:
     # Initialize empty state
     initial_state: DeduplicationState = {
         "lookback_hours": lookback_hours,
+        "input_sources": input_sources,
         "articles_to_check": [],
+        "merge_stats": {},
         "articles_with_embeddings": [],
         "historical_articles": [],
         "is_first_run": False,
@@ -197,7 +170,16 @@ def run(lookback_hours: int = 48) -> dict:
 
     report = result.get("dedup_report", {})
     summary = report.get("summary", {})
+    merge_stats = result.get("merge_stats", {})
 
+    # Merge stats
+    debug_log("  --- Merge Stats ---")
+    for source_type, stats in merge_stats.get("by_source_type", {}).items():
+        debug_log(f"    {source_type}: {stats.get('loaded', 0)} loaded, {stats.get('kept', 0)} kept")
+    debug_log(f"  URL collisions:   {merge_stats.get('url_collisions', 0)}")
+
+    # Dedup stats
+    debug_log("  --- Dedup Stats ---")
     debug_log(f"  Total input:      {summary.get('total_input', 0)}")
     debug_log(f"  Unique kept:      {summary.get('unique_kept', 0)}")
     debug_log(f"  Duplicates found: {summary.get('duplicates_removed', 0)}")
@@ -219,6 +201,6 @@ if __name__ == "__main__":
     report = result.get("dedup_report", {})
     print(f"\nDeduplication complete!")
     print(f"  Report: data/dedup_report.json")
-    print(f"  JSON:   data/aggregated_news_deduped.json")
-    print(f"  CSV:    data/aggregated_news_deduped.csv")
+    print(f"  JSON:   data/merged_news_deduped.json")
+    print(f"  CSV:    data/merged_news_deduped.csv")
     print(f"  Unique articles: {report.get('summary', {}).get('unique_kept', 0)}")

@@ -15,8 +15,8 @@ from src.tracking import debug_log, track_time, cost_tracker
 
 # Output paths
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
-DEDUP_JSON_PATH = DATA_DIR / "aggregated_news_deduped.json"
-DEDUP_CSV_PATH = DATA_DIR / "aggregated_news_deduped.csv"
+DEDUP_JSON_PATH = DATA_DIR / "merged_news_deduped.json"
+DEDUP_CSV_PATH = DATA_DIR / "merged_news_deduped.csv"
 REPORT_PATH = DATA_DIR / "dedup_report.json"
 
 
@@ -26,8 +26,8 @@ def export_dedup_report(state: dict) -> dict:
 
     Creates:
     - dedup_report.json: Statistics and duplicate details
-    - aggregated_news_deduped.json: Deduplicated articles
-    - aggregated_news_deduped.csv: CSV format
+    - merged_news_deduped.json: Deduplicated articles
+    - merged_news_deduped.csv: CSV format
 
     Args:
         state: Pipeline state with:
@@ -36,6 +36,7 @@ def export_dedup_report(state: dict) -> dict:
             - 'stored_count': Number stored to DB
             - 'is_first_run': Whether this was a seeding run
             - 'articles_to_check': Original input articles
+            - 'merge_stats': Statistics from merge_pipeline_outputs
 
     Returns:
         Dict with 'dedup_report': Report summary
@@ -48,11 +49,26 @@ def export_dedup_report(state: dict) -> dict:
         stored_count = state.get("stored_count", 0)
         is_first_run = state.get("is_first_run", False)
         articles_to_check = state.get("articles_to_check", [])
+        merge_stats = state.get("merge_stats", {})
 
         # Count dedup types
         url_dup_count = state.get("url_duplicates_dropped", 0)
         auto_dup_count = len([d for d in confirmed_duplicates if not d.get("llm_confirmed")])
         llm_dup_count = len([d for d in confirmed_duplicates if d.get("llm_confirmed")])
+
+        # Count by source_type in final output
+        by_source_type = {}
+        for article in final_unique:
+            st = article.get("source_type", "rss")
+            by_source_type[st] = by_source_type.get(st, 0) + 1
+
+        # Count cross-source duplicates (where kept and removed have different source_type)
+        cross_source_dups = 0
+        for dup in confirmed_duplicates:
+            article = dup.get("article", dup)
+            duplicate_of = dup.get("duplicate_of", {})
+            if article.get("source_type") != duplicate_of.get("source_type"):
+                cross_source_dups += 1
 
         # Build report
         report = {
@@ -67,6 +83,9 @@ def export_dedup_report(state: dict) -> dict:
                 "semantic_llm_confirmed": llm_dup_count,
                 "stored_to_db": stored_count,
             },
+            "by_source_type": by_source_type,
+            "cross_source_duplicates": cross_source_dups,
+            "merge_stats": merge_stats,
             "cost": {
                 "total_cost": f"${cost_tracker.total_cost:.4f}",
                 "input_tokens": cost_tracker.total_input_tokens,
@@ -138,8 +157,8 @@ def _save_deduped_csv(articles: list[dict]):
     if not articles:
         return
 
-    # Define column order
-    columns = ["date", "source", "region", "category", "layer", "title", "contents", "url"]
+    # Define column order (includes source_type for multi-source tracking)
+    columns = ["date", "source", "source_type", "region", "category", "layer", "title", "contents", "url"]
 
     with open(DEDUP_CSV_PATH, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
@@ -150,6 +169,7 @@ def _save_deduped_csv(articles: list[dict]):
             row = {
                 "date": article.get("date", article.get("pub_date", "")),
                 "source": article.get("source", article.get("source_name", "")),
+                "source_type": article.get("source_type", "rss"),
                 "region": article.get("region", ""),
                 "category": article.get("category", ""),
                 "layer": article.get("layer", ""),

@@ -37,12 +37,26 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 - Stores articles with embeddings to SQLite for future comparison
 - Output: `aggregated_news_deduped.json`, `dedup_report.json`
 
+**HTML Layer 1: Scrapability Discovery** (runs on RSS L1 "unavailable" sources)
+- Analyzes sources without RSS to determine if they can be scraped via HTTP
+- Tests HTTP accessibility and bot protection (Cloudflare, CAPTCHA)
+- LLM analyzes listing page structure (article URL patterns)
+- LLM analyzes article page structure (CSS selectors for extraction)
+- Output: `data/html_availability.json` with scraping configs
+
+**HTML Layer 2: Content Scraping** (uses HTML L1 configs)
+- Scrapes articles from sources marked "scrapable" in HTML L1
+- Fetches listing pages, extracts article URLs via regex patterns
+- Fetches articles, extracts content via CSS selectors
+- Feeds into existing L2 pipeline (filter, metadata, summaries)
+- Output: `data/html_news.json`, `data/html_news.csv`, `data/html_discarded.csv`
+
 **Twitter Pipeline** (independent, parallel to Layer 2) - **FIXED (2026-01-06)**
 - Scrape tweets from configured Twitter/X accounts
 - Uses Playwright to intercept GraphQL API responses
 - **Requires authenticated session cookies** (see Twitter Authentication below)
 - Same LLM filtering and metadata extraction as Layer 2
-- Rate-limited (30s delay between accounts)
+- Rate-limited (55-65s randomized delay between accounts)
 - Output: Same 8-field schema as RSS pipeline
 
 ---
@@ -58,6 +72,8 @@ project_ai_newsletter/
 ├── rss_orchestrator.py       # Layer 1: RSS discovery orchestrator
 ├── content_orchestrator.py   # Layer 2: Content aggregation orchestrator
 ├── dedup_orchestrator.py     # Layer 3: Deduplication orchestrator
+├── html_layer1_orchestrator.py    # HTML L1: Scrapability discovery
+├── html_layer2_orchestrator.py    # HTML L2: Content scraping
 ├── twitter_orchestrator.py   # Twitter: Tweet scraping pipeline (legacy)
 ├── twitter_layer1_orchestrator.py  # Twitter L1: Account discovery
 ├── twitter_layer2_orchestrator.py  # Twitter L2: Content aggregation
@@ -90,12 +106,29 @@ project_ai_newsletter/
 │       ├── save_aggregated_content.py
 │       ├── check_url_duplicates.py
 │       │── # Layer 3 functions
+│       ├── merge_pipeline_outputs.py
 │       ├── generate_embeddings.py
 │       ├── load_historical_embeddings.py
 │       ├── compare_similarities.py
 │       ├── llm_confirm_duplicates.py
 │       ├── store_articles.py
 │       ├── export_dedup_report.py
+│       │── # HTML Layer 1 functions
+│       ├── load_unavailable_sources.py
+│       ├── test_http_accessibility.py
+│       ├── analyze_listing_page.py
+│       ├── analyze_article_page.py
+│       ├── classify_html_source.py
+│       ├── merge_html_results.py
+│       ├── save_html_availability.py
+│       │── # HTML Layer 2 functions
+│       ├── load_scrapable_sources.py
+│       ├── fetch_listing_pages.py
+│       ├── extract_article_urls.py
+│       ├── fetch_html_articles.py
+│       ├── parse_article_content.py
+│       ├── adapt_html_to_articles.py
+│       ├── save_html_content.py
 │       │── # Twitter L1 functions
 │       ├── load_twitter_accounts.py
 │       ├── fetch_twitter_content.py
@@ -118,7 +151,10 @@ project_ai_newsletter/
 │   ├── extract_metadata_system_prompt.md
 │   ├── generate_summary_system_prompt.md
 │   │── # Layer 3 prompts
-│   └── confirm_duplicate_system_prompt.md
+│   ├── confirm_duplicate_system_prompt.md
+│   │── # HTML Layer 1 prompts
+│   ├── analyze_listing_page_system_prompt.md
+│   └── analyze_article_page_system_prompt.md
 ├── data/                     # Input/output data files
 │   ├── input_urls.json       # URLs to process (Layer 0/1 input)
 │   ├── source_quality.json   # Source quality ratings (Layer 0 output)
@@ -130,6 +166,7 @@ project_ai_newsletter/
 │   ├── aggregated_news_deduped.json  # Deduplicated content (Layer 3 output)
 │   ├── aggregated_news_deduped.csv   # CSV format output (Layer 3 output)
 │   ├── dedup_report.json     # Deduplication report (Layer 3 output)
+│   ├── html_availability.json     # HTML L1 output: Scrapability configs
 │   ├── twitter_accounts.json      # Twitter accounts config (Twitter input)
 │   ├── twitter_availability.json  # Twitter L1 output: Account status
 │   ├── twitter_raw_cache.json     # Twitter L1 output: Cached tweets for L2
@@ -345,9 +382,13 @@ def run():
 | `data/aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
 | `data/discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |
 | `data/articles.db` | Layer 3: SQLite database with articles and embeddings |
-| `data/aggregated_news_deduped.json` | Layer 3 output: Deduplicated AI business news |
-| `data/aggregated_news_deduped.csv` | Layer 3 output: Same as JSON in tabular format |
-| `data/dedup_report.json` | Layer 3 output: Deduplication statistics and details |
+| `data/merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Twitter) |
+| `data/merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
+| `data/dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
+| `data/html_availability.json` | HTML L1 output: Scrapability configs with CSS selectors |
+| `data/html_news.json` | HTML L2 output: AI business news from scraped sources |
+| `data/html_news.csv` | HTML L2 output: Same as JSON in tabular format |
+| `data/html_discarded.csv` | HTML L2 output: Filtered-out articles with discard reasons |
 | `data/twitter_availability.json` | Twitter L1 output: Account status and activity metrics |
 | `data/twitter_raw_cache.json` | Twitter L1 output: Cached tweets for L2 consumption |
 | `data/twitter_news.json` | Twitter L2 output: AI business news from tweets |
@@ -418,6 +459,84 @@ discover_with_agent -> classify_all_feeds -> merge_results -> save_results
 - `ai_feed_latest_date`: ISO date of latest AI feed article (for freshness)
 - `fallback_reason`: Why main feed was used (e.g., "stale_ai_feed")
 
+### HTML Layer 1: Scrapability Discovery
+
+```python
+import html_layer1_orchestrator
+
+# Run full discovery (all unavailable sources)
+html_layer1_orchestrator.run()
+
+# Run for specific URLs only (substring match)
+html_layer1_orchestrator.run(url_filter=['pulsenews', 'rundown'])
+```
+
+**Features:**
+- Tests HTTP accessibility with browser-like headers
+- Detects bot protection (Cloudflare, CAPTCHA, JS-redirect)
+- LLM analyzes listing page structure (article URL patterns)
+- LLM analyzes article pages (CSS selectors for extraction)
+- Results merge with existing `html_availability.json`
+
+**Pipeline Flow:**
+```
+load_unavailable_sources → test_http_accessibility → analyze_listing_page →
+analyze_article_page → classify_html_source → merge_html_results →
+save_html_availability
+```
+
+**Output Fields:**
+- `status`: "scrapable", "requires_js", "blocked", "not_scrapable"
+- `listing_page.article_url_pattern`: Regex for article URLs
+- `listing_page.sample_urls`: Example article URLs found
+- `article_page.title_selector`: CSS selector for title
+- `article_page.content_selector`: CSS selector for content
+- `article_page.date_selector`: CSS selector for date
+- `recommendation.approach`: "http_simple", "playwright", "not_recommended"
+- `recommendation.confidence`: 0.0-1.0
+
+### HTML Layer 2: Content Scraping
+
+```python
+import html_layer2_orchestrator
+
+# Run full scraping (all scrapable sources with full config)
+html_layer2_orchestrator.run()
+
+# Run for specific URLs only (substring match)
+html_layer2_orchestrator.run(url_filter=['rundown', 'pulsenews'])
+
+# Custom article age cutoff (e.g., last 48 hours)
+html_layer2_orchestrator.run(max_age_hours=48)
+```
+
+**Features:**
+- Loads sources with `status="scrapable"` and full config from HTML L1
+- Fetches listing pages and extracts article URLs via regex patterns
+- Fetches individual articles and extracts content via CSS selectors
+- Parses dates using discovered formats
+- Reuses L2 pipeline nodes (filter, metadata, summaries)
+- Outputs to separate files (html_news.json/csv)
+
+**Pipeline Flow:**
+```
+load_scrapable_sources → fetch_listing_pages → extract_article_urls →
+fetch_html_articles → parse_article_content → adapt_html_to_articles →
+filter_by_date → filter_business_news → extract_metadata →
+generate_summaries → build_output_dataframe → save_html_content
+```
+
+**Limitations:**
+- Sources without full config (missing article_page) are skipped
+- Max 20 articles per source to avoid overwhelming sites
+- 0.5s delay between article fetches
+- **No deduplication yet** - HTML articles may duplicate RSS articles (TODO: integrate with Layer 3)
+
+**Output:**
+- `data/html_news.json` - Scraped AI business news with metadata
+- `data/html_news.csv` - CSV format output
+- `data/html_discarded.csv` - Filtered-out articles with discard reasons
+
 ### Layer 2: Content Aggregation
 
 ```python
@@ -450,38 +569,49 @@ filter_by_date -> filter_business_news -> extract_metadata ->
 generate_summaries -> build_output_dataframe -> save_aggregated_content
 ```
 
-### Layer 3: Deduplication
+### Layer 3: Deduplication (Cross-Pipeline)
 
 ```python
 import dedup_orchestrator
 
-# Run deduplication on Layer 2 output (default: 48h lookback)
+# Run deduplication on all Layer 2 outputs (default: RSS + HTML + Twitter)
 dedup_orchestrator.run()
 
 # Custom lookback period (e.g., last 7 days)
 dedup_orchestrator.run(lookback_hours=168)
+
+# Select specific input sources
+dedup_orchestrator.run(input_sources=["rss", "html"])  # Exclude Twitter
+dedup_orchestrator.run(input_sources=["rss"])  # RSS only (backward compatible)
 ```
 
 **Features:**
-- Reads from `aggregated_news.json` (Layer 2 output)
-- URL deduplication (exact match against historical DB)
+- **Multi-source merging:** Combines RSS, HTML, and Twitter Layer 2 outputs
+- URL deduplication at merge point (priority: RSS > HTML > Twitter)
 - Semantic deduplication using OpenAI embeddings
 - Three-tier classification: unique (<0.75), ambiguous (0.75-0.90), duplicate (>0.90)
 - LLM confirmation only for ambiguous cases (cost-optimized)
+- Tracks `source_type` field for each article (rss, html, twitter)
+- Cross-source duplicate detection (same news from different pipelines)
 - Stores articles with embeddings to SQLite for future comparison
 - First run seeds database without deduplication
 
 **Pipeline Flow:**
 ```
-load_new_articles -> generate_embeddings -> load_historical_embeddings ->
+merge_pipeline_outputs -> generate_embeddings -> load_historical_embeddings ->
 compare_similarities -> llm_confirm_duplicates -> store_articles ->
 export_dedup_report
 ```
 
+**Input Files:**
+- `data/aggregated_news.json` - RSS Layer 2 output
+- `data/html_news.json` - HTML Layer 2 output
+- `data/twitter_news.json` - Twitter Layer 2 output
+
 **Output Files:**
-- `data/aggregated_news_deduped.json` - Deduplicated articles
-- `data/aggregated_news_deduped.csv` - CSV format
-- `data/dedup_report.json` - Deduplication statistics
+- `data/merged_news_deduped.json` - Deduplicated articles from all sources
+- `data/merged_news_deduped.csv` - CSV format with source_type column
+- `data/dedup_report.json` - Deduplication statistics (includes cross-source stats)
 - `data/articles.db` - SQLite database with embeddings
 
 **Cost Estimate:**
@@ -561,7 +691,8 @@ Edit `data/twitter_accounts.json` to add/remove accounts:
     {"handle": "@AnthropicAI", "category": "AI company"}
   ],
   "settings": {
-    "scrape_delay_seconds": 30,
+    "scrape_delay_min": 55,
+    "scrape_delay_max": 65,
     "max_age_hours": 24,
     "inactivity_threshold_days": 14,
     "cache_ttl_hours": 24
@@ -570,7 +701,7 @@ Edit `data/twitter_accounts.json` to add/remove accounts:
 ```
 
 **Settings:**
-- `scrape_delay_seconds`: Rate limiting between accounts (default: 30)
+- `scrape_delay_min`/`scrape_delay_max`: Randomized rate limiting between accounts (default: 55-65s)
 - `max_age_hours`: Tweet age cutoff for L2 (default: 24)
 - `inactivity_threshold_days`: Days without tweets = inactive (default: 14)
 - `cache_ttl_hours`: Cache validity period (default: 24)
@@ -606,7 +737,7 @@ The scraper automatically loads these cookies on each run. Re-run `twitter_cdp_l
 **⚠️ CAUTION: Aggressive scraping may result in account suspension.**
 
 Best practices to avoid bans:
-- Keep `scrape_delay_seconds` at 30+ seconds between accounts
+- Keep `scrape_delay_min`/`scrape_delay_max` at 55-65+ seconds between accounts
 - Limit scraping to a few times per day
 - Don't scrape more than 20-30 accounts per session
 - Use a secondary/throwaway Twitter account for authentication

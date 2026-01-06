@@ -4,6 +4,8 @@
 
 ## Current Phase
 
+HTML Layer 2 - Content Scraping: **COMPLETE** (2026-01-06)
+HTML Layer 1 - Scrapability Discovery: **COMPLETE** (2026-01-06)
 Layer 3 - Deduplication: **COMPLETE** (2026-01-06)
 Layer 2 - Content Aggregation: **COMPLETE & TESTED**
 
@@ -218,6 +220,308 @@ Layer 2 now automatically fetches article HTML for sources where:
 **Known blocked sources (Cloudflare JS challenge):**
 - AI Business
 - Others TBD (will be detected during Layer 1 run)
+
+---
+
+## HTML Layer 1: Scrapability Discovery - COMPLETE (2026-01-06)
+
+Automated pipeline to analyze "unavailable" sources from RSS Layer 1 and determine if they can be scraped via HTTP.
+
+### Architecture
+
+```
+RSS Layer 1 (existing)
+    │
+    ├── status: "available" → rss_availability.json → RSS Layer 2
+    │
+    └── status: "unavailable" ──┐
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │    HTML Layer 1       │
+                    │  (Scrapability Check) │
+                    └───────────┬───────────┘
+                                │
+                    ┌───────────┴───────────┐
+                    │                       │
+              scrapable: true         scrapable: false
+                    │                       │
+                    ▼                       ▼
+           html_availability.json      (excluded)
+                    │
+                    ▼
+              HTML Layer 2 (future)
+```
+
+### Pipeline Flow
+
+```
+load_unavailable_sources → test_http_accessibility → analyze_listing_page →
+analyze_article_page → classify_html_source → merge_html_results →
+save_html_availability
+```
+
+### Features
+
+1. **Source Filtering**
+   - Reads from `rss_availability.json`, filters `status == "unavailable"`
+   - Excludes known-blocked sources (Reuters/DataDome, WSJ/paywalled)
+   - Excludes non-news sources (law firms, think tanks, annual reports)
+
+2. **HTTP Accessibility Testing**
+   - Tests HTTP fetch with browser-like headers
+   - Detects bot protection: Cloudflare challenge, CAPTCHA, JS-only redirects
+   - Reports HTML length and status code
+
+3. **LLM-Powered Listing Page Analysis**
+   - Uses Claude Haiku to analyze homepage HTML structure
+   - Identifies article URL patterns (regex)
+   - Extracts sample article URLs
+   - Classifies listing type (news_grid, magazine, blog)
+
+4. **LLM-Powered Article Page Analysis**
+   - Fetches sample article from discovered URLs
+   - Identifies CSS selectors for extraction:
+     - Title selector
+     - Content selector
+     - Date selector (+ format)
+     - Author selector
+   - Extracts sample content to verify extraction works
+
+5. **Source Classification**
+   - `scrapable` - Full HTTP access, article links + content extractable
+   - `requires_js` - Needs Playwright for JavaScript rendering
+   - `blocked` - CAPTCHA, Cloudflare, or JS-redirect protection
+   - `not_scrapable` - Inaccessible or no article structure found
+
+### Test Results (2026-01-06)
+
+| Status | Count | Sources |
+|--------|-------|---------|
+| **Scrapable** | 4 | Rundown AI, Pulse News Korea, EPNC Korea, Biz Chosun |
+| **Blocked** | 6 | SCMP, CNBC, Economic Times, Finance ME, The National News, Baobab Network |
+| **Not Scrapable** | 3 | KED Global (SSL), NASSCOM (502), Euronews (SPA) |
+
+**Scrapable Sources with Full Extraction Config:**
+
+| Source | Article Pattern | Confidence |
+|--------|----------------|------------|
+| rundown.ai | `/articles/[a-z0-9\-]+` | 93.5% |
+| pulsenews.co.kr | `/news/english/\d+` | 95% |
+| epnc.co.kr | `/news/articleView.html?idxno=\d+` | 95% |
+| biz.chosun.com | `/[a-z_]+/[a-z_]+/\d{4}/\d{2}/\d{2}/[A-Z0-9]+/` | 51%* |
+
+*Biz Chosun has listing config but article extraction needs verification.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `html_layer1_orchestrator.py` | Main orchestrator |
+| `src/functions/load_unavailable_sources.py` | Load from rss_availability.json |
+| `src/functions/test_http_accessibility.py` | Bot protection detection |
+| `src/functions/analyze_listing_page.py` | LLM listing analysis |
+| `src/functions/analyze_article_page.py` | LLM article analysis |
+| `src/functions/classify_html_source.py` | Source classification |
+| `src/functions/merge_html_results.py` | Result merging |
+| `src/functions/save_html_availability.py` | Save output |
+| `prompts/analyze_listing_page_system_prompt.md` | Listing analysis prompt |
+| `prompts/analyze_article_page_system_prompt.md` | Article analysis prompt |
+
+### Output
+
+**File:** `data/html_availability.json`
+
+```json
+{
+  "results": [{
+    "url": "https://www.rundown.ai/",
+    "status": "scrapable",
+    "accessibility": {
+      "http_works": true,
+      "blocked_by": null,
+      "requires_javascript": false
+    },
+    "listing_page": {
+      "article_url_pattern": "/articles/[a-z0-9\\-]+",
+      "sample_urls": ["..."],
+      "listing_type": "news_grid"
+    },
+    "article_page": {
+      "has_full_content": true,
+      "title_selector": "h1.h2",
+      "content_selector": ".rich-text.w-richtext",
+      "date_selector": "p.body-s.u-text-secondary",
+      "date_format": "MMMM D, YYYY"
+    },
+    "recommendation": {
+      "approach": "http_simple",
+      "confidence": 0.935
+    }
+  }],
+  "total": 13,
+  "scrapable": 4,
+  "blocked": 6,
+  "not_scrapable": 3
+}
+```
+
+### Cost
+
+| Metric | Value |
+|--------|-------|
+| LLM Calls | 10 |
+| Input Tokens | 156k |
+| Output Tokens | 4.4k |
+| Total Cost | $0.53 |
+| Time | 1m 17s |
+
+### Usage
+
+```python
+import html_layer1_orchestrator
+
+# Run full discovery
+html_layer1_orchestrator.run()
+
+# Run for specific URLs only (substring match)
+html_layer1_orchestrator.run(url_filter=['pulsenews', 'rundown'])
+```
+
+---
+
+## HTML Layer 2: Content Scraping - COMPLETE (2026-01-06)
+
+Scrapes articles from sources discovered as "scrapable" in HTML Layer 1.
+
+### Architecture
+
+```
+HTML Layer 1 output
+    │
+    └── status: "scrapable" + full config ──┐
+                                            │
+                                            ▼
+                              ┌─────────────────────────┐
+                              │      HTML Layer 2       │
+                              │   (Content Scraping)    │
+                              └───────────┬─────────────┘
+                                          │
+                            ┌─────────────┴─────────────┐
+                            │                           │
+                   scraped articles            (reused L2 nodes)
+                            │                           │
+                            ▼                           ▼
+                   html_news.json          filter → metadata → summaries
+```
+
+### Pipeline Flow
+
+```
+load_scrapable_sources → fetch_listing_pages → extract_article_urls →
+fetch_html_articles → parse_article_content → adapt_html_to_articles →
+filter_by_date → filter_business_news → extract_metadata →
+generate_summaries → build_output_dataframe → save_html_content
+```
+
+### Features
+
+1. **Source Loading**
+   - Reads from `html_availability.json`
+   - Filters to sources with `status="scrapable"` AND full config
+   - Sources without `article_page` config are skipped (e.g., biz.chosun.com)
+
+2. **Listing Page Scraping**
+   - Fetches homepage for each source
+   - Extracts article URLs using regex patterns from HTML L1
+   - Rate-limited (1s between sources)
+
+3. **Article Scraping**
+   - Fetches individual article pages
+   - Max 20 articles per source (configurable)
+   - Rate-limited (0.5s between articles)
+
+4. **Content Extraction**
+   - Uses CSS selectors discovered in HTML L1
+   - Extracts: title, content, date, author
+   - Parses dates using discovered formats
+
+5. **L2 Pipeline Reuse**
+   - Converts scraped articles to RSSArticle format
+   - Feeds into existing L2 nodes (filter, metadata, summaries)
+   - Same output schema as RSS pipeline
+
+### Test Run (2026-01-06)
+
+| Metric | Value |
+|--------|-------|
+| **Sources Processed** | 3 (Rundown, Pulsenews, Epnc) |
+| **Sources Skipped** | 1 (biz.chosun.com - no article_page) |
+| **Articles Scraped** | 45 |
+| **After Date Filter** | 33 (24h cutoff) |
+| **After LLM Filter** | 7 kept, 26 discarded |
+| **LLM Cost** | $0.26 |
+| **Total Time** | ~64 seconds |
+
+**Sample Articles Extracted:**
+
+| Source | Title | Category |
+|--------|-------|----------|
+| Rundown | Alexa+ comes for ChatGPT's web turf | Product Launch |
+| Rundown | Agibot's tiny, portable humanoid | Product Launch |
+| Rundown | Meta's AI chief scientist leaves with parting shots | Executive |
+| Epnc | HBM Memory Supercycle (Korean) | Earnings |
+| Epnc | 팀스파르타 AI Education (Korean) | Expansion |
+| Epnc | Nvidia Rubin Platform (Korean) | Product Launch |
+| Epnc | Samsung AI Strategy at CES (Korean) | Product Launch |
+
+**Distribution:**
+- By Source: Epnc (4), Rundown (3)
+- By Region: North America (4), East Asia (3)
+- By Category: Product Launch (4), Earnings (1), Expansion (1), Executive (1)
+
+**Notes:**
+- Korean articles from Epnc are automatically translated to English summaries by the LLM
+- All 20 Pulsenews articles were discarded (general Korea business news, not AI-specific)
+- **TODO:** Integrate with Layer 3 dedup to avoid duplicates with RSS pipeline
+
+### Output Files
+
+| File | Description |
+|------|-------------|
+| `data/html_news.json` | Scraped AI business news with metadata |
+| `data/html_news.csv` | CSV format output |
+| `data/html_discarded.csv` | Filtered-out articles with discard reasons |
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `html_layer2_orchestrator.py` | Main orchestrator |
+| `src/functions/load_scrapable_sources.py` | Load from html_availability.json |
+| `src/functions/fetch_listing_pages.py` | Fetch listing pages |
+| `src/functions/extract_article_urls.py` | Extract URLs via regex |
+| `src/functions/fetch_html_articles.py` | Fetch article pages |
+| `src/functions/parse_article_content.py` | Extract via CSS selectors |
+| `src/functions/adapt_html_to_articles.py` | Convert to RSSArticle format |
+| `src/functions/save_html_content.py` | Save output files |
+
+### Usage
+
+```python
+import html_layer2_orchestrator
+
+# Run full scraping
+html_layer2_orchestrator.run()
+
+# Run for specific URLs only
+html_layer2_orchestrator.run(url_filter=['rundown'])
+
+# Custom article age cutoff
+html_layer2_orchestrator.run(max_age_hours=48)
+```
+
+---
 
 ## Layer 2: Content Aggregation - COMPLETE
 
@@ -454,7 +758,8 @@ twitter_layer2_orchestrator.run()
 ```json
 {
   "settings": {
-    "scrape_delay_seconds": 30,
+    "scrape_delay_min": 55,
+    "scrape_delay_max": 65,
     "max_age_hours": 24,
     "inactivity_threshold_days": 14,
     "cache_ttl_hours": 24
@@ -464,7 +769,7 @@ twitter_layer2_orchestrator.run()
 
 ### Known Limitations
 
-1. **Rate limiting required** - 30s delay between accounts to avoid bans
+1. **Rate limiting required** - 55-65s randomized delay between accounts to avoid bans
 2. **Authentication required** - Must provide session cookies from logged-in browser
 3. **Cookie expiration** - Cookies may expire after a few weeks, requiring re-authentication
 4. **Ban risk** - Aggressive scraping may result in account suspension
@@ -526,7 +831,39 @@ After (fixed):
 
 ### 2026-01-06 (Latest)
 
-1. **Twitter Scraper Fixed**
+1. **Cross-Pipeline Deduplication Implemented**
+   - Layer 3 now merges RSS, HTML, and Twitter outputs before deduplication
+   - New `merge_pipeline_outputs` node combines all sources with URL priority (RSS > HTML > Twitter)
+   - Tracks `source_type` field for each article ("rss", "html", "twitter")
+   - Cross-source duplicates detected via semantic similarity
+   - Report includes `by_source_type` breakdown and `cross_source_duplicates` count
+   - Output renamed: `merged_news_deduped.json` (was `aggregated_news_deduped.json`)
+   - Database schema updated with `source_type` column (auto-migrates existing DBs)
+   - New files: `src/functions/merge_pipeline_outputs.py`
+   - Modified: `dedup_orchestrator.py`, `export_dedup_report.py`, `src/database.py`
+
+2. **HTML Layer 2: Content Scraping Implemented**
+   - New pipeline to scrape articles from sources discovered as "scrapable" in HTML L1
+   - Fetches listing pages, extracts article URLs via regex patterns
+   - Fetches articles, extracts content via CSS selectors
+   - Reuses existing L2 pipeline nodes (filter, metadata, summaries)
+   - Test run: 3 sources processed, 45 articles scraped, 7 kept after filtering
+   - Outputs: `data/html_news.json`, `data/html_news.csv`, `data/html_discarded.csv`
+   - New files: `html_layer2_orchestrator.py`, 7 node functions
+   - Cost: $0.26 for full pipeline run
+
+2. **HTML Layer 1: Scrapability Discovery Implemented**
+   - New pipeline to analyze "unavailable" RSS sources for HTML scraping potential
+   - LLM-powered analysis of listing page structure and article extraction patterns
+   - Detects bot protection (Cloudflare, CAPTCHA, JS-redirect)
+   - Found 4 scrapable sources out of 13 tested:
+     - Rundown AI, Pulse News Korea, EPNC Korea, Biz Chosun
+   - Outputs CSS selectors, URL patterns, and extraction configs
+   - Results saved to `data/html_availability.json`
+   - New files: `html_layer1_orchestrator.py`, 7 node functions, 2 LLM prompts
+   - Cost: $0.53 for full pipeline run
+
+2. **Twitter Scraper Fixed**
    - Root cause: Twitter serves curated "highlights" to non-authenticated users
    - Solution: CDP (Chrome DevTools Protocol) cookie extraction from logged-in browser
    - New script `twitter_cdp_login.py` connects to Chrome with remote debugging
@@ -675,39 +1012,77 @@ REQUEST_TIMEOUT = 20  # Request timeout in seconds
    - Fetches homepage/about page, LLM assesses credibility
    - Outputs `source_quality: "quality"` or `"crude"` per source
    - Layer 1 automatically filters to quality sources only
-6. **Enhance filtering mechanism**
+6. **Enhance filtering & metadata quality**
    - Filter correctly discarded "Grok sexualized photos" scandal stories
    - Kept business news: "xAI launches Grok Business and Enterprise"
    - Monitor for edge cases where scandal/controversy slips through
+   - **Fix region classification errors:**
+     - Korean news incorrectly categorized as "South Asia" (should be "East Asia")
+     - **Clarify region definition:** company HQ vs. activity location?
+       - Example: SORA Technology (Japan-based) raising funds for Africa operations → classified as "Africa"
+       - Should this be "East Asia" (HQ) or "Africa" (activity) or both?
+     - Review region extraction prompt for geographic accuracy
+     - Consider validating region against source country as sanity check
+   - **Fix "Unable to summarize" failures:**
+     - Example: AI Business NVIDIA article → "Unable to summarize - insufficient full content provided"
+     - If recurring, articles with failed summaries should be discarded (not kept with placeholder text)
+     - Add post-processing validation to filter out articles with invalid/failed summaries
 7. ~~**FIX: Twitter scraper returns old/curated tweets instead of chronological timeline**~~ (Done 2026-01-06)
    - Fixed via CDP cookie injection from authenticated Chrome browser
    - See "Twitter Scraper Fixed" section under Twitter Pipeline for details
+8. ~~**Add comprehensive deduplication**~~ (Done 2026-01-06)
+   - Implemented cross-pipeline deduplication (RSS + HTML + Twitter)
+   - Layer 3 now merges all sources before deduplication
+   - URL dedup at merge point (priority: RSS > HTML > Twitter)
+   - Semantic dedup handles cross-source duplicates
+   - Output: `data/merged_news_deduped.json` with `source_type` field
+   - See "Cross-Pipeline Deduplication" section below
 
 ### Medium Priority
-8. **Add alternative content fetching for RSS-unavailable sources**
-   - 18 sources have no RSS (Reuters, SCMP, etc.), 8 are paywalled (Bloomberg, FT, Axios)
-   - Options: web scraping, API access, newsletter email ingestion
-   - Would require new Layer 2 node or parallel pipeline
-   - **Google News RSS investigated (2026-01-05):** Works for any indexed source (incl. paywalled), but only provides title/date/source domain - no article URL (JS redirect) or description. Not usable without additional URL resolution.
-   - **Reuters scraping investigated (2026-01-05):**
-     - Uses DataDome bot protection (enterprise-grade)
-     - All methods blocked: httpx, Playwright headless, Playwright stealth, curl, RSS feeds (401)
-     - CDP approach (Chrome `--remote-debugging-port=9222`) may work (~50% chance) if:
-       - Using Chrome profile with prior manual Reuters visits
-       - Different IP (current IP flagged)
-     - Alternatives: NewsAPI.org (free 100 req/day), Reuters paid API
-     - Test files: `tests/test_reuters_scraping*.py`
-9. Consider scheduled runs (cron/GitHub Actions)
-10. Build frontend/newsletter output format
+9. ~~**Add HTML fetch checker for unavailable sources**~~ (Done 2026-01-06 - HTML Layer 1)
+   - Implemented as `html_layer1_orchestrator.py`
+   - Tests HTTP accessibility, bot protection detection
+   - LLM analyzes listing page structure and article extraction patterns
+   - Results saved to `data/html_availability.json`
+   - Found 4 scrapable sources: Rundown AI, Pulse News Korea, EPNC Korea, Biz Chosun
+
+10. ~~**Implement HTML Layer 2: Content Scraping**~~ (Done 2026-01-06)
+    - Implemented as `html_layer2_orchestrator.py`
+    - Scrapes articles from sources with full config in `html_availability.json`
+    - Uses regex patterns for URL extraction, CSS selectors for content
+    - Reuses existing L2 pipeline nodes (filter, metadata, summaries)
+    - Sources processed: Rundown AI, Pulse News Korea, EPNC Korea
+    - Sources skipped: Biz Chosun (no article_page config)
+    - Output: `data/html_news.json`, `data/html_news.csv`
+
+11. ~~**Integrate HTML Layer 2 with Layer 3 deduplication**~~ (Done 2026-01-06)
+    - Merged into item #8 (comprehensive deduplication)
+    - Layer 3 now automatically includes HTML sources via `merge_pipeline_outputs`
+
+12. **Add alternative content fetching for blocked/paywalled sources**
+    - 6 sources blocked by CAPTCHA/Cloudflare (SCMP, CNBC, Economic Times, etc.)
+    - 8 sources paywalled (Bloomberg, FT, Axios)
+    - Options: NewsAPI.org, paid APIs, newsletter email ingestion
+    - **Google News RSS investigated (2026-01-05):** Works for any indexed source (incl. paywalled), but only provides title/date/source domain - no article URL (JS redirect) or description. Not usable without additional URL resolution.
+    - **Reuters scraping investigated (2026-01-05):**
+      - Uses DataDome bot protection (enterprise-grade)
+      - All methods blocked: httpx, Playwright headless, Playwright stealth, curl, RSS feeds (401)
+      - CDP approach (Chrome `--remote-debugging-port=9222`) may work (~50% chance) if:
+        - Using Chrome profile with prior manual Reuters visits
+        - Different IP (current IP flagged)
+      - Alternatives: NewsAPI.org (free 100 req/day), Reuters paid API
+      - Test files: `tests/test_reuters_scraping*.py`
+13. Consider scheduled runs (cron/GitHub Actions)
+14. Build frontend/newsletter output format
 
 ### Low Priority
-11. ~~**Add SQLite database for storage, deduplication, and history**~~ (Done 2026-01-06 - Layer 3 implemented)
+15. ~~**Add SQLite database for storage, deduplication, and history**~~ (Done 2026-01-06 - Layer 3 implemented)
     - ~~Store aggregated news in SQLite~~
     - ~~Deduplicate articles across runs (by URL and semantic similarity)~~
     - ~~Enable historical analysis and trend tracking~~
     - ~~Compare today's news with previous days/weeks~~
 
-12. ~~**Add date filter to Layer 2**~~ (Done 2026-01-05)
+16. ~~**Add date filter to Layer 2**~~ (Done 2026-01-05)
    - ~~Filter articles by publication date (e.g., last 24 hours, last 7 days)~~
    - ~~Prevent old articles from stale feeds from being processed~~
    - ~~Configurable via `run(max_age_hours=24)` parameter~~
