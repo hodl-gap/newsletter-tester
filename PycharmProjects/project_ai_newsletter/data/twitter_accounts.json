@@ -9,7 +9,8 @@
     {"handle": "@SawyerMerritt", "category": "Tech news"}
   ],
   "settings": {
-    "scrape_delay_seconds": 30,
+    "scrape_delay_min": 55,
+    "scrape_delay_max": 65,
     "max_age_hours": 24,
     "inactivity_threshold_days": 14,
     "cache_ttl_hours": 24

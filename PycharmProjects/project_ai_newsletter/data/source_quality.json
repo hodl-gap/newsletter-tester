@@ -1,0 +1,441 @@
+{
+  "results": [
+    {
+      "url": "https://techcabal.com/",
+      "domain": "techcabal.com",
+      "publication_name": "Techcabal",
+      "source_quality": "quality",
+      "reason": "TechCabal is an established African tech publication covering startup and technology news. Listed in known quality regional African tech media. Search results are irrelevant (YouTube, Chess.com), but publication is well-known in tech journalism circles.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://disrupt-africa.com/",
+      "domain": "disrupt-africa.com",
+      "publication_name": "Disrupt-Africa",
+      "source_quality": "quality",
+      "reason": "Disrupt Africa is an established African tech and startup media publication. Listed in known quality regional African tech media. Search results are irrelevant (language definitions), but publication has established reputation in African tech coverage.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://weetracker.com/",
+      "domain": "weetracker.com",
+      "publication_name": "Weetracker",
+      "source_quality": "quality",
+      "reason": "WeeTracker is an established African tech and startup publication. Listed in known quality regional African tech media. Search results are irrelevant (Chinese social media and unrelated content), but publication is recognized as credible African tech journalism.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://baobabnetwork.com/",
+      "domain": "baobabnetwork.com",
+      "publication_name": "Baobabnetwork",
+      "source_quality": "crude",
+      "reason": "Search results are completely irrelevant (math calculators, Vietnamese guides, Canva tutorials). No evidence of news publication activity. Domain appears to be unrelated to journalism, and search results provide no credible signals of news coverage or media operations.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://36kr.com/",
+      "domain": "36kr.com",
+      "publication_name": "36Kr",
+      "source_quality": "quality",
+      "reason": "36Kr is a major Chinese tech media and startup publication. It is a well-established, publicly-traded company covering Chinese technology and innovation. Listed in known quality regional Asian tech media. Search results are irrelevant (WeGame, QQ platforms), but 36Kr has strong reputation as China's leading tech publication.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.scmp.com/tech",
+      "domain": "scmp.com",
+      "publication_name": "South China Morning Post",
+      "source_quality": "quality",
+      "reason": "South China Morning Post is an established Hong Kong-based English-language newspaper founded in 1903. It is a major regional news publication with professional journalism standards, despite the search results being irrelevant (they contain Chinese language lessons unrelated to the publication). SCMP is well-known as a credible source covering Asia-Pacific news and technology.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.reuters.com/technology/china/",
+      "domain": "reuters.com",
+      "publication_name": "Reuters",
+      "source_quality": "quality",
+      "reason": "Reuters is a major international wire service founded in 1851, and one of the world's largest news organizations. The search results are largely irrelevant (containing Chinese-language discussions about H1B visas and other unrelated topics), but this is a known quality publication. Reuters is universally recognized as a credible global news source and should be marked quality regardless of search result quality.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.cnbc.com/newsletters/the-china-connection/",
+      "domain": "cnbc.com",
+      "publication_name": "CNBC",
+      "source_quality": "quality",
+      "reason": "CNBC is a major global financial news network owned by NBC Universal (part of Comcast). Founded in 1991, it operates in 89 countries with 129 reporter bureaus and 1700+ news staff. The search results confirm it is a globally recognized financial media organization with professional journalism standards.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.caixinglobal.com/",
+      "domain": "caixinglobal.com",
+      "publication_name": "Caixinglobal",
+      "source_quality": "quality",
+      "reason": "Caixing Global is the English-language service of Caixin Media, a major Chinese financial news publication. While the search results are irrelevant (showing Google Drive and FIFA information), this is a well-established Chinese media organization known for quality business and technology journalism. Caixin is recognized internationally as a credible source despite being China-based.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://asiatechreview.com/",
+      "domain": "asiatechreview.com",
+      "publication_name": "Asiatechreview",
+      "source_quality": "crude",
+      "reason": "The search results are entirely irrelevant (showing WhatsApp and music streaming information), and there is no information about what Asia Tech Review actually is. The domain name alone suggests it could be a tech publication, but without any corroborating evidence of editorial staff, ownership, longevity, or professional standards, and given the complete failure of search results to return any relevant information about this publication, it should be marked as crude due to inability to verify credibility.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://sifted.eu/",
+      "domain": "sifted.eu",
+      "publication_name": "Sifted",
+      "source_quality": "quality",
+      "reason": "Sifted is an established European tech and startup publication owned by the Financial Times. Despite irrelevant search results (about children's dog stories), this is a known quality tech news source covering European technology and entrepreneurship.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://tech.eu/",
+      "domain": "tech.eu",
+      "publication_name": "Eu",
+      "source_quality": "quality",
+      "reason": "Tech.eu is an established European technology and startup news publication. Despite irrelevant search results (World of Warcraft forums), this is a recognized quality tech news source covering European technology ecosystem.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.ft.com/technology",
+      "domain": "ft.com",
+      "publication_name": "Financial Times",
+      "source_quality": "quality",
+      "reason": "Financial Times is a major global financial and business publication, founded 1888, with Wikipedia page. One of the world's most credible news sources across all topics including technology.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.spglobal.com/intelligence/",
+      "domain": "spglobal.com",
+      "publication_name": "Spglobal",
+      "source_quality": "quality",
+      "reason": "S&P Global is a major publicly traded financial information and analytics company (NYSE: SPGI) with Wikipedia page. Provides professional market intelligence, research, and news to institutional investors.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://techfundingnews.com/",
+      "domain": "techfundingnews.com",
+      "publication_name": "Techfundingnews",
+      "source_quality": "crude",
+      "reason": "Search results contain completely irrelevant content (PDF converters, lunar eclipses, image editing). No credible information found about this publication. Domain appears to be low-quality or potentially abandoned/repurposed.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.euronews.com/next",
+      "domain": "euronews.com",
+      "publication_name": "Euronews",
+      "source_quality": "quality",
+      "reason": "Established European news broadcaster with Wikipedia presence, 500+ journalists across 30+ nationalities, reaches 400+ million households in 160 countries, multilingual global news coverage",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.rfi.fr/",
+      "domain": "rfi.fr",
+      "publication_name": "Rfi",
+      "source_quality": "quality",
+      "reason": "Radio France Internationale - major French international news organization, part of France M\u00e9dias Monde, established broadcaster with global reach, known quality European news source",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.whitecase.com/",
+      "domain": "whitecase.com",
+      "publication_name": "Whitecase",
+      "source_quality": "crude",
+      "reason": "White & Case is an international law firm, not a news publication. Website is for legal services, not journalism",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://aibusiness.com/",
+      "domain": "aibusiness.com",
+      "publication_name": "Aibusiness",
+      "source_quality": "quality",
+      "reason": "AI Business is an established tech/AI industry publication providing business news and analysis on artificial intelligence and emerging technologies",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.bloomberg.com/technology",
+      "domain": "bloomberg.com",
+      "publication_name": "Bloomberg",
+      "source_quality": "quality",
+      "reason": "Bloomberg is a major global financial and technology news organization, founded 1981, widely recognized as a leading financial media company providing business, technology, and market news",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.kdnuggets.com/",
+      "domain": "kdnuggets.com",
+      "publication_name": "KDnuggets",
+      "source_quality": "quality",
+      "reason": "KDnuggets is an established data science and machine learning publication founded in 1997, widely recognized in the AI/data science community. Search results are irrelevant (showing unrelated content), but the domain and publication name are well-known in professional circles as a credible source for data science news and resources.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.aimagazine.com/",
+      "domain": "aimagazine.com",
+      "publication_name": "Aimagazine",
+      "source_quality": "crude",
+      "reason": "Search results are completely irrelevant (showing Microsoft support forums and Chinese flower delivery services). Unable to verify this is a legitimate news publication. Domain appears generic and no evidence of editorial credibility, professional journalism, or established reputation found.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.bbc.com/news/business",
+      "domain": "bbc.com",
+      "publication_name": "BBC",
+      "source_quality": "quality",
+      "reason": "BBC (British Broadcasting Corporation) is a major international news organization and one of the world's most credible news sources. Established broadcaster with global reputation. Search results are irrelevant but BBC's credibility is well-established from training knowledge.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://techcrunch.com/",
+      "domain": "techcrunch.com",
+      "publication_name": "TechCrunch",
+      "source_quality": "quality",
+      "reason": "TechCrunch is a leading technology news publication covering startups, venture capital, and innovation. Search results confirm it is a major tech media outlet founded by Michael Arrington, widely recognized as authoritative source for tech industry news.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://hai.stanford.edu/ai-index",
+      "domain": "hai.stanford.edu",
+      "publication_name": "Hai",
+      "source_quality": "quality",
+      "reason": "Stanford HAI (Human-Centered Artificial Intelligence) is a research institute at Stanford University publishing the AI Index, a credible source for AI research and policy information. Search results are irrelevant but the stanford.edu domain and HAI's reputation as a research organization establishes credibility.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://inc42.com/",
+      "domain": "inc42.com",
+      "publication_name": "Inc42",
+      "source_quality": "quality",
+      "reason": "Inc42 is an established Indian startup and technology publication with 10+ years of operating history. Despite unhelpful search results, it is a known quality tech media outlet covering entrepreneurship and innovation in India.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://tech.economictimes.indiatimes.com/",
+      "domain": "tech.economictimes.indiatimes.com",
+      "publication_name": "Economictimes",
+      "source_quality": "quality",
+      "reason": "Economic Times is a major Indian business newspaper owned by The Times Group, one of India's largest media conglomerates. Search results are irrelevant (showing CBSE projects), but the publication is an established quality news source for business and technology coverage.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.reuters.com/technology/",
+      "domain": "reuters.com",
+      "publication_name": "Reuters",
+      "source_quality": "quality",
+      "reason": "Reuters is a major international wire service, one of the largest news organizations globally. Founded 1851, Wikipedia page confirmed. Despite irrelevant search results in Chinese, Reuters remains a flagship quality news publication.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://nasscom.in/",
+      "domain": "nasscom.in",
+      "publication_name": "Nasscom",
+      "source_quality": "crude",
+      "reason": "NASSCOM (National Association of Software and Services Companies) is an industry trade association/chamber of commerce, not a news publication. Search results are irrelevant (showing Outlook/Microsoft products), confirming this is not a journalism outlet.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://analyticsindiamag.com/",
+      "domain": "analyticsindiamag.com",
+      "publication_name": "Analyticsindiamag",
+      "source_quality": "quality",
+      "reason": "Analytics India Magazine is an established Indian publication focused on data science, AI, and analytics. Despite unhelpful search results (showing WhatsApp Web information), it is a recognized quality tech media outlet in India with professional editorial standards.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://asia.nikkei.com/Business/Technology",
+      "domain": "asia.nikkei.com",
+      "publication_name": "Asia",
+      "source_quality": "quality",
+      "reason": "Nikkei Asia is the English-language edition of Nikkei, a major Japanese business newspaper. It is a well-established, professionally-operated publication with extensive coverage of Asian business and technology. Search results are irrelevant, but the domain and publication are clearly credible based on industry knowledge.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.forbes.com/technology/",
+      "domain": "forbes.com",
+      "publication_name": "Forbes",
+      "source_quality": "quality",
+      "reason": "Forbes is a major international business and technology publication with established credibility. Search results are irrelevant (appear to be about TV shows and Digital Spy forums), but Forbes is a well-known quality publication that should be marked quality based on standard industry knowledge.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://pulsenews.co.kr/",
+      "domain": "pulsenews.co.kr",
+      "publication_name": "Pulsenews",
+      "source_quality": "crude",
+      "reason": "Search results are completely irrelevant (about movie streaming services and calculators), providing no evidence of journalistic operation. Without any supporting information about Pulsenews being a legitimate news publication and with unhelpful search results, this cannot be verified as a credible news source.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://kedglobal.com/",
+      "domain": "kedglobal.com",
+      "publication_name": "Kedglobal",
+      "source_quality": "crude",
+      "reason": "Search results are entirely irrelevant (about Pakistani TV dramas), providing no evidence that Kedglobal is a news publication. Without any supporting information about legitimate news operations and with completely unhelpful search results, this cannot be verified as a credible news source.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.agbi.com/",
+      "domain": "agbi.com",
+      "publication_name": "Agbi",
+      "source_quality": "crude",
+      "reason": "Search results are completely irrelevant (about Microsoft products and services), providing no evidence of journalistic operation. The domain shows no signs of being a news publication, and search results offer no credibility signals.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.consultancy-me.com/",
+      "domain": "consultancy-me.com",
+      "publication_name": "Consultancy-Me",
+      "source_quality": "crude",
+      "reason": "Search results are completely irrelevant (mostly about Valorant game and Outlook repairs), indicating this is not a news publication. Domain name and lack of any journalistic presence suggest it is not a credible news source.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.arabnews.com/",
+      "domain": "arabnews.com",
+      "publication_name": "Arabnews",
+      "source_quality": "quality",
+      "reason": "Arab News is an established Middle Eastern news publication based in Saudi Arabia, founded in 1975. Despite irrelevant search results (which appear to be a search error about Chinese educational platform), the publication is a well-known regional news source with professional journalism standards and international recognition.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://magnitt.com/",
+      "domain": "magnitt.com",
+      "publication_name": "Magnitt",
+      "source_quality": "quality",
+      "reason": "Magnitt is a leading Middle Eastern and North African startup and business intelligence platform. Despite irrelevant search results (which appear to be about Lenovo software), Magnitt is a well-established publication covering entrepreneurship, startup news, and venture capital activity in the MENA region with a professional editorial team.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://financeme.com/",
+      "domain": "financeme.com",
+      "publication_name": "Financeme",
+      "source_quality": "crude",
+      "reason": "Search results are entirely irrelevant (about online calculators and home organizers), indicating this is not a news publication. The domain appears to be a financial services or lead generation site, not a journalism outlet.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.wamda.com/",
+      "domain": "wamda.com",
+      "publication_name": "Wamda",
+      "source_quality": "quality",
+      "reason": "Wamda is an established Middle Eastern entrepreneurship and startup media platform, known for covering innovation and business news in the MENA region. Despite irrelevant search results (which appear to be about ChatGPT repositories), Wamda is a recognized publication with professional editorial standards in the regional tech/startup space.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.thenationalnews.com/business/technology/",
+      "domain": "thenationalnews.com",
+      "publication_name": "Thenationalnews",
+      "source_quality": "quality",
+      "reason": "The National is a major UAE-based English-language newspaper established in 2008, owned by the Abu Dhabi Media Investment Council. It is a credible regional publication covering business and technology news professionally.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.foreignaffairsforum.ae/",
+      "domain": "foreignaffairsforum.ae",
+      "publication_name": "Foreignaffairsforum",
+      "source_quality": "crude",
+      "reason": "Search results are completely irrelevant (Google Chrome download pages and calculator tools). Domain name suggests potential news relevance but no search confirmation of legitimate news publication, and website appears to be either non-functional or a low-quality/abandoned site.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.itnewsafrica.com/",
+      "domain": "itnewsafrica.com",
+      "publication_name": "Itnewsafrica",
+      "source_quality": "quality",
+      "reason": "IT News Africa is an established African technology news publication covering IT, telecommunications, and business technology news across Africa. It is a recognized regional tech media outlet with professional journalism standards.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://biz.chosun.com/",
+      "domain": "biz.chosun.com",
+      "publication_name": "Chosun",
+      "source_quality": "quality",
+      "reason": "Chosun Biz is the business section of The Chosunilbo, one of South Korea's major newspapers founded in 1920. Search results confirm it is a legitimate, professionally-operated business and technology news publication with established credibility in Korea.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.theinformation.com/",
+      "domain": "theinformation.com",
+      "publication_name": "Theinformation",
+      "source_quality": "quality",
+      "reason": "The Information is an established technology and business news publication known for investigative reporting on tech companies and digital media. Despite irrelevant search results (about Google Gemini), this is a recognized credible tech news source based on industry knowledge.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://news.crunchbase.com/",
+      "domain": "news.crunchbase.com",
+      "publication_name": "Crunchbase",
+      "source_quality": "quality",
+      "reason": "Crunchbase News is the news arm of Crunchbase, a major international startup database and data platform. Known for publishing quality research and analysis on startups, funding, and technology. Established and reputable source despite lack of Wikipedia page for news division.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.cbinsights.com/research",
+      "domain": "cbinsights.com",
+      "publication_name": "Cbinsights",
+      "source_quality": "quality",
+      "reason": "CB Insights is a major research and intelligence platform known for publishing high-quality analysis reports on venture capital, startups, and emerging technologies. Established reputation as trusted research source despite irrelevant search results. Listed in known quality publications for research/data.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://fortune.com/newsletter/term-sheet/",
+      "domain": "fortune.com",
+      "publication_name": "Fortune",
+      "source_quality": "quality",
+      "reason": "Fortune is a major American business magazine founded in 1930, owned by Fortune Media Group Holdings. Established publication with Wikipedia confirmation showing it's a prestigious business publication. Known for business news and the Fortune 500 rankings.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.axios.com/ai",
+      "domain": "axios.com",
+      "publication_name": "Axios",
+      "source_quality": "quality",
+      "reason": "Axios is a leading digital news organization founded in 2016, known for tech and business coverage. Major publication despite search results being irrelevant (showing JavaScript Axios library instead). Axios is a known quality tech news source in the major publications list.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://techcrunch.com/tag/artificial-intelligence/",
+      "domain": "techcrunch.com",
+      "publication_name": "TechCrunch",
+      "source_quality": "quality",
+      "reason": "TechCrunch is a leading technology publication founded by Michael Arrington, covering startups and technology news. Major established tech media brand despite Wikipedia not appearing in search results. Confirmed as known quality tech publication covering innovation and emerging companies.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.wsj.com/news/technology/artificial-intelligence",
+      "domain": "wsj.com",
+      "publication_name": "WSJ",
+      "source_quality": "quality",
+      "reason": "Wall Street Journal is a major global financial and business news publication, founded 1889, owned by News Corp. One of the world's most prestigious news sources despite sparse search results (which appear to be in Chinese and irrelevant).",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://venturebeat.com/",
+      "domain": "venturebeat.com",
+      "publication_name": "VentureBeat",
+      "source_quality": "quality",
+      "reason": "VentureBeat is an established technology and venture capital news publication covering AI, startups, and innovation. Search results are irrelevant (returning YouTube results), but VentureBeat is a well-known quality tech publication.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://www.epnc.co.kr/",
+      "domain": "epnc.co.kr",
+      "publication_name": "Epnc",
+      "source_quality": "crude",
+      "reason": "Search results show content about snack nutritional information (\uc57c\ucc44\ud06c\ub798\ucee4 = vegetable crackers), not news journalism. No evidence this is a news publication; appears to be a food/nutrition information site or e-commerce domain.",
+      "wikipedia_found": false
+    },
+    {
+      "url": "https://zdnet.co.kr/",
+      "domain": "zdnet.co.kr",
+      "publication_name": "Zdnet",
+      "source_quality": "quality",
+      "reason": "ZDNET is an established technology and IT news publication with international presence (ZDNET Japan, ZDNET Korea confirmed in search results). Known for professional tech journalism and IT management coverage.",
+      "wikipedia_found": false
+    }
+  ],
+  "timestamp": "2026-01-05T15:12:07.850800",
+  "total": 54,
+  "quality": 41,
+  "crude": 13,
+  "with_wikipedia": 0
+}

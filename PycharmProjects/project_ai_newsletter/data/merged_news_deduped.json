@@ -1,0 +1,133 @@
+{
+  "metadata": {
+    "timestamp": "2026-01-06T16:30:25.928907",
+    "total_articles": 10,
+    "dedup_summary": {
+      "total_input": 53,
+      "unique_kept": 10,
+      "duplicates_removed": 43,
+      "url_duplicates": 0,
+      "semantic_auto_duplicates": 41,
+      "semantic_llm_confirmed": 2,
+      "stored_to_db": 10
+    },
+    "cost": {
+      "total_cost": "$0.0079",
+      "input_tokens": 1360,
+      "output_tokens": 254,
+      "llm_calls": 1
+    }
+  },
+  "articles": [
+    {
+      "date": "2026-01-06",
+      "source": "Epnc",
+      "region": "East Asia",
+      "category": "Earnings",
+      "layer": "Chips & Infrastructure",
+      "contents": "South Korea's semiconductor market is set to grow 25% in 2026 to approximately $9.75 billion, with memory semiconductors accounting for roughly 30% of that growth, driven by AI infrastructure expansion. SK Hynix is positioned as the biggest beneficiary with its HBM3E and next-generation HBM4 chip leadership, expected to maintain over 50% market share.",
+      "url": "https://www.epnc.co.kr/news/articleView.html?idxno=326948",
+      "title": "2026년 메모리 시장 “HBM이 이끄는 메모리 슈퍼사이클에 주목”",
+      "source_type": "html"
+    },
+    {
+      "date": "2026-01-06",
+      "source": "Epnc",
+      "region": "East Asia",
+      "category": "Expansion",
+      "layer": "B2B Applications",
+      "contents": "Korean edtech startup Tumspartner saw its B2B corporate AI training revenue more than double year-over-year in 2025, with 20,000 cumulative students achieving 4.6/5 satisfaction scores. The company shifted focus from theory-based to practical, job-applicable training with hands-on problem-solving and corporate partnerships to place graduates directly.",
+      "url": "https://www.epnc.co.kr/news/articleView.html?idxno=326951",
+      "title": "팀스파르타, 2025년 AI 오프라인 교육 매출 전년 대비 2.5배 ↑",
+      "source_type": "html"
+    },
+    {
+      "date": "2026-01-06",
+      "source": "Epnc",
+      "region": "North America",
+      "category": "Product Launch",
+      "layer": "Chips & Infrastructure",
+      "contents": "Nvidia unveiled its Rubin platform at CES 2026, a next-generation AI supercomputer designed to reduce training costs and inference tokens by up to 10x compared to Blackwell. The platform integrates six new AI chips including Vera CPU, Rubin GPU, and DPU technology, with production expected in the second half of 2026.",
+      "url": "https://www.epnc.co.kr/news/articleView.html?idxno=326955",
+      "title": "엔비디아, 차세대 AI 위한 ‘루빈’ 플랫폼 출시…첨단 AI 슈퍼컴퓨터 구현",
+      "source_type": "html"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "Rundown",
+      "region": "East Asia",
+      "category": "Product Launch",
+      "layer": "B2B Applications",
+      "contents": "Chinese robotics startup Agibot unveiled Q1, a 31-inch backpack-sized humanoid with crash-proof joints and zero-code programming that teaches English and dances. The company, which built 5,000 robots and operates three mass-produced humanoid lines, highlighted how China's robotics industry is expanding beyond factories into homes.",
+      "url": "https://www.rundown.ai/articles/agibots-tiny-portable-humanoid",
+      "title": "Agibot's tiny, portable humanoid",
+      "source_type": "html"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "Rundown",
+      "region": "North America",
+      "category": "Executive",
+      "layer": "Foundation Models",
+      "contents": "Meta's departing AI chief scientist Yann LeCun criticized CEO Alexander Wang as inexperienced and admitted Llama 4 benchmarks were manipulated, warning of more departures from the company's AI team. LeCun is launching a new AI startup called AMI with French healthcare AI founder Alex LeBrun as CEO, maintaining that LLMs are a dead end for achieving superintelligence.",
+      "url": "https://www.rundown.ai/articles/metas-ai-chief-scientist-leaves-with-parting-shots",
+      "title": "Meta’s AI chief scientist leaves with parting shots",
+      "source_type": "html"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "Epnc",
+      "region": "North America",
+      "category": "Product Launch",
+      "layer": "B2B Applications",
+      "contents": "Samsung Electronics announced plans to embed AI across all products and services, positioning itself as an AI companion in daily life and democratizing AI experiences. The company introduced Vision AI Companion for TVs, new display and audio technologies including HDR10+ Advanced and Eclipsa Audio, plus a 130-inch Micro RGB TV.",
+      "url": "https://www.epnc.co.kr/news/articleView.html?idxno=326888",
+      "title": "노태문 대표, \"삼성 모든 제품군·서비스에 AI적용, AI경험 대중화 선도할 것\"",
+      "source_type": "html"
+    },
+    {
+      "date": "2026-01-06",
+      "source": "@SawyerMerritt",
+      "region": "North America",
+      "category": "Expansion",
+      "layer": "Chips & Infrastructure",
+      "contents": "Elon Musk's xAI purchased five 380MW natural gas turbines to power an additional 600,000+ Nvidia GB200-equivalent GPU cluster, with the first two units scheduled for delivery by end of 2026. The infrastructure expansion supports xAI's AI model training and deployment operations.",
+      "url": "https://x.com/SawyerMerritt/status/2008400590246715868",
+      "title": "NEWS: Elon Musk has confirmed that xAI has purchased five additional 380MW natural gas turbines, wit...",
+      "source_type": "twitter"
+    },
+    {
+      "date": "2026-01-06",
+      "source": "@rohanpaul_ai",
+      "region": "North America",
+      "category": "Expansion",
+      "layer": "Chips & Infrastructure",
+      "contents": "Stack Exchange completed its infrastructure migration by decommissioning the physical server racks that powered its Q&A sites for 16 years, moving all operations to cloud hosting with the last New Jersey datacenter hardware removed in December 2025.",
+      "url": "https://x.com/rohanpaul_ai/status/2008398502628581853",
+      "title": "The end of an era, Stack Exchange that is.\n\nThey finished shutting down the physical server racks th...",
+      "source_type": "twitter"
+    },
+    {
+      "date": "2026-01-06",
+      "source": "@rohanpaul_ai",
+      "region": "Global",
+      "category": "Earnings",
+      "layer": "Consumer Applications",
+      "contents": "ChatGPT's daily web traffic declined 22% over six weeks to approximately 158 million visitors following Gemini 3's launch, while Gemini remained stable at roughly 60 million visitors, narrowing the gap to 40% of ChatGPT's traffic. The shift suggests potential user migration toward Google's generative AI alternative.",
+      "url": "https://x.com/rohanpaul_ai/status/2008390417134543311",
+      "title": "ChatGPT’s daily web visits slid from roughly 200M down to roughly 158M, which is about a 22% drop ov...",
+      "source_type": "twitter"
+    },
+    {
+      "date": "2026-01-05",
+      "source": "@SawyerMerritt",
+      "region": "Global",
+      "category": "Product Launch",
+      "layer": "B2B Applications",
+      "contents": "Boston Dynamics began manufacturing its new Atlas humanoid robot with 4-hour battery life and -4°F to 104°F operating range, shipping fleets to Hyundai and Google DeepMind in coming months. Additional customers are expected to receive the autonomous robots in early 2027.",
+      "url": "https://x.com/SawyerMerritt/status/2008297109922140461",
+      "title": "NEWS: Boston Dynamics has announced that it will begin manufacturing the new version of its Atlas ro...",
+      "source_type": "twitter"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "results": [
+    {
+      "handle": "@rohanpaul_ai",
+      "category": "AI news",
+      "status": "active",
+      "last_tweet_date": "2026-01-06",
+      "tweets_in_window": 6,
+      "avg_tweets_per_day": 0.43,
+      "notes": null,
+      "last_checked": "2026-01-06T08:20:51Z"
+    },
+    {
+      "handle": "@TheRundownAI",
+      "category": "AI news",
+      "status": "active",
+      "last_tweet_date": "2026-01-05",
+      "tweets_in_window": 11,
+      "avg_tweets_per_day": 0.79,
+      "notes": null,
+      "last_checked": "2026-01-06T08:20:51Z"
+    },
+    {
+      "handle": "@GoodfireAI",
+      "category": "AI company",
+      "status": "error",
+      "last_tweet_date": null,
+      "tweets_in_window": 0,
+      "avg_tweets_per_day": 0.0,
+      "notes": "No tweets captured - scraping may have failed or account is empty",
+      "last_checked": "2026-01-06T08:20:51Z"
+    },
+    {
+      "handle": "@jeremyakahn",
+      "category": "AI journalist",
+      "status": "active",
+      "last_tweet_date": "2025-12-29",
+      "tweets_in_window": 1,
+      "avg_tweets_per_day": 0.07,
+      "notes": null,
+      "last_checked": "2026-01-06T08:20:51Z"
+    },
+    {
+      "handle": "@leijun",
+      "category": "Tech executive",
+      "status": "inactive",
+      "last_tweet_date": "2025-12-14",
+      "tweets_in_window": 0,
+      "avg_tweets_per_day": 0.0,
+      "notes": "No tweets in 23 days",
+      "last_checked": "2026-01-06T08:20:51Z"
+    },
+    {
+      "handle": "@Meer_AIIT",
+      "category": "AI news",
+      "status": "active",
+      "last_tweet_date": "2026-01-04",
+      "tweets_in_window": 4,
+      "avg_tweets_per_day": 0.29,
+      "notes": null,
+      "last_checked": "2026-01-06T08:20:51Z"
+    },
+    {
+      "handle": "@SawyerMerritt",
+      "category": "Tech news",
+      "status": "active",
+      "last_tweet_date": "2026-01-06",
+      "tweets_in_window": 12,
+      "avg_tweets_per_day": 0.86,
+      "notes": null,
+      "last_checked": "2026-01-06T08:20:51Z"
+    }
+  ],
+  "timestamp": "2026-01-06T08:20:51Z",
+  "total": 7,
+  "active": 5,
+  "inactive": 1,
+  "error": 1,
+  "settings": {
+    "inactivity_threshold_days": 14,
+    "scrape_delay_seconds": 30
+  }
+}

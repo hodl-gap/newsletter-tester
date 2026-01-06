@@ -1,0 +1,62 @@
+source_name,title,url,pub_date,discard_reason
+@SawyerMerritt,Elon on Nvidia's new Alpamayo AI for self-driving cars:,https://x.com/SawyerMerritt/status/2008399080335036773,2026-01-06,Opinion/commentary on competitor's product without business substance
+@SawyerMerritt,"NEWS: All @Tesla Model Ys trims in China, including the base Model Y RWD, now come standard with black headliner. The gray headliner is officially gone.
+
+Additionally, all Model Y trims in China now come standard with the larger 16"" center screen (up from 15.4"") that the Model Y https://t.co/Vnobn9HyzZ",https://x.com/SawyerMerritt/status/2008385546381381733,2026-01-06,Automotive product specification change - not AI-specific
+@SawyerMerritt,"NEWS: Tesla China has just announced 5-year 0% interest free loans for the new Model Y L, as well as special low financing rates for the Model 3 and other Model Y trims. https://t.co/GD6Kefx39O",https://x.com/SawyerMerritt/status/2008383201010471277,2026-01-06,Automotive financing announcement - not AI business news
+@SawyerMerritt,"When there are thousands of Cybercabs running in Austin (and eventually other cities), why would demand in that area for vehicles on Uber’s network not drop like a rock, especially when those vehicles cost 3–5X more and are more expensive per mile for riders?",https://x.com/SawyerMerritt/status/2008366051944247782,2026-01-06,Speculation/commentary on autonomous vehicles without concrete business news
+@SawyerMerritt,"NEWS: Lucid today unveiled its production-intent robotaxi vehicle, developed in partnership with Group, Nuro and Uber, that will power its global robotaxi service. They also debuted today the Uber-designed in-cabin rider experience:
+
+• Sensor array featuring high-resolution https://t.co/rjWH2ULlIj",https://x.com/SawyerMerritt/status/2008330422615261197,2026-01-06,"Autonomous vehicle product announcement - automotive application, not AI company business news"
+@SawyerMerritt,"NEWS: Boston Dynamics has just released a new video of its upgraded next-generation humanoid robot called Atlas.
+
+• 4 hour battery. Self-swappable for continuous operation
+• 6 feet 2 inches tall
+• Weight: 198 lbs
+• 56 total degrees of freedom
+• Now fully electric, ditching https://t.co/t9KOlxbaiM",https://x.com/SawyerMerritt/status/2008293610308202508,2026-01-05,Product technical specifications - not business activity
+@SawyerMerritt,Two Tesla Cybercabs at night on public roads. Some great 4K 120fps footage 🔥 https://t.co/vDIdXQh6qi,https://x.com/SawyerMerritt/status/2008244531993661507,2026-01-05,Product demonstration video - not business news
+@SawyerMerritt,"I wonder whether the new camera hardware on these Tesla engineering validation vehicles is only for validation, or if they’re also testing potential additional camera locations for future vehicles, or possibly testing Banish? https://t.co/edGLej0NRb",https://x.com/SawyerMerritt/status/2008243512446513594,2026-01-05,Technical speculation on product hardware - not business activity
+@SawyerMerritt,"This post is based on a 2 day old WSJ article, which contained no real new information.
+
+Optimus is the hardest thing the company has ever worked on, and encountering technical challenges along the way is a normal and expected part of the engineering process.
+
+Every company",https://x.com/SawyerMerritt/status/2008225426192085478,2026-01-05,Commentary on technical challenges - not business activity announcement
+@rohanpaul_ai,"The paper says the best way to manage AI context is to treat everything like a file system.
+
+Today, a model's knowledge sits in separate prompts, databases, tools, and logs, so context engineering pulls this into a coherent system.
+
+The paper proposes an agentic file system where https://t.co/ZZyV4zRb38",https://x.com/rohanpaul_ai/status/2008445933424386074,2026-01-06,"Academic research paper - technical content, not company business news"
+@rohanpaul_ai,"The paper shows Large Language Models solve ARC-AGI puzzles better by thinking in images first, then in text.
+
+Up to 4.33% higher accuracy than text only baselines, without any extra training.
+
+ARC-AGI, short for Abstraction and Reasoning Corpus for Artificial General https://t.co/z9n8L21hK8",https://x.com/rohanpaul_ai/status/2008429827188023748,2026-01-06,"Academic research paper - technical content, not company business news"
+@rohanpaul_ai,"New @AIatMeta paper shows long context large language models miss buried facts, and fixes it with query-only test-time training (qTTT).
+
+On LongBench-v2 and ZeroScrolls, it lifts Qwen3-4B by 12.6 and 14.1 points on average.
+
+A large language model predicts the next token, meaning https://t.co/1fjW4LFUd2",https://x.com/rohanpaul_ai/status/2008414476018827278,2026-01-06,"Academic research paper - Meta research, not company business activity"
+@rohanpaul_ai,"A solid paper from Stanford, Princeton, Harvard, University of Washington, and many other top univ.
+
+Says that almost all advanced AI agent systems can be understood as using just 4 basic ways to adapt, either by updating the agent itself or by updating its tools.
+
+It also https://t.co/jNJrtqqdoC",https://x.com/rohanpaul_ai/status/2008388104747639146,2026-01-06,"Academic research paper - technical research, not company business news"
+@TheRundownAI,"Top stories in robotics today:
+
+- This tiny humanoid fits in your backpack
+- SwitchBot puts a robot butler on wheels
+- NEO’s $20K home bot now comes with pillows
+- AVs could cut a million road injuries by 2035
+- Quick hits on other tech news
+
+Read more: https://t.co/UXEdr7Y96U https://t.co/Xr01FCLR6D",https://x.com/TheRundownAI/status/2008206934814445573,2026-01-05,News roundup/aggregation - not specific company business activity
+@TheRundownAI,"Top stories in AI today:
+
+- LeCun blasts Meta's AI leadership
+- The Rundown Roundtable: Our 2026 AI predictions
+- Create Claude Skill for YT thumbnails
+- Grok faces backlash over AI ‘undressing'
+- 4 new AI tools, community workflows, and more
+
+Read more: https://t.co/F93sXa8DM6 https://t.co/IAvGdkUOtw",https://x.com/TheRundownAI/status/2008138947780657355,2026-01-05,News roundup/aggregation with opinion - not specific company business activity

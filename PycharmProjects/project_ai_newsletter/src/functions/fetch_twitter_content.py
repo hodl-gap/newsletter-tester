@@ -9,6 +9,7 @@ being detected as a bot by Twitter.
 """
 
 import os
+import random
 import time
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -42,7 +43,8 @@ class RawTweet(TypedDict):
 
 
 # Default delay between scraping accounts (seconds)
-DEFAULT_SCRAPE_DELAY = 30
+DEFAULT_SCRAPE_DELAY_MIN = 55
+DEFAULT_SCRAPE_DELAY_MAX = 65
 
 # Playwright timeout (ms)
 PAGE_TIMEOUT = 30000
@@ -87,10 +89,11 @@ def fetch_twitter_content(state: dict) -> dict:
 
         twitter_accounts = state.get("twitter_accounts", [])
         settings = state.get("twitter_settings", {})
-        scrape_delay = settings.get("scrape_delay_seconds", DEFAULT_SCRAPE_DELAY)
+        scrape_delay_min = settings.get("scrape_delay_min", DEFAULT_SCRAPE_DELAY_MIN)
+        scrape_delay_max = settings.get("scrape_delay_max", DEFAULT_SCRAPE_DELAY_MAX)
 
         debug_log(f"[NODE: fetch_twitter_content] Processing {len(twitter_accounts)} accounts")
-        debug_log(f"[NODE: fetch_twitter_content] Delay between accounts: {scrape_delay}s")
+        debug_log(f"[NODE: fetch_twitter_content] Delay between accounts: {scrape_delay_min}-{scrape_delay_max}s (randomized)")
 
         if not twitter_accounts:
             return {"raw_tweets": []}
@@ -108,8 +111,9 @@ def fetch_twitter_content(state: dict) -> dict:
 
             # Rate limit delay (skip for last account)
             if i < len(twitter_accounts) - 1:
-                debug_log(f"[NODE: fetch_twitter_content] Waiting {scrape_delay}s before next account...")
-                time.sleep(scrape_delay)
+                delay = random.uniform(scrape_delay_min, scrape_delay_max)
+                debug_log(f"[NODE: fetch_twitter_content] Waiting {delay:.1f}s before next account...")
+                time.sleep(delay)
 
         # Deduplicate by tweet_id
         seen_ids = set()

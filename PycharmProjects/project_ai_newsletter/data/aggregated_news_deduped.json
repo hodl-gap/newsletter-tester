@@ -1,38 +1,21 @@
 {
   "metadata": {
-    "timestamp": "2026-01-06T06:15:30.454648",
+    "timestamp": "2026-01-06T06:15:51.928858",
     "total_articles": 41,
-    "content_source": "descriptions",
-    "sufficiency_score": 0,
+    "dedup_summary": {
+      "total_input": 41,
+      "unique_kept": 41,
+      "duplicates_removed": 0,
+      "url_duplicates": 0,
+      "semantic_auto_duplicates": 0,
+      "semantic_llm_confirmed": 0,
+      "stored_to_db": 41
+    },
     "cost": {
-      "total_cost": "$1.4378",
-      "input_tokens": 314083,
-      "output_tokens": 33039,
-      "llm_calls": 24
-    },
-    "by_category": {
-      "Funding": 6,
-      "IPO": 2,
-      "Expansion": 1,
-      "Product Launch": 21,
-      "Partnership": 6,
-      "Other": 4,
-      "Acquisition": 1
-    },
-    "by_region": {
-      "East Asia": 12,
-      "North America": 19,
-      "Global": 6,
-      "South Asia": 2,
-      "Africa": 1,
-      "Southeast Asia": 1
-    },
-    "by_layer": {
-      "Fine-tuning & MLOps": 3,
-      "Foundation Models": 9,
-      "Consumer Applications": 6,
-      "Chips & Infrastructure": 12,
-      "B2B Applications": 11
+      "total_cost": "$0.0000",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "llm_calls": 0
     }
   },
   "articles": [

@@ -1,0 +1,389 @@
+{
+  "results": [
+    {
+      "url": "https://www.rundown.ai/",
+      "status": "scrapable",
+      "accessibility": {
+        "http_works": true,
+        "status_code": 200,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 242143,
+        "error": null
+      },
+      "listing_page": {
+        "url": "https://www.rundown.ai/",
+        "has_article_links": true,
+        "article_url_pattern": "/articles/[a-z0-9\\-]+",
+        "sample_urls": [
+          "https://www.rundown.ai/articles/agibots-tiny-portable-humanoid",
+          "https://www.rundown.ai/articles/metas-ai-chief-scientist-leaves-with-parting-shots",
+          "https://www.rundown.ai/articles/neuralinks-bet-to-scale-brain-surgery",
+          "https://www.rundown.ai/articles/instagrams-ai-driven-identity-crisis",
+          "https://www.rundown.ai/articles/robotaxis-that-plug-into-your-brain"
+        ],
+        "listing_type": "news_grid",
+        "pagination_pattern": null
+      },
+      "article_page": {
+        "sample_article_url": "https://www.rundown.ai/articles/agibots-tiny-portable-humanoid",
+        "has_full_content": true,
+        "title_selector": "h1.h2",
+        "content_selector": ".rich-text.w-richtext",
+        "date_selector": "p.body-s.u-text-secondary",
+        "date_format": "MMMM D, YYYY",
+        "author_selector": "p.body-m.u-wg-500",
+        "sample_extracted": {
+          "title": "Agibot's tiny, portable humanoid",
+          "content_preview": "Good morning, robotics enthusiasts. Agibot just shrunk its humanoid playbook to 31 inches. The Chinese startup's new Q1 survives crashes, codes without scripts, and teaches English — all in a package that fits in a backpack. As China's robot boom spills from factories into homes, this tiny testbed could be a sign of where the industry's headed: smaller, cheaper, and everywhere. In today's robotics rundown: This tiny humanoid fits in your backpack; SwitchBot puts a robot butler on wheels; NEO's $",
+          "date": "2026-01-05",
+          "author": "Jennifer Mossalgue"
+        }
+      },
+      "recommendation": {
+        "approach": "http_simple",
+        "source_type": "news",
+        "confidence": 0.935,
+        "notes": "Full article content accessible via HTTP"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://pulsenews.co.kr/",
+      "status": "scrapable",
+      "accessibility": {
+        "http_works": true,
+        "status_code": 200,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 40580,
+        "error": null
+      },
+      "listing_page": {
+        "url": "https://pulsenews.co.kr/",
+        "has_article_links": true,
+        "article_url_pattern": "/news/english/\\d+",
+        "sample_urls": [
+          "https://pulse.mk.co.kr/news/english/11924236",
+          "https://pulse.mk.co.kr/news/english/11924235",
+          "https://pulse.mk.co.kr/news/english/11924237",
+          "https://pulse.mk.co.kr/news/english/11924224",
+          "https://pulse.mk.co.kr/news/english/11924217"
+        ],
+        "listing_type": "magazine",
+        "pagination_pattern": null
+      },
+      "article_page": {
+        "sample_article_url": "https://pulse.mk.co.kr/news/english/11924236",
+        "has_full_content": true,
+        "title_selector": "h2#s_view_top, div#s_view_top > h2",
+        "content_selector": "div.art_txt",
+        "date_selector": "div.txt_left",
+        "date_format": "YYYY.MM.DD HH:mm:ss",
+        "author_selector": "span.art_sign",
+        "sample_extracted": {
+          "title": "Korea's FX reserves slip for first time in seven months in December",
+          "content_preview": "South Korea's foreign exchange reserves fell for the first time in seven months in December with the government's efforts to defend the local currency against the U.S. dollar. According to data released by the Bank of Korea on Tuesday, the country's foreign exchange reserves stood at $428.05 billion at the end of December, down $2.6 billion from the previous month. Reserves had declined to $404.6 billion at the end of May, the lowest level in about five years, before rising for six straight mont",
+          "date": "2026-01-06",
+          "author": "Pulse"
+        }
+      },
+      "recommendation": {
+        "approach": "http_simple",
+        "source_type": "news",
+        "confidence": 0.95,
+        "notes": "Full article content accessible via HTTP"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://tech.economictimes.indiatimes.com/",
+      "status": "blocked",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 500,
+        "blocked_by": "captcha",
+        "requires_javascript": false,
+        "html_length": 145744,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Blocked by captcha"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://baobabnetwork.com/",
+      "status": "blocked",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 200,
+        "blocked_by": "js_redirect",
+        "requires_javascript": true,
+        "html_length": 114,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Blocked by js_redirect"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://www.cnbc.com/newsletters/the-china-connection/",
+      "status": "blocked",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 404,
+        "blocked_by": "captcha",
+        "requires_javascript": false,
+        "html_length": 1399658,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Blocked by captcha"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://www.epnc.co.kr/",
+      "status": "scrapable",
+      "accessibility": {
+        "http_works": true,
+        "status_code": 200,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 107916,
+        "error": null
+      },
+      "listing_page": {
+        "url": "https://www.epnc.co.kr/",
+        "has_article_links": true,
+        "article_url_pattern": "/news/articleView.html\\?idxno=\\d+",
+        "sample_urls": [
+          "https://www.epnc.co.kr/news/articleView.html?idxno=326969",
+          "https://www.epnc.co.kr/news/articleView.html?idxno=326948",
+          "https://www.epnc.co.kr/news/articleView.html?idxno=326973",
+          "https://www.epnc.co.kr/news/articleView.html?idxno=326888",
+          "https://www.epnc.co.kr/news/articleView.html?idxno=326839"
+        ],
+        "listing_type": "news_grid",
+        "pagination_pattern": null
+      },
+      "article_page": {
+        "sample_article_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326969",
+        "has_full_content": true,
+        "title_selector": "meta[property='og:title']",
+        "content_selector": "#article-view-content-div",
+        "date_selector": "meta[property='article:published_time']",
+        "date_format": "YYYY-MM-DDTHH:mm:ss+09:00",
+        "author_selector": "meta[name='author']",
+        "sample_extracted": {
+          "title": "일상용 무선 이어폰도 '위험'…소니·JBL 등 취약점 대거 발견",
+          "content_preview": "[테크월드뉴스=김혜진 기자] 일상에서 사용하는 무선 이어폰도 해킹을 통해 개인정보가 유출될 수 있는 것으로 나타났다. 독일 보안 연구기관인 ERNW가 지난 12월 28일 공식 블로그와 백서를 통해 공개한 연구 결과에 따르면 주요 브랜드 제품에서 심각한 블루투스 취약점이 발견됐다.",
+          "date": "2026-01-06T14:47:19+09:00",
+          "author": "김혜진 기자"
+        }
+      },
+      "recommendation": {
+        "approach": "http_simple",
+        "source_type": "news",
+        "confidence": 0.95,
+        "notes": "Full article content accessible via HTTP"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://www.euronews.com/next",
+      "status": "not_scrapable",
+      "accessibility": {
+        "http_works": true,
+        "status_code": 200,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 467494,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 0.7,
+        "notes": "No article links found on listing page"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://financeme.com/",
+      "status": "blocked",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 200,
+        "blocked_by": "captcha",
+        "requires_javascript": false,
+        "html_length": 104335,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Blocked by captcha"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://kedglobal.com/",
+      "status": "not_scrapable",
+      "accessibility": {
+        "http_works": false,
+        "status_code": null,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 0,
+        "error": "Connection error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not va"
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Not accessible: Connection error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not va"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://biz.chosun.com/",
+      "status": "scrapable",
+      "accessibility": {
+        "http_works": true,
+        "status_code": 200,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 2242780,
+        "error": null
+      },
+      "listing_page": {
+        "url": "https://biz.chosun.com/",
+        "has_article_links": true,
+        "article_url_pattern": "/[a-z_]+/[a-z_]+/\\d{4}/\\d{2}/\\d{2}/[A-Z0-9]+/",
+        "sample_urls": [
+          "https://biz.chosun.com/topics/topics_social/2025/12/17/DXGNM3MLQ5H6PAEAEPHLKFJWMM/",
+          "https://biz.chosun.com/policy/policy_sub/2025/12/17/5ATY4XGGTRHTZPBJY2ECCNF4M4/",
+          "https://biz.chosun.com/policy/policy_sub/2025/12/17/SKEKRW7YERAD5BFC3ORBYFSCI4/",
+          "https://biz.chosun.com/policy/policy_sub/2025/12/17/5PPNVW6P7VCSZB7IAZB2KDJAVQ/"
+        ],
+        "listing_type": "magazine",
+        "pagination_pattern": null
+      },
+      "article_page": null,
+      "recommendation": {
+        "approach": "http_simple",
+        "source_type": "news",
+        "confidence": 0.51,
+        "notes": "Article links found but content extraction uncertain"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://www.thenationalnews.com/business/technology/",
+      "status": "blocked",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 200,
+        "blocked_by": "captcha",
+        "requires_javascript": false,
+        "html_length": 769158,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Blocked by captcha"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://www.scmp.com/tech",
+      "status": "blocked",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 200,
+        "blocked_by": "captcha",
+        "requires_javascript": false,
+        "html_length": 3618542,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Blocked by captcha"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    },
+    {
+      "url": "https://nasscom.in/",
+      "status": "not_scrapable",
+      "accessibility": {
+        "http_works": false,
+        "status_code": 502,
+        "blocked_by": null,
+        "requires_javascript": false,
+        "html_length": 1030,
+        "error": null
+      },
+      "listing_page": null,
+      "article_page": null,
+      "recommendation": {
+        "approach": "not_recommended",
+        "source_type": "unknown",
+        "confidence": 1.0,
+        "notes": "Not accessible: None"
+      },
+      "method": "llm_analysis",
+      "analyzed_at": "2026-01-06T10:05:12.828920"
+    }
+  ],
+  "timestamp": "2026-01-06T10:05:12.829608",
+  "total": 13,
+  "scrapable": 4,
+  "requires_js": 0,
+  "blocked": 6,
+  "not_scrapable": 3
+}
