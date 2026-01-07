@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from src.database import ArticleDatabase
 from src.tracking import debug_log, track_time, cost_tracker
 
 
@@ -102,6 +103,10 @@ def save_twitter_content(state: dict) -> dict:
                 writer.writerows(discarded_articles)
 
             debug_log(f"[NODE: save_twitter_content] Saved {len(discarded_articles)} discarded tweets to {discarded_csv_path}")
+
+            # Also store discarded articles in database for debugging/reference
+            db = ArticleDatabase()
+            db.insert_discarded_batch(discarded_articles, source_type="twitter")
 
         # Print summary
         _print_summary(metadata, output_data, len(discarded_articles))

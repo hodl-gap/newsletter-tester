@@ -84,7 +84,7 @@ project_ai_newsletter/
 │   ├── models.py             # All LLM model definitions and helpers
 │   ├── utils.py              # Utility functions (prompt loading, etc.)
 │   ├── tracking.py           # Time and cost tracking utilities
-│   ├── database.py           # SQLite database for article storage
+│   ├── database.py           # SQLite database (articles, discarded_articles, dedup_log)
 │   └── functions/            # Node functions (one file per function)
 │       ├── __init__.py
 │       │── # Layer 0 functions
@@ -381,7 +381,7 @@ def run():
 | `data/aggregated_news.json` | Layer 2 output: AI business news with metadata |
 | `data/aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
 | `data/discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |
-| `data/articles.db` | Layer 3: SQLite database with articles and embeddings |
+| `data/articles.db` | SQLite database with articles, embeddings, discarded articles, and dedup logs |
 | `data/merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Twitter) |
 | `data/merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
 | `data/dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
@@ -394,6 +394,14 @@ def run():
 | `data/twitter_news.json` | Twitter L2 output: AI business news from tweets |
 | `data/twitter_news.csv` | Twitter L2 output: Same as JSON in tabular format |
 | `data/twitter_discarded.csv` | Twitter L2 output: Filtered-out tweets with discard reasons |
+
+### Database Tables (`data/articles.db`)
+
+| Table | Description |
+|-------|-------------|
+| `articles` | Stored articles with embeddings (url_hash, title, summary, source, source_type, embedding, created_at) |
+| `discarded_articles` | Filtered-out articles from all L2 pipelines (url, title, source, source_type, pub_date, discard_reason, run_timestamp) |
+| `dedup_log` | Deduplication decisions with full article content (original_url, duplicate_of_url, similarity_score, dedup_type, original_title, original_summary, duplicate_of_title, llm_reason) |
 
 ---
 

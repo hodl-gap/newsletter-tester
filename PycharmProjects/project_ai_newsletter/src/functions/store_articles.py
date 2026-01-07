@@ -56,7 +56,7 @@ def store_articles(state: dict) -> dict:
 
         debug_log(f"[NODE: store_articles] Stored {stored_count} articles to database")
 
-        # Log deduplication decisions for duplicates
+        # Log deduplication decisions for duplicates (with full article content)
         if duplicate_articles:
             dedup_entries = []
 
@@ -71,7 +71,20 @@ def store_articles(state: dict) -> dict:
                     "duplicate_of_url": duplicate_of_url,
                     "dedup_type": "semantic_llm" if dup.get("llm_confirmed") else "semantic_auto",
                     "similarity_score": dup.get("similarity"),
-                    "llm_confirmed": dup.get("llm_confirmed")
+                    "llm_confirmed": dup.get("llm_confirmed"),
+                    "llm_reason": dup.get("llm_reason"),
+                    # Full article content for debugging
+                    "original_article": {
+                        "title": article.get("title", ""),
+                        "summary": article.get("contents", article.get("summary", "")),
+                        "source": article.get("source", ""),
+                        "source_type": article.get("source_type", "rss"),
+                    },
+                    "duplicate_of_article": {
+                        "title": duplicate_of.get("title", ""),
+                        "summary": duplicate_of.get("summary", duplicate_of.get("contents", "")),
+                        "source": duplicate_of.get("source", ""),
+                    },
                 }
                 dedup_entries.append(entry)
 

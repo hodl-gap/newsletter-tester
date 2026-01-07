@@ -48,19 +48,44 @@ CREATE INDEX IF NOT EXISTS idx_pub_date ON articles(pub_date);
 CREATE INDEX IF NOT EXISTS idx_source ON articles(source);
 -- Note: idx_source_type created via migration for existing DBs
 
--- Deduplication audit log
+-- Deduplication audit log (with full article content for debugging)
 CREATE TABLE IF NOT EXISTS dedup_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     run_timestamp TIMESTAMP NOT NULL,
     original_url TEXT NOT NULL,
+    original_title TEXT,
+    original_summary TEXT,
+    original_source TEXT,
+    original_source_type TEXT,
     duplicate_of_url TEXT,
+    duplicate_of_title TEXT,
+    duplicate_of_summary TEXT,
+    duplicate_of_source TEXT,
     dedup_type TEXT NOT NULL,
     similarity_score REAL,
     llm_confirmed INTEGER,
+    llm_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_dedup_run ON dedup_log(run_timestamp);
+
+-- Discarded articles log (for debugging/reference)
+CREATE TABLE IF NOT EXISTS discarded_articles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT NOT NULL,
+    url_hash TEXT NOT NULL,
+    title TEXT NOT NULL,
+    source TEXT NOT NULL,
+    source_type TEXT DEFAULT 'rss',
+    pub_date TEXT NOT NULL,
+    discard_reason TEXT NOT NULL,
+    run_timestamp TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_discarded_url_hash ON discarded_articles(url_hash);
+CREATE INDEX IF NOT EXISTS idx_discarded_run ON discarded_articles(run_timestamp);
 """
 
 
@@ -112,6 +137,8 @@ class ArticleDatabase:
 
             # Migration: Add source_type column if missing (for existing DBs)
             self._migrate_source_type(conn)
+            # Migration: Add new dedup_log columns if missing (for existing DBs)
+            self._migrate_dedup_log(conn)
 
         debug_log(f"[DB] Database initialized at {self.db_path}")
 
@@ -130,6 +157,31 @@ class ArticleDatabase:
                 debug_log("[DB] Migration complete: source_type column added")
         except Exception as e:
             debug_log(f"[DB] Migration warning: {e}", "warning")
+
+    def _migrate_dedup_log(self, conn):
+        """Add new columns to dedup_log for existing databases."""
+        try:
+            cursor = conn.execute("PRAGMA table_info(dedup_log)")
+            columns = [row[1] for row in cursor.fetchall()]
+
+            new_columns = [
+                ("original_title", "TEXT"),
+                ("original_summary", "TEXT"),
+                ("original_source", "TEXT"),
+                ("original_source_type", "TEXT"),
+                ("duplicate_of_title", "TEXT"),
+                ("duplicate_of_summary", "TEXT"),
+                ("duplicate_of_source", "TEXT"),
+                ("llm_reason", "TEXT"),
+            ]
+
+            for col_name, col_type in new_columns:
+                if col_name not in columns:
+                    conn.execute(f"ALTER TABLE dedup_log ADD COLUMN {col_name} {col_type}")
+
+            conn.commit()
+        except Exception as e:
+            debug_log(f"[DB] Dedup log migration warning: {e}", "warning")
 
     # -------------------------------------------------------------------------
     # URL Deduplication
@@ -291,6 +343,62 @@ class ArticleDatabase:
         return inserted
 
     # -------------------------------------------------------------------------
+    # Discarded Articles Storage
+    # -------------------------------------------------------------------------
+
+    def insert_discarded_batch(
+        self,
+        articles: list[dict],
+        source_type: str = "rss",
+        run_timestamp: Optional[str] = None
+    ) -> int:
+        """
+        Insert discarded articles for debugging/reference.
+
+        Args:
+            articles: List of discarded article dicts with keys:
+                      url, title, source_name, pub_date, discard_reason.
+            source_type: Source type ('rss', 'html', 'twitter').
+            run_timestamp: Shared timestamp for all entries.
+
+        Returns:
+            Number of articles inserted.
+        """
+        if run_timestamp is None:
+            run_timestamp = datetime.now().isoformat()
+
+        inserted = 0
+        with self._connection() as conn:
+            for article in articles:
+                url = article.get("url", "")
+                url_hash = self._hash_url(url)
+
+                try:
+                    conn.execute(
+                        """INSERT INTO discarded_articles
+                           (url, url_hash, title, source, source_type,
+                            pub_date, discard_reason, run_timestamp)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (
+                            url,
+                            url_hash,
+                            article.get("title", ""),
+                            article.get("source_name", article.get("source", "")),
+                            source_type,
+                            article.get("pub_date", ""),
+                            article.get("discard_reason", ""),
+                            run_timestamp
+                        )
+                    )
+                    inserted += 1
+                except Exception:
+                    pass
+            conn.commit()
+
+        debug_log(f"[DB] Inserted {inserted}/{len(articles)} discarded articles")
+        return inserted
+
+    # -------------------------------------------------------------------------
     # Historical Retrieval (for semantic dedup)
     # -------------------------------------------------------------------------
 
@@ -405,6 +513,7 @@ class ArticleDatabase:
         Args:
             entries: List of dicts with keys: original_url, dedup_type,
                      duplicate_of_url, similarity_score, llm_confirmed.
+                     Optional keys for full content: original_article, duplicate_of_article, llm_reason.
             run_timestamp: Shared timestamp for all entries.
         """
         if run_timestamp is None:
@@ -416,18 +525,32 @@ class ArticleDatabase:
                 if entry.get("llm_confirmed") is not None:
                     llm_value = 1 if entry["llm_confirmed"] else 0
 
+                # Extract full article content if provided
+                orig = entry.get("original_article", {})
+                dup = entry.get("duplicate_of_article", {})
+
                 conn.execute(
                     """INSERT INTO dedup_log
-                       (run_timestamp, original_url, duplicate_of_url,
-                        dedup_type, similarity_score, llm_confirmed)
-                       VALUES (?, ?, ?, ?, ?, ?)""",
+                       (run_timestamp, original_url, original_title, original_summary,
+                        original_source, original_source_type, duplicate_of_url,
+                        duplicate_of_title, duplicate_of_summary, duplicate_of_source,
+                        dedup_type, similarity_score, llm_confirmed, llm_reason)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (
                         run_timestamp,
                         entry["original_url"],
+                        orig.get("title"),
+                        orig.get("summary"),
+                        orig.get("source"),
+                        orig.get("source_type"),
                         entry.get("duplicate_of_url"),
+                        dup.get("title"),
+                        dup.get("summary"),
+                        dup.get("source"),
                         entry["dedup_type"],
                         entry.get("similarity_score"),
-                        llm_value
+                        llm_value,
+                        entry.get("llm_reason")
                     )
                 )
             conn.commit()

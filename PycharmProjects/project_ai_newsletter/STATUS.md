@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-07
 
 ## Current Phase
 
@@ -829,7 +829,24 @@ After (fixed):
 
 ## Recent Improvements
 
-### 2026-01-06 (Latest)
+### 2026-01-07 (Latest)
+
+1. **Database Storage for Discarded Articles and Full Dedup Content**
+   - New `discarded_articles` table stores all filtered-out articles from L2 pipelines
+   - Fields: url, url_hash, title, source, source_type, pub_date, discard_reason, run_timestamp
+   - Expanded `dedup_log` table with 8 new columns for full article content:
+     - original_title, original_summary, original_source, original_source_type
+     - duplicate_of_title, duplicate_of_summary, duplicate_of_source, llm_reason
+   - Auto-migration for existing databases (ALTER TABLE adds new columns)
+   - Integration: save_aggregated_content.py, save_html_content.py, save_twitter_content.py
+   - Enables debugging and historical analysis of filtering/dedup decisions
+   - **Files modified:** database.py, store_articles.py, save_aggregated_content.py, save_html_content.py, save_twitter_content.py
+
+**Test Run Results (2026-01-07):**
+- Discarded articles stored: 237 total (205 RSS, 22 HTML, 10 Twitter)
+- Dedup log entries with full content: 12
+
+### 2026-01-06
 
 1. **Cross-Pipeline Deduplication Implemented**
    - Layer 3 now merges RSS, HTML, and Twitter outputs before deduplication
@@ -1059,7 +1076,13 @@ REQUEST_TIMEOUT = 20  # Request timeout in seconds
     - Merged into item #8 (comprehensive deduplication)
     - Layer 3 now automatically includes HTML sources via `merge_pipeline_outputs`
 
-12. **Add alternative content fetching for blocked/paywalled sources**
+12. **Move HTML exclusions from hardcoded Python to `html_availability.json`**
+    - Currently excluded sources are hardcoded in `load_unavailable_sources.py` (EXCLUDED_SOURCES list)
+    - Should be stored in `html_availability.json` with `status: "excluded"` and `exclusion_reason`
+    - Makes exclusions discoverable alongside other HTML L1 results
+    - Affected sources: asiatechreview.com, hai.stanford.edu, whitecase.com, foreignaffairsforum.ae, reuters.com, wsj.com
+
+13. **Add alternative content fetching for blocked/paywalled sources**
     - 6 sources blocked by CAPTCHA/Cloudflare (SCMP, CNBC, Economic Times, etc.)
     - 8 sources paywalled (Bloomberg, FT, Axios)
     - Options: NewsAPI.org, paid APIs, newsletter email ingestion
@@ -1072,17 +1095,34 @@ REQUEST_TIMEOUT = 20  # Request timeout in seconds
         - Different IP (current IP flagged)
       - Alternatives: NewsAPI.org (free 100 req/day), Reuters paid API
       - Test files: `tests/test_reuters_scraping*.py`
-13. Consider scheduled runs (cron/GitHub Actions)
-14. Build frontend/newsletter output format
+14. **Make Layer 1 incremental (skip already-identified sources)**
+    - Currently L1 re-checks ALL sources every run, even if already in `rss_availability.json`
+    - Should skip sources that already have results unless `force=True`
+    - Apply same logic to HTML L1 and Twitter L1
+    - Options:
+      - Skip if source exists in output JSON (default)
+      - `run(force=True)` to re-check all sources
+      - `run(url_filter=['...'])` to re-check specific sources (already works)
+    - Enables "run entire pipeline" without redundant L1 re-discovery
+
+15. Consider scheduled runs (cron/GitHub Actions)
+16. Build frontend/newsletter output format
 
 ### Low Priority
-15. ~~**Add SQLite database for storage, deduplication, and history**~~ (Done 2026-01-06 - Layer 3 implemented)
+17. ~~**Add SQLite database for storage, deduplication, and history**~~ (Done 2026-01-06 - Layer 3 implemented)
     - ~~Store aggregated news in SQLite~~
     - ~~Deduplicate articles across runs (by URL and semantic similarity)~~
     - ~~Enable historical analysis and trend tracking~~
     - ~~Compare today's news with previous days/weeks~~
 
-16. ~~**Add date filter to Layer 2**~~ (Done 2026-01-05)
+18. ~~**Add date filter to Layer 2**~~ (Done 2026-01-05)
    - ~~Filter articles by publication date (e.g., last 24 hours, last 7 days)~~
    - ~~Prevent old articles from stale feeds from being processed~~
    - ~~Configurable via `run(max_age_hours=24)` parameter~~
+
+19. ~~**Store discarded articles and full dedup content in database**~~ (Done 2026-01-07)
+    - New `discarded_articles` table: url, title, source, source_type, pub_date, discard_reason, run_timestamp
+    - Expanded `dedup_log` table: +8 columns for full article content (original_title, original_summary, original_source, original_source_type, duplicate_of_title, duplicate_of_summary, duplicate_of_source, llm_reason)
+    - Integration: save_aggregated_content.py, save_html_content.py, save_twitter_content.py now write to DB
+    - Auto-migration for existing databases (ALTER TABLE adds new columns safely)
+    - Enables historical debugging of filtering and deduplication decisions

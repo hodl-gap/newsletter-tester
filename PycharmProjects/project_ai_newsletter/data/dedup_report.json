@@ -1,435 +1,156 @@
 {
-  "timestamp": "2026-01-06T16:30:25.928907",
+  "timestamp": "2026-01-07T05:52:05.343903",
   "is_first_run": false,
   "summary": {
-    "total_input": 53,
-    "unique_kept": 10,
-    "duplicates_removed": 43,
+    "total_input": 30,
+    "unique_kept": 18,
+    "duplicates_removed": 12,
     "url_duplicates": 0,
-    "semantic_auto_duplicates": 41,
-    "semantic_llm_confirmed": 2,
-    "stored_to_db": 10
+    "semantic_auto_duplicates": 8,
+    "semantic_llm_confirmed": 4,
+    "stored_to_db": 18
   },
   "by_source_type": {
-    "html": 6,
-    "twitter": 4
+    "rss": 15,
+    "html": 3
   },
-  "cross_source_duplicates": 2,
+  "cross_source_duplicates": 1,
   "merge_stats": {
     "by_source_type": {
       "rss": {
-        "loaded": 41,
-        "kept": 41,
+        "loaded": 19,
+        "kept": 19,
         "url_collisions": 0
       },
       "html": {
-        "loaded": 7,
-        "kept": 7,
+        "loaded": 9,
+        "kept": 9,
         "url_collisions": 0
       },
       "twitter": {
-        "loaded": 5,
-        "kept": 5,
+        "loaded": 2,
+        "kept": 2,
         "url_collisions": 0
       }
     },
     "url_collisions": 0,
-    "total_before_dedup": 53,
-    "total_after_dedup": 53
+    "total_before_dedup": 30,
+    "total_after_dedup": 30
   },
   "cost": {
-    "total_cost": "$0.0079",
-    "input_tokens": 1360,
-    "output_tokens": 254,
+    "total_cost": "$0.0119",
+    "input_tokens": 1950,
+    "output_tokens": 404,
     "llm_calls": 1
   },
   "duplicates": [
     {
-      "removed_url": "https://36kr.com/p/3626190603568384?f=rss",
-      "removed_title": "36氪首发 | 开源异构算力调度平台「密瓜智能」获复星创富数千万元投资，为企业提供高效灵活算力解决方案",
-      "duplicate_of_url": "https://36kr.com/p/3626190603568384?f=rss",
-      "duplicate_of_title": "36氪首发 | 开源异构算力调度平台「密瓜智能」获复星创富数千万元投资，为企业提供高效灵活算力解决方案",
-      "similarity": 0.9999995231628418,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://36kr.com/newsflashes/3627541140784390?f=rss",
-      "removed_title": "MiniMax超额认购1209倍，1月9日正式上市",
-      "duplicate_of_url": "https://36kr.com/newsflashes/3627541140784390?f=rss",
-      "duplicate_of_title": "MiniMax超额认购1209倍，1月9日正式上市",
-      "similarity": 0.9996558427810669,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://36kr.com/newsflashes/3627525676942342?f=rss",
-      "removed_title": "格灵深瞳在北京成立人工智能科技公司",
-      "duplicate_of_url": "https://36kr.com/newsflashes/3627525676942342?f=rss",
-      "duplicate_of_title": "格灵深瞳在北京成立人工智能科技公司",
-      "similarity": 0.999999463558197,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://36kr.com/newsflashes/3627467486643209?f=rss",
-      "removed_title": "协创数据：融梦AI眼镜由公司参股企业子公司推出，预计2026年第一季度启动量产",
-      "duplicate_of_url": "https://36kr.com/newsflashes/3627467486643209?f=rss",
-      "duplicate_of_title": "协创数据：融梦AI眼镜由公司参股企业子公司推出，预计2026年第一季度启动量产",
-      "similarity": 0.9999995231628418,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://36kr.com/newsflashes/3627408088220681?f=rss",
-      "removed_title": "AMD推出下一代新品，4年内AI芯片性能有望提升1000倍",
-      "duplicate_of_url": "https://36kr.com/newsflashes/3627408088220681?f=rss",
-      "duplicate_of_title": "AMD推出下一代新品，4年内AI芯片性能有望提升1000倍",
-      "similarity": 0.9999997019767761,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://www.caixinglobal.com/2026-01-06/chinas-telecom-giants-back-smart-glasses-maker-rayneo-in-143-million-funding-round-102400654.html?originReferrer=Feedly",
-      "removed_title": "China’s Telecom Giants Back Smart-Glasses Maker RayNeo in $143 Million Funding Round",
-      "duplicate_of_url": "https://www.caixinglobal.com/2026-01-06/chinas-telecom-giants-back-smart-glasses-maker-rayneo-in-143-million-funding-round-102400654.html?originReferrer=Feedly",
-      "duplicate_of_title": "China’s Telecom Giants Back Smart-Glasses Maker RayNeo in $143 Million Funding Round",
-      "similarity": 0.9999996423721313,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://www.bbc.com/news/articles/c0jv1vd571wo?at_medium=RSS&at_campaign=rss",
-      "removed_title": "Nvidia unveils 'reasoning' AI technology for self-driving cars",
-      "duplicate_of_url": "https://www.bbc.com/news/articles/c0jv1vd571wo?at_medium=RSS&at_campaign=rss",
-      "duplicate_of_title": "Nvidia unveils 'reasoning' AI technology for self-driving cars",
-      "similarity": 0.9999996423721313,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/amd-unveils-new-ai-pc-processors-for-general-use-and-gaming-at-ces/",
-      "removed_title": "AMD unveils new AI PC processors for general use and gaming at CES",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/amd-unveils-new-ai-pc-processors-for-general-use-and-gaming-at-ces/",
-      "duplicate_of_title": "AMD unveils new AI PC processors for general use and gaming at CES",
-      "similarity": 0.9999996423721313,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://analyticsindiamag.com/ai-news-updates/intel-launches-core-ultra-series-3-ai-pc-platform-at-ces-2026/",
-      "removed_title": "Intel launches Core Ultra Series 3 AI PC platform at CES 2026",
-      "duplicate_of_url": "https://analyticsindiamag.com/ai-news-updates/intel-launches-core-ultra-series-3-ai-pc-platform-at-ces-2026/",
-      "duplicate_of_title": "Intel launches Core Ultra Series 3 AI PC platform at CES 2026",
-      "similarity": 0.9999996423721313,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106083228",
-      "removed_title": "삼성전자, 올해 핵심 사업전략은 'AI·M&A' 동시 강화",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106083228",
-      "duplicate_of_title": "삼성전자, 올해 핵심 사업전략은 'AI·M&A' 동시 강화",
-      "similarity": 0.9999518394470215,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106134827",
-      "removed_title": "한전KPS, ‘AI+드론’ 기술로 송전선 주변 위험수목 잡아낸다",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106134827",
-      "duplicate_of_title": "한전KPS, ‘AI+드론’ 기술로 송전선 주변 위험수목 잡아낸다",
-      "similarity": 0.9999997615814209,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106123425",
-      "removed_title": "[SW키트] AI 인프라 비용 폭증 시대…\"엣지·분산 클라우드로 탈피\"",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106123425",
-      "duplicate_of_title": "[SW키트] AI 인프라 비용 폭증 시대…\"엣지·분산 클라우드로 탈피\"",
-      "similarity": 0.9995537996292114,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106133553",
-      "removed_title": "\"암기력보다 실무 추론\"…데이터브릭스, 기업용 AI 벤치마크 공개",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106133553",
-      "duplicate_of_title": "\"암기력보다 실무 추론\"…데이터브릭스, 기업용 AI 벤치마크 공개",
-      "similarity": 0.9999988675117493,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106102912",
-      "removed_title": "엔비디아-벤츠 자율주행차 타 봤더니…\"테슬라 긴장해\"",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106102912",
-      "duplicate_of_title": "엔비디아-벤츠 자율주행차 타 봤더니…\"테슬라 긴장해\"",
-      "similarity": 0.9999801516532898,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106084049",
-      "removed_title": "\"클로이드, 탁자 위 수건 개어줘\"…LG AI홈 혁신 즐비",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106084049",
-      "duplicate_of_title": "\"클로이드, 탁자 위 수건 개어줘\"…LG AI홈 혁신 즐비",
-      "similarity": 0.999999463558197,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106123752",
-      "removed_title": "휴머노이드 최대 격전지는 '물류'…2030년 도입율 25% 전망",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106123752",
-      "duplicate_of_title": "휴머노이드 최대 격전지는 '물류'…2030년 도입율 25% 전망",
-      "similarity": 0.9999959468841553,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106123734",
-      "removed_title": "엔비디아, AI 추론 병목현상 줄이는 스토리지 플랫폼 공개",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106123734",
-      "duplicate_of_title": "엔비디아, AI 추론 병목현상 줄이는 스토리지 플랫폼 공개",
-      "similarity": 0.9999994039535522,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260105183221",
-      "removed_title": "AMD, AI PC 겨냥 '라이젠 AI 400' 프로세서 공개",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260105183221",
-      "duplicate_of_title": "AMD, AI PC 겨냥 '라이젠 AI 400' 프로세서 공개",
-      "similarity": 0.9999995231628418,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106115226",
-      "removed_title": "젠슨 황이 꺼낸 든 자율주행 AI '알파마요', 어떻게 구현했나",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106115226",
-      "duplicate_of_title": "젠슨 황이 꺼낸 든 자율주행 AI '알파마요', 어떻게 구현했나",
-      "similarity": 0.9999960064888,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106114625",
-      "removed_title": "美 CES 찍고 오픈AI·엔비디아 본사로…정부, 'AI 동맹' 가속 페달",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106114625",
-      "duplicate_of_title": "美 CES 찍고 오픈AI·엔비디아 본사로…정부, 'AI 동맹' 가속 페달",
-      "similarity": 0.9999890327453613,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://zdnet.co.kr/view/?no=20260106111804",
-      "removed_title": "업스테이지, '솔라 오픈' 공개…\"딥시크·GPT 성능 넘어\"",
-      "duplicate_of_url": "https://zdnet.co.kr/view/?no=20260106111804",
-      "duplicate_of_title": "업스테이지, '솔라 오픈' 공개…\"딥시크·GPT 성능 넘어\"",
-      "similarity": 0.9999995231628418,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://www.nytimes.com/2026/01/05/technology/nvidia-chips-mercedes.html",
-      "removed_title": "Nvidia Details New A.I. Chips and Autonomous Car Project With Mercedes",
-      "duplicate_of_url": "https://www.nytimes.com/2026/01/05/technology/nvidia-chips-mercedes.html",
-      "duplicate_of_title": "Nvidia Details New A.I. Chips and Autonomous Car Project With Mercedes",
-      "similarity": 0.9999997615814209,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcabal.com/2026/01/05/japans-sora-technology-secures-fresh-2-5m/",
-      "removed_title": "Japan’s SORA Technology raises $2.5 million to scale health drones in Africa",
+      "removed_url": "https://weetracker.com/2026/01/06/sora-technology-raises-2-5m-africa-health-drones-ai/",
+      "removed_title": "SORA Technology Raises USD 2.5 M To Scale Drone-Led Malaria Control In Africa",
       "duplicate_of_url": "https://techcabal.com/2026/01/05/japans-sora-technology-secures-fresh-2-5m/",
       "duplicate_of_title": "Japan’s SORA Technology raises $2.5 million to scale health drones in Africa",
-      "similarity": 0.9999997019767761,
+      "similarity": 0.9337798357009888,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://36kr.com/p/3626249137652741?f=rss",
-      "removed_title": "氪星晚报｜人工智能公司加大力度挑战谷歌在浏览器市场的主导地位；字节“豆包”AI眼镜即将进入出货阶段，将分版本推出；2025年国家铁路运输总收入首次突破万亿",
-      "duplicate_of_url": "https://36kr.com/p/3626249137652741?f=rss",
-      "duplicate_of_title": "氪星晚报｜人工智能公司加大力度挑战谷歌在浏览器市场的主导地位；字节“豆包”AI眼镜即将进入出货阶段，将分版本推出；2025年国家铁路运输总收入首次突破万亿",
-      "similarity": 0.9999998211860657,
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327011",
+      "removed_title": "“이미 물량 꽉 찼다” TSMC 2나노 초기 생산...대만 2개 팹서 가동",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327011",
+      "duplicate_of_title": "“이미 물량 꽉 찼다” TSMC 2나노 초기 생산...대만 2개 팹서 가동",
+      "similarity": 0.9426497220993042,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://36kr.com/p/3625896773240067?f=rss",
-      "removed_title": "前中金、甲骨文团队再创业，其AI智能自动化平台渗透三成央企，再获亿元融资 | 硬氪首发",
-      "duplicate_of_url": "https://36kr.com/p/3625896773240067?f=rss",
-      "duplicate_of_title": "前中金、甲骨文团队再创业，其AI智能自动化平台渗透三成央企，再获亿元融资 | 硬氪首发",
-      "similarity": 0.9999997615814209,
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327012",
+      "removed_title": "노르딕, nRF54L·엣지 AI 랩으로 '대규모 IoT 온디바이스 AI' 구현 간소화",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327012",
+      "duplicate_of_title": "노르딕, nRF54L·엣지 AI 랩으로 '대규모 IoT 온디바이스 AI' 구현 간소화",
+      "similarity": 0.9789808988571167,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://36kr.com/p/3618139468923911?f=rss",
-      "removed_title": "科沃斯参股基金投了一家柔性触觉感知公司，产品已上车头部新势力｜硬氪首发",
-      "duplicate_of_url": "https://36kr.com/p/3618139468923911?f=rss",
-      "duplicate_of_title": "科沃斯参股基金投了一家柔性触觉感知公司，产品已上车头部新势力｜硬氪首发",
-      "similarity": 0.9999240040779114,
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327005",
+      "removed_title": "Ceva, 보스반도체 차세대 ADAS 플랫폼에 AI DSP 공급",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327005",
+      "duplicate_of_title": "Ceva, 보스반도체 차세대 ADAS 플랫폼에 AI DSP 공급",
+      "similarity": 0.9561130404472351,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://www.caixinglobal.com/2026-01-05/trump-orders-chinese-controlled-firm-to-unwind-purchase-of-us-chip-assets-102400291.html?originReferrer=Feedly",
-      "removed_title": "Trump Orders Chinese-Controlled Firm to Unwind Purchase of U.S. Chip Assets",
-      "duplicate_of_url": "https://www.caixinglobal.com/2026-01-05/trump-orders-chinese-controlled-firm-to-unwind-purchase-of-us-chip-assets-102400291.html?originReferrer=Feedly",
-      "duplicate_of_title": "Trump Orders Chinese-Controlled Firm to Unwind Purchase of U.S. Chip Assets",
-      "similarity": 0.9999995827674866,
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326948",
+      "removed_title": "2026년 메모리 시장 “HBM이 이끄는 메모리 슈퍼사이클에 주목”",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326948",
+      "duplicate_of_title": "2026년 메모리 시장 “HBM이 이끄는 메모리 슈퍼사이클에 주목”",
+      "similarity": 0.9164225459098816,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://www.caixinglobal.com/2026-01-05/robot-maker-unitrees-ipo-expected-by-mid-2026-source-says-102400282.html?originReferrer=Feedly",
-      "removed_title": "Robot-Maker Unitree’s IPO Expected by Mid-2026, Source Says",
-      "duplicate_of_url": "https://www.caixinglobal.com/2026-01-05/robot-maker-unitrees-ipo-expected-by-mid-2026-source-says-102400282.html?originReferrer=Feedly",
-      "duplicate_of_title": "Robot-Maker Unitree’s IPO Expected by Mid-2026, Source Says",
-      "similarity": 0.999999463558197,
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326951",
+      "removed_title": "팀스파르타, 2025년 AI 오프라인 교육 매출 전년 대비 2.5배 ↑",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326951",
+      "duplicate_of_title": "팀스파르타, 2025년 AI 오프라인 교육 매출 전년 대비 2.5배 ↑",
+      "similarity": 0.9094687700271606,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://www.ft.com/content/5d566029-6aee-4627-a665-81108a1eb70e",
-      "removed_title": "AI start-ups take on Google in fight to reshape web browser market",
-      "duplicate_of_url": "https://www.ft.com/content/5d566029-6aee-4627-a665-81108a1eb70e",
-      "duplicate_of_title": "AI start-ups take on Google in fight to reshape web browser market",
-      "similarity": 0.9999994039535522,
+      "removed_url": "https://x.com/SawyerMerritt/status/2008400590246715868",
+      "removed_title": "NEWS: Elon Musk has confirmed that xAI has purchased five additional 380MW natural gas turbines, wit...",
+      "duplicate_of_url": "https://x.com/SawyerMerritt/status/2008400590246715868",
+      "duplicate_of_title": "NEWS: Elon Musk has confirmed that xAI has purchased five additional 380MW natural gas turbines, wit...",
+      "similarity": 0.9851917028427124,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://techfundingnews.com/antler-510m-raise-us-expansion-unicorns/",
-      "removed_title": "Antler bags $510M in new funds, half for the US founders, as Airalo and Lovable soar to unicorn",
-      "duplicate_of_url": "https://techfundingnews.com/antler-510m-raise-us-expansion-unicorns/",
-      "duplicate_of_title": "Antler bags $510M in new funds, half for the US founders, as Airalo and Lovable soar to unicorn",
-      "similarity": 0.9999998211860657,
+      "removed_url": "https://x.com/rohanpaul_ai/status/2008390417134543311",
+      "removed_title": "ChatGPT’s daily web visits slid from roughly 200M down to roughly 158M, which is about a 22% drop ov...",
+      "duplicate_of_url": "https://x.com/rohanpaul_ai/status/2008390417134543311",
+      "duplicate_of_title": "ChatGPT’s daily web visits slid from roughly 200M down to roughly 158M, which is about a 22% drop ov...",
+      "similarity": 0.9631328582763672,
       "dedup_type": "semantic_auto",
       "reason": "Auto-detected duplicate"
     },
     {
-      "removed_url": "https://aibusiness.com/generative-ai/nvidia-intros-new-ai-chips-and-open-models",
-      "removed_title": "Nvidia intros six new AI chips and new open models",
-      "duplicate_of_url": "https://aibusiness.com/generative-ai/nvidia-intros-new-ai-chips-and-open-models",
-      "duplicate_of_title": "Nvidia intros six new AI chips and new open models",
-      "similarity": 0.9999997615814209,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://www.bbc.com/news/articles/c5y5w0k99r1o?at_medium=RSS&at_campaign=rss",
-      "removed_title": "Ofcom asks X about reports its Grok AI makes sexualised images of children",
-      "duplicate_of_url": "https://www.bbc.com/news/articles/c5y5w0k99r1o?at_medium=RSS&at_campaign=rss",
-      "duplicate_of_title": "Ofcom asks X about reports its Grok AI makes sexualised images of children",
-      "similarity": 0.9999997019767761,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/microsofts-nadella-wants-us-to-stop-thinking-of-ai-as-slop/",
-      "removed_title": "Microsoft’s Nadella wants us to stop thinking of AI as ‘slop’",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/microsofts-nadella-wants-us-to-stop-thinking-of-ai-as-slop/",
-      "duplicate_of_title": "Microsoft’s Nadella wants us to stop thinking of AI as ‘slop’",
-      "similarity": 0.9999997615814209,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/nvidia-wants-to-be-the-android-of-generalist-robotics/",
-      "removed_title": "Nvidia wants to be the Android of generalist robotics",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/nvidia-wants-to-be-the-android-of-generalist-robotics/",
-      "duplicate_of_title": "Nvidia wants to be the Android of generalist robotics",
-      "similarity": 0.9999935626983643,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/nvidia-launches-powerful-new-rubin-chip-architecture/",
-      "removed_title": "Nvidia launches powerful new Rubin chip architecture",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/nvidia-launches-powerful-new-rubin-chip-architecture/",
-      "duplicate_of_title": "Nvidia launches powerful new Rubin chip architecture",
-      "similarity": 0.9999995827674866,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/nvidia-launches-alpamayo-open-ai-models-that-allow-autonomous-vehicles-to-think-like-a-human/",
-      "removed_title": "Nvidia launches Alpamayo, open AI models that allow autonomous vehicles to ‘think like a human’",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/nvidia-launches-alpamayo-open-ai-models-that-allow-autonomous-vehicles-to-think-like-a-human/",
-      "duplicate_of_title": "Nvidia launches Alpamayo, open AI models that allow autonomous vehicles to ‘think like a human’",
-      "similarity": 0.9994732141494751,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/alexa-without-an-echo-amazons-ai-chatbot-comes-to-the-web-and-a-revamped-alexa-app/",
-      "removed_title": "Amazon’s AI assistant comes to the web with Alexa.com",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/alexa-without-an-echo-amazons-ai-chatbot-comes-to-the-web-and-a-revamped-alexa-app/",
-      "duplicate_of_title": "Amazon’s AI assistant comes to the web with Alexa.com",
-      "similarity": 0.9999895095825195,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://techcrunch.com/2026/01/05/google-previews-new-gemini-features-for-tv-at-ces-2026/",
-      "removed_title": "Google previews new Gemini features for TV at CES 2026",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/google-previews-new-gemini-features-for-tv-at-ces-2026/",
-      "duplicate_of_title": "Google previews new Gemini features for TV at CES 2026",
-      "similarity": 0.9999995231628418,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
-    },
-    {
-      "removed_url": "https://analyticsindiamag.com/ai-news-updates/manus-meta-deal-may-come-under-scrutiny-from-beijing-report/",
-      "removed_title": "Manus–Meta Deal May Come Under Scrutiny From Beijing: Report",
+      "removed_url": "https://www.ft.com/content/62f8f2c5-95c7-4437-b0f1-b8ecd507c330",
+      "removed_title": "China reviews Meta’s $2bn purchase of AI start-up Manus",
       "duplicate_of_url": "https://analyticsindiamag.com/ai-news-updates/manus-meta-deal-may-come-under-scrutiny-from-beijing-report/",
       "duplicate_of_title": "Manus–Meta Deal May Come Under Scrutiny From Beijing: Report",
-      "similarity": 0.9999994039535522,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
+      "similarity": 0.7678529620170593,
+      "dedup_type": "semantic_llm",
+      "reason": "Both articles cover the same specific news event: Meta's $2 billion acquisition of AI startup Manus coming under Chinese regulatory review. The articles report on the same deal from different angles (Financial Times reporting the review, Analytics India Mag providing context on why Beijing might scrutinize it)."
     },
     {
-      "removed_url": "https://finainews.com/banking/cobalt-credit-union-deploys-eltropys-ai-voice-technology/",
-      "removed_title": "Cobalt Credit Union deploys Eltropy’s AI Voice technology",
-      "duplicate_of_url": "https://finainews.com/banking/cobalt-credit-union-deploys-eltropys-ai-voice-technology/",
-      "duplicate_of_title": "Cobalt Credit Union deploys Eltropy’s AI Voice technology",
-      "similarity": 0.9999998211860657,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
+      "removed_url": "https://www.caixinglobal.com/2026-01-06/minimaxs-hong-kong-ipo-oversubscribed-1848-times-as-ai-frenzy-builds-102400879.html?originReferrer=Feedly",
+      "removed_title": "MiniMax’s Hong Kong IPO Oversubscribed 1,848 Times as AI Frenzy Builds",
+      "duplicate_of_url": "https://36kr.com/newsflashes/3627541140784390?f=rss",
+      "duplicate_of_title": "MiniMax超额认购1209倍，1月9日正式上市",
+      "similarity": 0.8465179204940796,
+      "dedup_type": "semantic_llm",
+      "reason": "Both articles cover the same MiniMax Hong Kong IPO event on January 6, 2026. While they report slightly different oversubscription figures (1,848x vs 1,209x), this appears to be due to different measurement points in the IPO process (retail vs total subscriptions). They are reporting on the same specific corporate event."
     },
     {
-      "removed_url": "https://www.marktechpost.com/2026/01/04/tencent-researchers-release-tencent-hy-mt1-5-a-new-translation-models-featuring-1-8b-and-7b-models-designed-for-seamless-on-device-and-cloud-deployment/",
-      "removed_title": "Tencent Researchers Release Tencent HY-MT1.5: A New Translation Models Featuring 1.8B and 7B Models Designed for Seamless on-Device and Cloud Deployment",
-      "duplicate_of_url": "https://www.marktechpost.com/2026/01/04/tencent-researchers-release-tencent-hy-mt1-5-a-new-translation-models-featuring-1-8b-and-7b-models-designed-for-seamless-on-device-and-cloud-deployment/",
-      "duplicate_of_title": "Tencent Researchers Release Tencent HY-MT1.5: A New Translation Models Featuring 1.8B and 7B Models Designed for Seamless on-Device and Cloud Deployment",
-      "similarity": 0.9999997019767761,
-      "dedup_type": "semantic_auto",
-      "reason": "Auto-detected duplicate"
+      "removed_url": "https://aibusiness.com/intelligent-automation/nvidia-s-ai-driving-tech-debuts-in-mercedes-cla-by-2026",
+      "removed_title": "Nvidia's AI driving tech to debut in Mercedes CLA in 2026",
+      "duplicate_of_url": "https://analyticsindiamag.com/ai-news-updates/nvidia-drive-av-software-makes-production-debut-in-new-mercedes-benz-cla/",
+      "duplicate_of_title": "NVIDIA DRIVE AV Software Makes Production Debut in New Mercedes-Benz CLA",
+      "similarity": 0.8392909169197083,
+      "dedup_type": "semantic_llm",
+      "reason": "Both articles report the same announcement: Nvidia's autonomous driving technology (Alpamayo/DRIVE AV) making its production debut in the Mercedes-Benz CLA in 2026. They cover the identical partnership and timeline, just with slightly different technical terminology and emphasis."
     },
     {
       "removed_url": "https://www.rundown.ai/articles/alexa-comes-for-chatgpts-web-turf",
       "removed_title": "Alexa+ comes for ChatGPT's web turf",
       "duplicate_of_url": "https://techcrunch.com/2026/01/05/alexa-without-an-echo-amazons-ai-chatbot-comes-to-the-web-and-a-revamped-alexa-app/",
       "duplicate_of_title": "Amazon’s AI assistant comes to the web with Alexa.com",
-      "similarity": 0.7970397472381592,
+      "similarity": 0.7980166673660278,
       "dedup_type": "semantic_llm",
-      "reason": "Both articles cover the same specific event: Amazon's launch of Alexa.com and the Alexa+ web-based AI assistant. They report on the same product announcement with overlapping details about partnerships (Expedia, Yelp, Square) and the platform's capabilities. The articles are from different sources (Rundown vs TechCrunch) covering the same news event on consecutive dates."
-    },
-    {
-      "removed_url": "https://x.com/SawyerMerritt/status/2008326118542073884",
-      "removed_title": "NEWS: Nvidia has released a new video of its next-generation Rubin chips, which are 5X more powerful...",
-      "duplicate_of_url": "https://techcrunch.com/2026/01/05/nvidia-launches-powerful-new-rubin-chip-architecture/",
-      "duplicate_of_title": "Nvidia launches powerful new Rubin chip architecture",
-      "similarity": 0.8393977880477905,
-      "dedup_type": "semantic_llm",
-      "reason": "Both articles cover Nvidia's announcement of its next-generation Rubin chips. They report the same specific product launch with consistent details (5x more powerful than Blackwell, production underway, pod configuration with GPUs). Despite minor variations in framing (one mentions CES 2026 venue, the other emphasizes CEO demonstration), they are reporting the same announcement from different sources on the same date."
+      "reason": "Both articles report the same news event: Amazon launching Alexa.com (and revamped Alexa mobile app) with its Alexa+ AI assistant as a web-based interface. They cover the same product launch with similar details about integrations and capabilities, published within one day of each other."
     }
   ]
 }
