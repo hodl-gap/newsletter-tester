@@ -6,9 +6,20 @@ with the required columns. Mirrors build_output_dataframe.py but
 adapted for Twitter-specific fields.
 """
 
+import re
 from typing import TypedDict
 
 from src.tracking import debug_log, track_time
+
+
+# Patterns that indicate a failed/error summary from the LLM
+FAILED_SUMMARY_PATTERNS = [
+    r"^Unable to (?:process|summarize)",
+    r"insufficient (?:content|information)",
+    r"(?:corrupted|encrypted|unreadable)",
+    r"^This page contains only",
+    r"making summarization impossible",
+]
 
 
 class OutputRecord(TypedDict):
@@ -23,25 +34,63 @@ class OutputRecord(TypedDict):
     title: str          # Original tweet text
 
 
+def _is_failed_summary(contents: str) -> bool:
+    """
+    Check if summary is an LLM error message rather than actual content.
+
+    The LLM sometimes generates error messages like "Unable to process: ..."
+    when tweet content is corrupted or insufficient. These should be
+    filtered out and moved to discarded articles.
+
+    Args:
+        contents: The summary text to check
+
+    Returns:
+        True if the summary appears to be a failure/error message
+    """
+    if not contents or len(contents.strip()) < 10:
+        return True
+    for pattern in FAILED_SUMMARY_PATTERNS:
+        if re.search(pattern, contents, re.IGNORECASE):
+            return True
+    return False
+
+
 def build_twitter_output(state: dict) -> dict:
     """
     Build the final output data in DataFrame-ready format.
 
     Args:
-        state: Pipeline state with 'enriched_articles'
+        state: Pipeline state with 'enriched_articles' and 'discarded_articles'
 
     Returns:
-        Dict with 'output_data' list of OutputRecord
+        Dict with 'output_data' list of OutputRecord and updated 'discarded_articles'
     """
     with track_time("build_twitter_output"):
         debug_log("[NODE: build_twitter_output] Entering")
 
         enriched_articles = state.get("enriched_articles", [])
+        existing_discards = state.get("discarded_articles", [])
+
         debug_log(f"[NODE: build_twitter_output] Processing {len(enriched_articles)} tweets")
 
         output_data: list[OutputRecord] = []
+        failed_summary_discards: list[dict] = []
 
         for tweet in enriched_articles:
+            contents = tweet.get("contents", "")
+
+            # Check for failed summaries (LLM error messages)
+            if _is_failed_summary(contents):
+                failed_summary_discards.append({
+                    "source_name": tweet.get("handle", tweet.get("source_name", "Unknown")),
+                    "title": tweet.get("full_text", tweet.get("title", ""))[:100],
+                    "url": tweet.get("url", tweet.get("link", "")),
+                    "pub_date": tweet.get("pub_date", ""),
+                    "discard_reason": f"failed_summary: {contents[:100]}..." if len(contents) > 100 else f"failed_summary: {contents}",
+                })
+                continue  # Skip adding to output
+
             # Truncate tweet text for title (first 100 chars)
             full_text = tweet.get("full_text", tweet.get("title", ""))
             title = full_text[:100] + "..." if len(full_text) > 100 else full_text
@@ -52,7 +101,7 @@ def build_twitter_output(state: dict) -> dict:
                 "region": _format_region(tweet.get("region", "unknown")),
                 "category": _format_category(tweet.get("category", "other")),
                 "layer": _format_layer(tweet.get("layer", "b2b_apps")),
-                "contents": tweet.get("contents", ""),
+                "contents": contents,
                 "url": tweet.get("url", tweet.get("link", "")),
                 "title": title,
             }
@@ -61,12 +110,22 @@ def build_twitter_output(state: dict) -> dict:
         # Sort by date (newest first)
         output_data.sort(key=lambda x: x["date"], reverse=True)
 
+        # Log discards
+        if failed_summary_discards:
+            debug_log(f"[NODE: build_twitter_output] Discarded {len(failed_summary_discards)} tweets with failed summaries")
+
         debug_log(f"[NODE: build_twitter_output] Output: {len(output_data)} records")
 
         # Log summary statistics
         _log_summary(output_data)
 
-        return {"output_data": output_data}
+        # Combine with existing discards
+        all_discards = existing_discards + failed_summary_discards
+
+        return {
+            "output_data": output_data,
+            "discarded_articles": all_discards,
+        }
 
 
 def _format_region(region: str) -> str:

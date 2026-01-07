@@ -10,7 +10,15 @@ Extract three fields from each article: **region**, **category**, and **layer**.
 
 ### region
 
-The geographic region **MENTIONED IN THE ARTICLE CONTENT** (not where the publication is based).
+The geographic region where the **PRIMARY COMPANY is headquartered** (company nationality).
+
+**Classification Rule**: Always use the company's home country/headquarters, NOT the event location or activity location.
+
+Examples:
+- Korean company presenting at CES (USA) → `east_asia` (company is Korean)
+- Japanese company expanding to Africa → `east_asia` (company is Japanese)
+- African startup raising funds in Silicon Valley → `africa` (company is African)
+- US company opening office in Singapore → `north_america` (company is American)
 
 Allowed values:
 - `north_america` - USA, Canada, Mexico
@@ -22,10 +30,8 @@ Allowed values:
 - `southeast_asia` - Singapore, Indonesia, Vietnam, Thailand, Malaysia, Philippines
 - `east_asia` - China, Japan, South Korea, Taiwan, Hong Kong
 - `oceania` - Australia, New Zealand
-- `global` - Multiple regions or worldwide scope
-- `unknown` - Cannot determine from content
-
-**Important**: Look for company headquarters, deal locations, market focus. If the article mentions "Silicon Valley" or a US company, use `north_america`. If it mentions a funding round in India, use `south_asia`.
+- `global` - Article covers multiple companies from different regions equally
+- `unknown` - Cannot determine company's headquarters from content
 
 ### category
 
@@ -91,8 +97,8 @@ Return ONLY valid JSON:
 |-------|--------|----------|-------|
 | "Anthropic raises $2B led by Google" | north_america | funding | foundation_models |
 | "Indian AI startup Krutrim valued at $1B" | south_asia | funding | foundation_models |
-| "NVIDIA opens new data center in Singapore" | southeast_asia | expansion | chips_infra |
-| "Salesforce acquires AI startup for $500M" | north_america | acquisition | b2b_apps |
-| "OpenAI launches ChatGPT Enterprise" | global | product_launch | foundation_models |
-| "Hugging Face raises $235M Series D" | north_america | funding | finetuning_mlops |
+| "NVIDIA opens new data center in Singapore" | north_america | expansion | chips_infra |
+| "Korean robotics firm showcases at CES 2026" | east_asia | product_launch | b2b_apps |
+| "Japanese AI company expands to Africa market" | east_asia | expansion | b2b_apps |
+| "African fintech startup raises Series A in NYC" | africa | funding | b2b_apps |
 | "Korean AI firm Upstage partners with LG" | east_asia | partnership | foundation_models |

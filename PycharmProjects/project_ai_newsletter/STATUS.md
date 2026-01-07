@@ -1033,17 +1033,14 @@ REQUEST_TIMEOUT = 20  # Request timeout in seconds
    - Filter correctly discarded "Grok sexualized photos" scandal stories
    - Kept business news: "xAI launches Grok Business and Enterprise"
    - Monitor for edge cases where scandal/controversy slips through
-   - **Fix region classification errors:**
-     - Korean news incorrectly categorized as "South Asia" (should be "East Asia")
-     - **Clarify region definition:** company HQ vs. activity location?
-       - Example: SORA Technology (Japan-based) raising funds for Africa operations → classified as "Africa"
-       - Should this be "East Asia" (HQ) or "Africa" (activity) or both?
-     - Review region extraction prompt for geographic accuracy
-     - Consider validating region against source country as sanity check
-   - **Fix "Unable to summarize" failures:**
-     - Example: AI Business NVIDIA article → "Unable to summarize - insufficient full content provided"
-     - If recurring, articles with failed summaries should be discarded (not kept with placeholder text)
-     - Add post-processing validation to filter out articles with invalid/failed summaries
+   - ~~**Fix region classification errors:**~~ (Done 2026-01-07)
+     - Updated `extract_metadata_system_prompt.md` to classify by **company headquarters/nationality**
+     - Region = where the primary company is headquartered, NOT event/activity location
+     - Examples: Korean company at CES → East Asia, Japanese company in Africa → East Asia
+   - ~~**Fix "Unable to summarize" failures:**~~ (Done 2026-01-07)
+     - Added `_is_failed_summary()` validation in `build_output_dataframe.py` and `build_twitter_output.py`
+     - Failed summaries now filtered out and moved to `discarded_articles` with reason `"failed_summary: ..."`
+     - Patterns detected: "Unable to process/summarize", "insufficient content", "corrupted/encrypted"
 7. ~~**FIX: Twitter scraper returns old/curated tweets instead of chronological timeline**~~ (Done 2026-01-06)
    - Fixed via CDP cookie injection from authenticated Chrome browser
    - See "Twitter Scraper Fixed" section under Twitter Pipeline for details
