@@ -1,0 +1,242 @@
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          AI NEWSLETTER AGGREGATOR - WORKFLOW DIAGRAM                         │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+
+                                      ┌─────────────────────┐
+                                      │   input_urls.json   │
+                                      └──────────┬──────────┘
+                                                 │
+                                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                             LAYER 1: RSS DISCOVERY                                          │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                             │
+│   load_urls ──► test_main_rss ──► scan_rss_directories ──► test_ai_category ──►            │
+│                                                                                             │
+│       ──► discover_with_agent ──► classify_all_feeds ──► merge_results ──► save_results    │
+│                                                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+                                    ┌────────────────────────┐
+                                    │  rss_availability.json │
+                                    └────────────────────────┘
+                                                 │
+                        ┌────────────────────────┼────────────────────────┐
+                        │                        │                        │
+               status: "available"      status: "unavailable"             │
+                        │                        │                        │
+                        ▼                        ▼                        │
+┌─────────────────────────────────┐ ┌─────────────────────────────────┐   │
+│      LAYER 2: RSS CONTENT       │ │   HTML LAYER 1: SCRAPABILITY    │   │
+│         AGGREGATION             │ │         DISCOVERY               │   │
+├─────────────────────────────────┤ ├─────────────────────────────────┤   │
+│                                 │ │                                 │   │
+│ load_available_feeds            │ │ load_unavailable_sources        │   │
+│         │                       │ │         │                       │   │
+│         ▼                       │ │         ▼                       │   │
+│ fetch_rss_content               │ │ test_http_accessibility         │   │
+│         │                       │ │         │                       │   │
+│         ▼                       │ │         ▼                       │   │
+│ check_url_duplicates            │ │ analyze_listing_page (LLM)      │   │
+│         │                       │ │         │                       │   │
+│         ▼                       │ │         ▼                       │   │
+│ filter_by_date                  │ │ analyze_article_page (LLM)      │   │
+│         │                       │ │         │                       │   │
+│         ▼                       │ │         ▼                       │   │
+│ filter_business_news (LLM)      │ │ classify_html_source            │   │
+│         │                       │ │         │                       │   │
+│         ▼                       │ │         ▼                       │   │
+│ extract_metadata (LLM)          │ │ merge_html_results              │   │
+│         │                       │ │         │                       │   │
+│         ▼                       │ │         ▼                       │   │
+│ generate_summaries (LLM)        │ │ save_html_availability          │   │
+│         │                       │ │                                 │   │
+│         ▼                       │ └─────────────────────────────────┘   │
+│ build_output_dataframe          │                  │                    │
+│         │                       │                  ▼                    │
+│         ▼                       │     ┌────────────────────────┐        │
+│ save_aggregated_content         │     │ html_availability.json │        │
+│                                 │     └────────────────────────┘        │
+└─────────────────────────────────┘                  │                    │
+           │                              status: "scrapable"             │
+           │                                         │                    │
+           │                                         ▼                    │
+           │            ┌─────────────────────────────────────────────┐   │
+           │            │     HTML LAYER 2: CONTENT SCRAPING          │   │
+           │            ├─────────────────────────────────────────────┤   │
+           │            │                                             │   │
+           │            │ load_scrapable_sources                      │   │
+           │            │         │                                   │   │
+           │            │         ▼                                   │   │
+           │            │ fetch_listing_pages                         │   │
+           │            │         │                                   │   │
+           │            │         ▼                                   │   │
+           │            │ extract_article_urls                        │   │
+           │            │         │                                   │   │
+           │            │         ▼                                   │   │
+           │            │ fetch_html_articles                         │   │
+           │            │         │                                   │   │
+           │            │         ▼                                   │   │
+           │            │ parse_article_content                       │   │
+           │            │         │                                   │   │
+           │            │         ▼                                   │   │
+           │            │ adapt_html_to_articles                      │   │
+           │            │         │                                   │   │
+           │            │         ▼                                   │   │
+           │            │ filter_by_date ──► filter_business_news ──► │   │
+           │            │ extract_metadata ──► generate_summaries ──► │   │
+           │            │ build_output_dataframe ──► save_html_content│   │
+           │            │                                             │   │
+           │            └─────────────────────────────────────────────┘   │
+           │                               │                              │
+           ▼                               ▼                              │
+┌────────────────────┐        ┌────────────────────┐                      │
+│ aggregated_news.json│       │   html_news.json   │                      │
+│ discarded_news.csv │        │ html_discarded.csv │                      │
+└────────────────────┘        └────────────────────┘                      │
+           │                               │                              │
+           │                               │                              │
+           │                               │         ┌────────────────────┘
+           │                               │         │
+           │                               │         ▼
+           │                               │  ┌──────────────────────────┐
+           │                               │  │ twitter_accounts.json    │
+           │                               │  └──────────────────────────┘
+           │                               │              │
+           │                               │              ▼
+           │            ┌──────────────────────────────────────────────────────┐
+           │            │          TWITTER LAYER 1: ACCOUNT DISCOVERY          │
+           │            ├──────────────────────────────────────────────────────┤
+           │            │                                                      │
+           │            │ load_twitter_accounts ──► fetch_twitter_content      │
+           │            │ (Playwright GraphQL intercept + cookie auth)         │
+           │            │         │                                            │
+           │            │         ▼                                            │
+           │            │ analyze_account_activity                             │
+           │            │         │                                            │
+           │            │         ▼                                            │
+           │            │ save_twitter_availability                            │
+           │            │                                                      │
+           │            └──────────────────────────────────────────────────────┘
+           │                               │
+           │                               ▼
+           │                  ┌─────────────────────────────┐
+           │                  │ twitter_availability.json   │
+           │                  │ twitter_raw_cache.json      │
+           │                  └─────────────────────────────┘
+           │                               │
+           │                       status: "active"
+           │                               │
+           │                               ▼
+           │            ┌──────────────────────────────────────────────────────┐
+           │            │       TWITTER LAYER 2: CONTENT AGGREGATION           │
+           │            ├──────────────────────────────────────────────────────┤
+           │            │                                                      │
+           │            │ load_available_twitter_accounts                      │
+           │            │         │                                            │
+           │            │         ▼                                            │
+           │            │ load_cached_tweets (from twitter_raw_cache.json)     │
+           │            │         │                                            │
+           │            │         ▼                                            │
+           │            │ filter_by_date_twitter                               │
+           │            │         │                                            │
+           │            │         ▼                                            │
+           │            │ adapt_tweets_to_articles                             │
+           │            │         │                                            │
+           │            │         ▼                                            │
+           │            │ filter_business_news ──► extract_metadata ──►        │
+           │            │ generate_summaries ──► build_twitter_output ──►      │
+           │            │ save_twitter_content                                 │
+           │            │                                                      │
+           │            └──────────────────────────────────────────────────────┘
+           │                               │
+           │                               ▼
+           │                  ┌──────────────────────────┐
+           │                  │   twitter_news.json      │
+           │                  │ twitter_discarded.csv    │
+           │                  └──────────────────────────┘
+           │                               │
+           └───────────────────┬───────────┴───────────────────────────────────┐
+                               │                                               │
+                               ▼                                               │
+┌──────────────────────────────────────────────────────────────────────────────┴──────────────┐
+│                        LAYER 3: CROSS-PIPELINE DEDUPLICATION                                │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                             │
+│  merge_pipeline_outputs ◄── aggregated_news.json + html_news.json + twitter_news.json      │
+│  (URL dedup: RSS > HTML > Twitter priority)                                                │
+│           │                                                                                 │
+│           ▼                                                                                 │
+│  generate_embeddings (OpenAI text-embedding-3-small)                                        │
+│           │                                                                                 │
+│           ▼                                                                                 │
+│  load_historical_embeddings (from articles.db, last 48h)                                    │
+│           │                                                                                 │
+│           ▼                                                                                 │
+│  compare_similarities                                                                       │
+│       │           │           │                                                             │
+│   <0.75       0.75-0.90     >0.90                                                           │
+│   unique      ambiguous    duplicate                                                        │
+│       │           │           │                                                             │
+│       │           ▼           │                                                             │
+│       │   llm_confirm_duplicates (Haiku)                                                    │
+│       │           │           │                                                             │
+│       └─────►─────┴─────◄─────┘                                                             │
+│               │                                                                             │
+│               ▼                                                                             │
+│       store_articles (SQLite: articles + discarded_articles + dedup_log)                    │
+│               │                                                                             │
+│               ▼                                                                             │
+│       export_dedup_report                                                                   │
+│                                                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+              ┌─────────────────────────────────────────┐
+              │  merged_news_deduped.json/.csv          │
+              │  dedup_report.json                      │
+              │  articles.db (SQLite)                   │
+              └─────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    LLM NODES LEGEND                                         │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│  (LLM) = Uses Claude/OpenAI                                                                 │
+│                                                                                             │
+│  ┌───────────────────────────┬───────────────────────────────┬──────────────────────────┐   │
+│  │         Node              │          Model                │        Purpose           │   │
+│  ├───────────────────────────┼───────────────────────────────┼──────────────────────────┤   │
+│  │ filter_business_news      │ claude-haiku-4.5              │ Binary classification    │   │
+│  │ extract_metadata          │ claude-haiku-4.5              │ Region/category/layer    │   │
+│  │ generate_summaries        │ claude-haiku-4.5              │ 1-2 sentence English     │   │
+│  │ analyze_listing_page      │ claude-haiku-4.5              │ URL pattern extraction   │   │
+│  │ analyze_article_page      │ claude-haiku-4.5              │ CSS selector extraction  │   │
+│  │ llm_confirm_duplicates    │ claude-haiku-4.5              │ Ambiguous dedup confirm  │   │
+│  │ generate_embeddings       │ text-embedding-3-small        │ Semantic vectors         │   │
+│  └───────────────────────────┴───────────────────────────────┴──────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   SHARED NODES                                              │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│  These L2 nodes are reused across RSS, HTML, and Twitter pipelines:                         │
+│  • filter_by_date           • filter_business_news     • extract_metadata                   │
+│  • generate_summaries       • build_output_dataframe                                        │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+SUMMARY OF PIPELINES
+====================
+
+| Pipeline         | Nodes    | Purpose                                        |
+|------------------|----------|------------------------------------------------|
+| Layer 1 (RSS)    | 8 nodes  | Discover RSS feeds from input URLs             |
+| HTML Layer 1     | 7 nodes  | Test unavailable sources for HTTP scraping     |
+| HTML Layer 2     | 12 nodes | Scrape & process articles from scrapable sources|
+| Layer 2 (RSS)    | 9 nodes  | Fetch RSS content, filter, enrich with metadata|
+| Twitter Layer 1  | 4 nodes  | Scrape accounts, analyze activity, cache tweets|
+| Twitter Layer 2  | 9 nodes  | Process cached tweets through LLM pipeline     |
+| Layer 3 (Dedup)  | 7 nodes  | Merge all sources, semantic deduplication      |

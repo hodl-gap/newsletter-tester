@@ -180,8 +180,8 @@ def _classify_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool,
     Returns:
         Tuple of (success: bool, classifications: dict)
     """
-    # Load system prompt
-    system_prompt = load_prompt("filter_business_news_system_prompt.md")
+    # Load system prompt (generic name - actual prompt content is per-config)
+    system_prompt = load_prompt("filter_system_prompt.md")
 
     # Prepare user message
     articles_for_llm = [

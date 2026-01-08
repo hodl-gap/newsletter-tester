@@ -15,6 +15,7 @@ from typing import TypedDict, Any
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG
 from src.functions.load_unavailable_sources import load_unavailable_sources, SourceInfo
 from src.functions.test_http_accessibility import test_http_accessibility, AccessibilityResult
 from src.functions.analyze_listing_page import analyze_listing_page, ListingAnalysis
@@ -75,7 +76,7 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(url_filter: list[str] | None = None) -> dict:
+def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> dict:
     """
     Run the HTML scrapability discovery pipeline.
 
@@ -86,13 +87,18 @@ def run(url_filter: list[str] | None = None) -> dict:
         url_filter: Optional list of URL substrings to filter sources.
                    Only sources containing any of these substrings will be tested.
                    Example: ['pulsenews', 'rundown']
+        config: Configuration name (default: business_news).
 
     Returns:
         Final pipeline state with results.
     """
+    # Set active configuration
+    set_config(config)
+
     with track_time("html_layer1_pipeline"):
         debug_log("=" * 60)
         debug_log("HTML LAYER 1: SCRAPABILITY DISCOVERY")
+        debug_log(f"CONFIG: {config}")
         debug_log("=" * 60)
 
         # Reset cost tracker
@@ -130,13 +136,12 @@ def run(url_filter: list[str] | None = None) -> dict:
 # =============================================================================
 
 if __name__ == "__main__":
-    import sys
+    import argparse
 
-    # Parse command line arguments
-    url_filter = None
-    if len(sys.argv) > 1:
-        # Support: python html_layer1_orchestrator.py pulsenews rundown
-        url_filter = sys.argv[1:]
-        print(f"Filtering to URLs containing: {url_filter}")
+    parser = argparse.ArgumentParser(description="Run HTML scrapability discovery (HTML Layer 1)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--url-filter", nargs="*", help="Filter for specific URLs")
 
-    run(url_filter=url_filter)
+    args = parser.parse_args()
+
+    run(config=args.config, url_filter=args.url_filter)

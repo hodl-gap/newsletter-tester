@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from src.config import get_data_dir
 from src.database import ArticleDatabase
 from src.tracking import debug_log, track_time, cost_tracker
 
@@ -32,9 +33,8 @@ def save_twitter_content(state: dict) -> dict:
 
         debug_log(f"[NODE: save_twitter_content] Saving {len(output_data)} records")
 
-        # Prepare output paths
-        data_dir = Path("data")
-        data_dir.mkdir(exist_ok=True)
+        # Prepare output paths (get_data_dir creates the directory if needed)
+        data_dir = get_data_dir()
 
         json_path = data_dir / "twitter_news.json"
         csv_path = data_dir / "twitter_news.csv"

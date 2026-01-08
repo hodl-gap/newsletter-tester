@@ -310,12 +310,61 @@ def _parse_twitter_responses(responses: list[dict], handle: str) -> list[RawTwee
                         entries = [entry]
 
                 for entry in entries:
+                    # Handle individual tweet items (TimelineTimelineItem)
                     tweet = _parse_tweet_entry(entry, handle)
                     if tweet:
                         tweets.append(tweet)
 
+                    # Handle conversation/thread modules (TimelineTimelineModule)
+                    module_tweets = _parse_module_entry(entry, handle)
+                    tweets.extend(module_tweets)
+
         except Exception as e:
             debug_log(f"[NODE: fetch_twitter_content] Error parsing response: {e}", "warning")
+
+    return tweets
+
+
+def _parse_module_entry(entry: dict, handle: str) -> list[RawTweet]:
+    """
+    Parse a TimelineTimelineModule entry (conversation thread) to extract tweets.
+
+    Twitter groups tweets into "profile-conversation" modules for threads.
+    Each module contains multiple tweet items.
+
+    Args:
+        entry: Module entry from API response
+        handle: Twitter handle
+
+    Returns:
+        List of RawTweet dicts
+    """
+    if not entry:
+        return []
+
+    content = entry.get("content", {})
+    if content.get("entryType") != "TimelineTimelineModule":
+        return []
+
+    # Only parse profile-conversation modules (not who-to-follow, etc.)
+    entry_id = entry.get("entryId", "")
+    if "profile-conversation" not in entry_id:
+        return []
+
+    tweets = []
+    items = content.get("items", [])
+
+    for item_wrapper in items:
+        item = item_wrapper.get("item", {})
+        item_content = item.get("itemContent", {})
+
+        if item_content.get("itemType") != "TimelineTweet":
+            continue
+
+        tweet_result = item_content.get("tweet_results", {}).get("result", {})
+        tweet = _extract_tweet_from_result(tweet_result, handle)
+        if tweet:
+            tweets.append(tweet)
 
     return tweets
 
@@ -343,6 +392,20 @@ def _parse_tweet_entry(entry: dict, handle: str) -> Optional[RawTweet]:
         return None
 
     tweet_result = item.get("tweet_results", {}).get("result", {})
+    return _extract_tweet_from_result(tweet_result, handle)
+
+
+def _extract_tweet_from_result(tweet_result: dict, handle: str) -> Optional[RawTweet]:
+    """
+    Extract tweet data from a tweet_results.result object.
+
+    Args:
+        tweet_result: The result object containing tweet data
+        handle: Twitter handle
+
+    Returns:
+        RawTweet dict or None if not a valid tweet
+    """
     if not tweet_result:
         return None
 

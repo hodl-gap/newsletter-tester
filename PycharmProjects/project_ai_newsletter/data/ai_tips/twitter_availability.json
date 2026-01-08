@@ -1,0 +1,23 @@
+{
+  "results": [
+    {
+      "handle": "@Sumanth_077",
+      "category": "AI tips",
+      "status": "active",
+      "last_tweet_date": "2026-01-07",
+      "tweets_in_window": 9,
+      "avg_tweets_per_day": 0.64,
+      "notes": null,
+      "last_checked": "2026-01-08T04:38:43Z"
+    }
+  ],
+  "timestamp": "2026-01-08T04:38:43Z",
+  "total": 1,
+  "active": 1,
+  "inactive": 0,
+  "error": 0,
+  "settings": {
+    "inactivity_threshold_days": 14,
+    "scrape_delay_seconds": 30
+  }
+}

@@ -10,14 +10,18 @@ import csv
 from datetime import datetime
 from pathlib import Path
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time, cost_tracker
 
 
-# Output paths
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
-DEDUP_JSON_PATH = DATA_DIR / "merged_news_deduped.json"
-DEDUP_CSV_PATH = DATA_DIR / "merged_news_deduped.csv"
-REPORT_PATH = DATA_DIR / "dedup_report.json"
+def _get_output_paths() -> tuple[Path, Path, Path]:
+    """Get output paths for dedup report files."""
+    data_dir = get_data_dir()
+    return (
+        data_dir / "merged_news_deduped.json",
+        data_dir / "merged_news_deduped.csv",
+        data_dir / "dedup_report.json",
+    )
 
 
 def export_dedup_report(state: dict) -> dict:
@@ -43,6 +47,8 @@ def export_dedup_report(state: dict) -> dict:
     """
     with track_time("export_dedup_report"):
         debug_log("[NODE: export_dedup_report] Entering")
+
+        dedup_json_path, dedup_csv_path, report_path = _get_output_paths()
 
         final_unique = state.get("final_unique", [])
         confirmed_duplicates = state.get("confirmed_duplicates", [])
@@ -110,25 +116,23 @@ def export_dedup_report(state: dict) -> dict:
                 "reason": dup.get("llm_reason", "Auto-detected duplicate")
             })
 
-        # Save report
-        DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-        with open(REPORT_PATH, "w", encoding="utf-8") as f:
+        # Save report (get_data_dir creates the directory if needed)
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
-        debug_log(f"[NODE: export_dedup_report] Saved report to {REPORT_PATH}")
+        debug_log(f"[NODE: export_dedup_report] Saved report to {report_path}")
 
         # Save deduplicated articles JSON
-        _save_deduped_json(final_unique, report)
+        _save_deduped_json(final_unique, report, dedup_json_path)
 
         # Save deduplicated articles CSV
-        _save_deduped_csv(final_unique)
+        _save_deduped_csv(final_unique, dedup_csv_path)
 
         debug_log(f"[NODE: export_dedup_report] Exported {len(final_unique)} unique articles")
 
         return {"dedup_report": report}
 
 
-def _save_deduped_json(articles: list[dict], report: dict):
+def _save_deduped_json(articles: list[dict], report: dict, output_path: Path):
     """Save deduplicated articles to JSON."""
     # Clean articles (remove embedding)
     clean_articles = []
@@ -146,13 +150,13 @@ def _save_deduped_json(articles: list[dict], report: dict):
         "articles": clean_articles
     }
 
-    with open(DEDUP_JSON_PATH, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
-    debug_log(f"[NODE: export_dedup_report] Saved JSON to {DEDUP_JSON_PATH}")
+    debug_log(f"[NODE: export_dedup_report] Saved JSON to {output_path}")
 
 
-def _save_deduped_csv(articles: list[dict]):
+def _save_deduped_csv(articles: list[dict], output_path: Path):
     """Save deduplicated articles to CSV."""
     if not articles:
         return
@@ -160,7 +164,7 @@ def _save_deduped_csv(articles: list[dict]):
     # Define column order (includes source_type for multi-source tracking)
     columns = ["date", "source", "source_type", "region", "category", "layer", "title", "contents", "url"]
 
-    with open(DEDUP_CSV_PATH, "w", encoding="utf-8", newline="") as f:
+    with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
 
@@ -179,4 +183,4 @@ def _save_deduped_csv(articles: list[dict]):
             }
             writer.writerow(row)
 
-    debug_log(f"[NODE: export_dedup_report] Saved CSV to {DEDUP_CSV_PATH}")
+    debug_log(f"[NODE: export_dedup_report] Saved CSV to {output_path}")

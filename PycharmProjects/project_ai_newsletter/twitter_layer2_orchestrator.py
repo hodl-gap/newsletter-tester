@@ -23,6 +23,7 @@ from typing import TypedDict, Optional
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG
 from src.tracking import debug_log, reset_cost_tracker, cost_tracker, track_time
 
 # Import Layer 2 specific node functions
@@ -145,7 +146,11 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(handle_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> dict:
+def run(
+    handle_filter: Optional[list[str]] = None,
+    max_age_hours: int = 24,
+    config: str = DEFAULT_CONFIG
+) -> dict:
     """
     Run the Twitter Layer 2 aggregation pipeline.
 
@@ -156,12 +161,17 @@ def run(handle_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> d
                       If None, all active accounts from L1 are processed.
         max_age_hours: Maximum tweet age in hours. Tweets older than this
                       are dropped before LLM filtering. Default: 24.
+        config: Configuration name (default: business_news).
 
     Returns:
         Final state with aggregated content.
     """
+    # Set active configuration
+    set_config(config)
+
     debug_log("=" * 60)
     debug_log("STARTING TWITTER LAYER 2 (CONTENT AGGREGATION)")
+    debug_log(f"CONFIG: {config}")
     if handle_filter:
         debug_log(f"HANDLE FILTER: {handle_filter}")
     debug_log(f"MAX AGE HOURS: {max_age_hours}")
@@ -201,7 +211,20 @@ def run(handle_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> d
 
 
 if __name__ == "__main__":
-    result = run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run Twitter content aggregation (Twitter Layer 2)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--handle-filter", nargs="*", help="Filter for specific handles")
+    parser.add_argument("--max-age-hours", type=int, default=24, help="Max tweet age in hours (default: 24)")
+
+    args = parser.parse_args()
+
+    result = run(
+        config=args.config,
+        handle_filter=args.handle_filter,
+        max_age_hours=args.max_age_hours
+    )
 
     # Print quick summary
     save_status = result.get("save_status", {})

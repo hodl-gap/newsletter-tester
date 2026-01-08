@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "timestamp": "2026-01-08T05:00:37.548848",
+    "total_articles": 2,
+    "dedup_summary": {
+      "total_input": 4,
+      "unique_kept": 2,
+      "duplicates_removed": 2,
+      "url_duplicates": 0,
+      "semantic_auto_duplicates": 2,
+      "semantic_llm_confirmed": 0,
+      "stored_to_db": 2
+    },
+    "cost": {
+      "total_cost": "$0.0000",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "llm_calls": 0
+    }
+  },
+  "articles": [
+    {
+      "date": "2026-01-08",
+      "source": "Hada News",
+      "region": "Global",
+      "category": "Other",
+      "layer": "B2B Applications",
+      "contents": "Learn how to detect AI-generated homework and academic dishonesty through an NYU professor's practical testing framework. The experiment reveals vulnerabilities in traditional grading systems when students use AI tools and demonstrates detection methods educators can implement.",
+      "url": "https://news.hada.io/topic?id=25656",
+      "title": "학생당 42센트로 AI 부정행위 잡기: NYU 교수의 AI 구술시험 실험",
+      "source_type": "rss"
+    },
+    {
+      "date": "2026-01-08",
+      "source": "Hada News",
+      "region": "Global",
+      "category": "Other",
+      "layer": "B2B Applications",
+      "contents": "Understand how Tailwind CSS optimized documentation for LLM training by implementing the /llms.txt endpoint standard. This approach consolidates all documentation pages into a structured format that improves AI model learning efficiency and reduces training data fragmentation.",
+      "url": "https://news.hada.io/topic?id=25650",
+      "title": "Tailwind 제작사, 엔지니어링 팀의 75% 해고",
+      "source_type": "rss"
+    }
+  ]
+}

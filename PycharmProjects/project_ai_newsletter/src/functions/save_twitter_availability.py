@@ -14,13 +14,18 @@ from pathlib import Path
 from typing import TypedDict
 from collections import defaultdict
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
-# Output file paths
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
-AVAILABILITY_FILE = DATA_DIR / "twitter_availability.json"
-CACHE_FILE = DATA_DIR / "twitter_raw_cache.json"
+def _get_availability_file() -> Path:
+    """Get path for twitter_availability.json."""
+    return get_data_dir() / "twitter_availability.json"
+
+
+def _get_cache_file() -> Path:
+    """Get path for twitter_raw_cache.json."""
+    return get_data_dir() / "twitter_raw_cache.json"
 
 
 class SaveStatus(TypedDict):
@@ -56,33 +61,34 @@ def save_twitter_availability(state: dict) -> dict:
         debug_log(f"[NODE: save_twitter_availability] Saving {len(activity_results)} accounts")
         debug_log(f"[NODE: save_twitter_availability] Caching {len(raw_tweets)} tweets")
 
+        availability_file = _get_availability_file()
+        cache_file = _get_cache_file()
+
         # Build availability JSON
         availability_data = _build_availability_json(activity_results, settings)
 
         # Merge with existing results
-        availability_data = _merge_with_existing(availability_data)
+        availability_data = _merge_with_existing(availability_data, availability_file)
 
         # Build cache JSON
         cache_data = _build_cache_json(raw_tweets, settings)
 
-        # Save files
-        DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-        with open(AVAILABILITY_FILE, "w", encoding="utf-8") as f:
+        # Save files (get_data_dir creates the directory if needed)
+        with open(availability_file, "w", encoding="utf-8") as f:
             json.dump(availability_data, f, indent=2, ensure_ascii=False)
-        debug_log(f"[NODE: save_twitter_availability] Saved: {AVAILABILITY_FILE}")
+        debug_log(f"[NODE: save_twitter_availability] Saved: {availability_file}")
 
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+        with open(cache_file, "w", encoding="utf-8") as f:
             json.dump(cache_data, f, indent=2, ensure_ascii=False)
-        debug_log(f"[NODE: save_twitter_availability] Saved: {CACHE_FILE}")
+        debug_log(f"[NODE: save_twitter_availability] Saved: {cache_file}")
 
         # Calculate stats
         active_count = sum(1 for r in availability_data["results"] if r["status"] == "active")
         inactive_count = sum(1 for r in availability_data["results"] if r["status"] == "inactive")
 
         save_status: SaveStatus = {
-            "availability_path": str(AVAILABILITY_FILE),
-            "cache_path": str(CACHE_FILE),
+            "availability_path": str(availability_file),
+            "cache_path": str(cache_file),
             "total_accounts": len(availability_data["results"]),
             "active_accounts": active_count,
             "inactive_accounts": inactive_count,
@@ -126,7 +132,7 @@ def _build_availability_json(activity_results: list[dict], settings: dict) -> di
     }
 
 
-def _merge_with_existing(new_data: dict) -> dict:
+def _merge_with_existing(new_data: dict, availability_file: Path) -> dict:
     """
     Merge new results with existing availability file.
 
@@ -135,16 +141,17 @@ def _merge_with_existing(new_data: dict) -> dict:
 
     Args:
         new_data: New availability data
+        availability_file: Path to the availability file
 
     Returns:
         Merged availability data
     """
-    if not AVAILABILITY_FILE.exists():
+    if not availability_file.exists():
         debug_log("[NODE: save_twitter_availability] No existing file, creating new")
         return new_data
 
     try:
-        with open(AVAILABILITY_FILE, "r", encoding="utf-8") as f:
+        with open(availability_file, "r", encoding="utf-8") as f:
             existing_data = json.load(f)
     except (json.JSONDecodeError, IOError) as e:
         debug_log(f"[NODE: save_twitter_availability] Error reading existing file: {e}", "warning")

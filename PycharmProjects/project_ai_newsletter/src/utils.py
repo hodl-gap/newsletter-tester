@@ -4,31 +4,48 @@ Utility functions for the project.
 
 from pathlib import Path
 
+from src.config import get_prompts_dir
+
 
 # =============================================================================
 # Prompt Loading
 # =============================================================================
 
-PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
+# Legacy prompts directory (for non-config-specific prompts like Layer 1/3)
+LEGACY_PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
 
 
 def load_prompt(filename: str) -> str:
     """
-    Load a prompt from the prompts/ directory.
+    Load a prompt from the current config's prompts directory.
+
+    Falls back to legacy prompts/ directory for non-config-specific prompts
+    (e.g., Layer 1 discovery prompts, Layer 3 dedup prompts).
 
     Args:
-        filename: Name of the prompt file (e.g., "summarize_system_prompt.md")
+        filename: Name of the prompt file (e.g., "filter_system_prompt.md")
 
     Returns:
         Prompt content as string.
 
     Raises:
-        FileNotFoundError: If the prompt file doesn't exist.
+        FileNotFoundError: If the prompt file doesn't exist in either location.
     """
-    prompt_path = PROMPTS_DIR / filename
-    if not prompt_path.exists():
-        raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
-    return prompt_path.read_text(encoding="utf-8")
+    # First, try config-specific prompts directory
+    config_prompt_path = get_prompts_dir() / filename
+    if config_prompt_path.exists():
+        return config_prompt_path.read_text(encoding="utf-8")
+
+    # Fall back to legacy prompts/ directory
+    legacy_prompt_path = LEGACY_PROMPTS_DIR / filename
+    if legacy_prompt_path.exists():
+        return legacy_prompt_path.read_text(encoding="utf-8")
+
+    raise FileNotFoundError(
+        f"Prompt file not found: {filename}\n"
+        f"  Checked: {config_prompt_path}\n"
+        f"  Checked: {legacy_prompt_path}"
+    )
 
 
 def load_prompt_with_vars(filename: str, **variables) -> str:

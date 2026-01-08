@@ -12,6 +12,7 @@ from typing import TypedDict
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, get_input_urls_path, get_data_dir, DEFAULT_CONFIG
 from src.functions.test_rss_preset import test_rss_preset, RSSTestResult
 from src.functions.test_ai_category import test_ai_category, AIFeedResult
 from src.functions.discover_rss_agent import discover_rss_agent, RSSDiscoveryResult
@@ -61,7 +62,7 @@ class RSSDiscoveryState(TypedDict):
 
 def load_urls(state: RSSDiscoveryState) -> dict:
     """
-    Load URLs from input_urls.json.
+    Load URLs from config's input_urls.json.
 
     NOTE: Layer 0 integration is disabled due to reliability issues.
     Previously checked source_quality.json first, now reads directly from input_urls.json.
@@ -69,10 +70,10 @@ def load_urls(state: RSSDiscoveryState) -> dict:
     with track_time("load_urls"):
         debug_log("[NODE: load_urls] Entering")
 
-        input_path = Path("data/input_urls.json")
+        input_path = get_input_urls_path()
 
-        # Load from input_urls.json (L0 disabled)
-        debug_log("[NODE: load_urls] Loading from input_urls.json (L0 disabled)")
+        # Load from config's input_urls.json
+        debug_log(f"[NODE: load_urls] Loading from {input_path}")
         with open(input_path) as f:
             data = json.load(f)
         urls = data.get("urls", [])
@@ -385,8 +386,7 @@ def save_results(state: RSSDiscoveryState) -> dict:
         debug_log("[NODE: save_results] Entering")
 
         new_results = state["final_results"]
-        output_path = Path("data/rss_availability.json")
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path = get_data_dir() / "rss_availability.json"
 
         # Load existing results if file exists
         existing_results = []
@@ -494,14 +494,18 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(url_filter: list[str] | None = None) -> dict:
+def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> dict:
     """
     Run the RSS discovery pipeline.
 
     Args:
         url_filter: Optional list of substrings to filter URLs.
                    Only URLs containing any of these substrings will be processed.
+        config: Configuration name (default: business_news).
     """
+    # Set active configuration
+    set_config(config)
+
     # Reset cost tracker for this run
     reset_cost_tracker()
 
@@ -510,6 +514,7 @@ def run(url_filter: list[str] | None = None) -> dict:
 
     debug_log("=" * 60)
     debug_log("RSS Discovery Pipeline - Layer 1 (v2)")
+    debug_log(f"CONFIG: {config}")
     if url_filter:
         debug_log(f"URL FILTER: {url_filter}")
     debug_log("=" * 60)
@@ -540,4 +545,12 @@ def run(url_filter: list[str] | None = None) -> dict:
 
 
 if __name__ == "__main__":
-    run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run RSS discovery pipeline (Layer 1)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--url-filter", nargs="*", help="Filter for specific URLs")
+
+    args = parser.parse_args()
+
+    run(config=args.config, url_filter=args.url_filter)

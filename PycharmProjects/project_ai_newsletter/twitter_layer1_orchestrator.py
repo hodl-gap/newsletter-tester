@@ -16,6 +16,7 @@ from typing import TypedDict, Optional
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG
 from src.tracking import debug_log, reset_cost_tracker, cost_tracker, track_time
 
 # Import node functions
@@ -85,7 +86,7 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(handle_filter: Optional[list[str]] = None) -> dict:
+def run(handle_filter: Optional[list[str]] = None, config: str = DEFAULT_CONFIG) -> dict:
     """
     Run the Twitter Layer 1 discovery pipeline.
 
@@ -93,12 +94,17 @@ def run(handle_filter: Optional[list[str]] = None) -> dict:
         handle_filter: Optional list of Twitter handles to filter for.
                       If None, all configured accounts are processed.
                       Uses substring matching (e.g., "OpenAI" matches "@OpenAI")
+        config: Configuration name (default: business_news).
 
     Returns:
         Final state with activity results and save status.
     """
+    # Set active configuration
+    set_config(config)
+
     debug_log("=" * 60)
     debug_log("STARTING TWITTER LAYER 1 (ACCOUNT DISCOVERY)")
+    debug_log(f"CONFIG: {config}")
     if handle_filter:
         debug_log(f"HANDLE FILTER: {handle_filter}")
     debug_log("=" * 60)
@@ -139,7 +145,15 @@ def run(handle_filter: Optional[list[str]] = None) -> dict:
 
 
 if __name__ == "__main__":
-    result = run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run Twitter account discovery (Twitter Layer 1)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--handle-filter", nargs="*", help="Filter for specific handles")
+
+    args = parser.parse_args()
+
+    result = run(config=args.config, handle_filter=args.handle_filter)
 
     # Print quick summary
     save_status = result.get("save_status", {})

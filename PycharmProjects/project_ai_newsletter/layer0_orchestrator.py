@@ -15,6 +15,7 @@ from typing import TypedDict
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG, get_input_urls_path, get_data_dir
 from src.functions.fetch_source_reputation import fetch_source_reputation, SourceReputation
 from src.functions.assess_credibility import assess_credibility, CredibilityAssessment
 from src.tracking import track_time, cost_tracker, reset_cost_tracker, get_logger, debug_log
@@ -40,7 +41,7 @@ def load_urls(state: Layer0State) -> dict:
     with track_time("load_urls"):
         debug_log("[NODE: load_urls] Entering")
 
-        input_path = Path("data/input_urls.json")
+        input_path = get_input_urls_path()
         with open(input_path) as f:
             data = json.load(f)
 
@@ -89,8 +90,7 @@ def save_quality_results(state: Layer0State) -> dict:
         debug_log("[NODE: save_quality_results] Entering")
 
         assessments = state.get("assessments", [])
-        output_path = Path("data/source_quality.json")
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path = get_data_dir() / "source_quality.json"
 
         # Build results with reputation info
         reputation_map = {s["url"]: s for s in state.get("source_reputation", [])}
@@ -164,17 +164,21 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(url_filter: list[str] | None = None) -> dict:
+def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> dict:
     """
     Run the Layer 0 source quality assessment pipeline.
 
     Args:
         url_filter: Optional list of substrings to filter URLs.
                    Only URLs containing any of these substrings will be processed.
+        config: Configuration name (default: business_news).
 
     Returns:
         Final pipeline state.
     """
+    # Set active configuration
+    set_config(config)
+
     # Reset cost tracker for this run
     reset_cost_tracker()
 
@@ -183,6 +187,7 @@ def run(url_filter: list[str] | None = None) -> dict:
 
     debug_log("=" * 60)
     debug_log("Layer 0: Source Quality Assessment (Search-Based)")
+    debug_log(f"CONFIG: {config}")
     if url_filter:
         debug_log(f"URL FILTER: {url_filter}")
     debug_log("=" * 60)
@@ -209,4 +214,22 @@ def run(url_filter: list[str] | None = None) -> dict:
 
 
 if __name__ == "__main__":
-    run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run Layer 0 source quality assessment")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--url-filter", nargs="*", help="Filter for specific URLs")
+
+    args = parser.parse_args()
+
+    result = run(config=args.config, url_filter=args.url_filter)
+
+    # Print quick summary
+    assessments = result.get("assessments", [])
+    quality_count = sum(1 for a in assessments if a.get("source_quality") == "quality")
+    crude_count = sum(1 for a in assessments if a.get("source_quality") == "crude")
+    print(f"\nLayer 0 Complete")
+    print(f"  Output: data/{args.config}/source_quality.json")
+    print(f"  Total assessed: {len(assessments)}")
+    print(f"  Quality: {quality_count}")
+    print(f"  Crude: {crude_count}")

@@ -8,10 +8,13 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
-OUTPUT_FILE = Path("data/html_availability.json")
+def _get_output_file() -> Path:
+    """Get the output file path for html_availability.json."""
+    return get_data_dir() / "html_availability.json"
 
 
 def save_html_availability(state: dict) -> dict:
@@ -32,11 +35,13 @@ def save_html_availability(state: dict) -> dict:
         final_results = state.get("final_results", [])
         debug_log(f"[NODE: save_html_availability] Saving {len(final_results)} results")
 
+        output_file = _get_output_file()
+
         # Load existing results if file exists
         existing_results = []
-        if OUTPUT_FILE.exists():
+        if output_file.exists():
             try:
-                with open(OUTPUT_FILE) as f:
+                with open(output_file) as f:
                     existing_data = json.load(f)
                     existing_results = existing_data.get("results", [])
                 debug_log(f"[NODE: save_html_availability] Loaded {len(existing_results)} existing results")
@@ -67,14 +72,11 @@ def save_html_availability(state: dict) -> dict:
             "not_scrapable": status_counts.get("not_scrapable", 0),
         }
 
-        # Ensure data directory exists
-        OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-
-        # Write to file
-        with open(OUTPUT_FILE, "w") as f:
+        # Write to file (get_data_dir already creates the directory)
+        with open(output_file, "w") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
-        debug_log(f"[NODE: save_html_availability] Saved to {OUTPUT_FILE}")
+        debug_log(f"[NODE: save_html_availability] Saved to {output_file}")
         debug_log(f"[NODE: save_html_availability] Summary:")
         debug_log(f"[NODE: save_html_availability]   Total: {output_data['total']}")
         debug_log(f"[NODE: save_html_availability]   Scrapable: {output_data['scrapable']}")
@@ -82,4 +84,4 @@ def save_html_availability(state: dict) -> dict:
         debug_log(f"[NODE: save_html_availability]   Blocked: {output_data['blocked']}")
         debug_log(f"[NODE: save_html_availability]   Not scrapable: {output_data['not_scrapable']}")
 
-        return {"output_file": str(OUTPUT_FILE)}
+        return {"output_file": str(output_file)}

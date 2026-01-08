@@ -1,0 +1,191 @@
+{
+  "timestamp": "2026-01-08T04:28:54.836974",
+  "is_first_run": false,
+  "summary": {
+    "total_input": 64,
+    "unique_kept": 48,
+    "duplicates_removed": 16,
+    "url_duplicates": 0,
+    "semantic_auto_duplicates": 13,
+    "semantic_llm_confirmed": 3,
+    "stored_to_db": 48
+  },
+  "by_source_type": {
+    "rss": 48
+  },
+  "cross_source_duplicates": 0,
+  "merge_stats": {
+    "by_source_type": {
+      "rss": {
+        "loaded": 53,
+        "kept": 53,
+        "url_collisions": 0
+      },
+      "html": {
+        "loaded": 9,
+        "kept": 9,
+        "url_collisions": 0
+      },
+      "twitter": {
+        "loaded": 2,
+        "kept": 2,
+        "url_collisions": 0
+      }
+    },
+    "url_collisions": 0,
+    "total_before_dedup": 64,
+    "total_after_dedup": 64
+  },
+  "cost": {
+    "total_cost": "$0.0128",
+    "input_tokens": 2227,
+    "output_tokens": 409,
+    "llm_calls": 1
+  },
+  "duplicates": [
+    {
+      "removed_url": "https://techfundingnews.com/accenture-acquires-faculty-ai-1b-deal/",
+      "removed_title": "Accenture snaps up UK’s AI startup Faculty for $1B",
+      "duplicate_of_url": "https://sifted.eu/articles/accenture-faculty-ai-deal-uk/",
+      "duplicate_of_title": "Accenture to acquire Faculty AI for undisclosed sum",
+      "similarity": 0.9242817163467407,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://analyticsindiamag.com/ai-news-updates/bengaluru-startup-arrowhead-raises-3-mn-to-expand-voice-ai-capabilities/",
+      "removed_title": "Bengaluru Startup Arrowhead Raises $3 Mn to Expand Voice AI Capabilities",
+      "duplicate_of_url": "https://inc42.com/buzz/arrowhead-raises-3-mn-to-scale-voice-ai-for-bfsi-sales/",
+      "duplicate_of_title": "Arrowhead Raises $3 Mn To Scale Voice AI For BFSI Sales",
+      "similarity": 0.9372638463973999,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://pulse.mk.co.kr/news/english/11925436",
+      "removed_title": "CES 2026 opens with AI stepping into physical world",
+      "duplicate_of_url": "https://pulse.mk.co.kr/news/english/11925436",
+      "duplicate_of_title": "CES 2026 opens with AI stepping into physical world",
+      "similarity": 0.9999945163726807,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://pulse.mk.co.kr/news/english/11925619",
+      "removed_title": "SK AX wins government approval for AI skills certification",
+      "duplicate_of_url": "https://pulse.mk.co.kr/news/english/11925619",
+      "duplicate_of_title": "SK AX wins government approval for AI skills certification",
+      "similarity": 0.9999994039535522,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327011",
+      "removed_title": "“이미 물량 꽉 찼다” TSMC 2나노 초기 생산...대만 2개 팹서 가동",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327011",
+      "duplicate_of_title": "“이미 물량 꽉 찼다” TSMC 2나노 초기 생산...대만 2개 팹서 가동",
+      "similarity": 0.942649781703949,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327025",
+      "removed_title": "딥엑스, CES 2026서 ‘5W 미만 초저전력 LLM 추론’ 전략 DX-M2 로드맵 공개",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327025",
+      "duplicate_of_title": "딥엑스, CES 2026서 ‘5W 미만 초저전력 LLM 추론’ 전략 DX-M2 로드맵 공개",
+      "similarity": 0.9998207092285156,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327012",
+      "removed_title": "노르딕, nRF54L·엣지 AI 랩으로 '대규모 IoT 온디바이스 AI' 구현 간소화",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327012",
+      "duplicate_of_title": "노르딕, nRF54L·엣지 AI 랩으로 '대규모 IoT 온디바이스 AI' 구현 간소화",
+      "similarity": 0.9790158271789551,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327005",
+      "removed_title": "Ceva, 보스반도체 차세대 ADAS 플랫폼에 AI DSP 공급",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=327005",
+      "duplicate_of_title": "Ceva, 보스반도체 차세대 ADAS 플랫폼에 AI DSP 공급",
+      "similarity": 0.9561129212379456,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.rundown.ai/articles/alexa-comes-for-chatgpts-web-turf",
+      "removed_title": "Alexa+ comes for ChatGPT's web turf",
+      "duplicate_of_url": "https://www.rundown.ai/articles/alexa-comes-for-chatgpts-web-turf",
+      "duplicate_of_title": "Alexa+ comes for ChatGPT's web turf",
+      "similarity": 0.9999998211860657,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326948",
+      "removed_title": "2026년 메모리 시장 “HBM이 이끄는 메모리 슈퍼사이클에 주목”",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326948",
+      "duplicate_of_title": "2026년 메모리 시장 “HBM이 이끄는 메모리 슈퍼사이클에 주목”",
+      "similarity": 0.9164225459098816,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326951",
+      "removed_title": "팀스파르타, 2025년 AI 오프라인 교육 매출 전년 대비 2.5배 ↑",
+      "duplicate_of_url": "https://www.epnc.co.kr/news/articleView.html?idxno=326951",
+      "duplicate_of_title": "팀스파르타, 2025년 AI 오프라인 교육 매출 전년 대비 2.5배 ↑",
+      "similarity": 0.9094687700271606,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://x.com/SawyerMerritt/status/2008400590246715868",
+      "removed_title": "NEWS: Elon Musk has confirmed that xAI has purchased five additional 380MW natural gas turbines, wit...",
+      "duplicate_of_url": "https://x.com/SawyerMerritt/status/2008400590246715868",
+      "duplicate_of_title": "NEWS: Elon Musk has confirmed that xAI has purchased five additional 380MW natural gas turbines, wit...",
+      "similarity": 0.9852373600006104,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://x.com/rohanpaul_ai/status/2008390417134543311",
+      "removed_title": "ChatGPT’s daily web visits slid from roughly 200M down to roughly 158M, which is about a 22% drop ov...",
+      "duplicate_of_url": "https://x.com/rohanpaul_ai/status/2008390417134543311",
+      "duplicate_of_title": "ChatGPT’s daily web visits slid from roughly 200M down to roughly 158M, which is about a 22% drop ov...",
+      "similarity": 0.9631015062332153,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://www.caixinglobal.com/2026-01-07/nvidia-resumes-h200-chip-production-for-chinese-market-on-strong-demand-102401333.html?originReferrer=Feedly",
+      "removed_title": "Nvidia Resumes H200 Chip Production for Chinese Market on Strong Demand",
+      "duplicate_of_url": "https://www.ft.com/content/ae4f28a0-39f9-48e6-bdf4-09321b03c236",
+      "duplicate_of_title": "Nvidia steps up H200 chip production for Chinese market, Huang says",
+      "similarity": 0.877808153629303,
+      "dedup_type": "semantic_llm",
+      "reason": "Same Nvidia H200 chip production announcement for Chinese market by CEO Jensen Huang, reported by different sources on consecutive days"
+    },
+    {
+      "removed_url": "https://aibusiness.com/data-centers/xai-new-funding-round-despite-grok-controversy",
+      "removed_title": "Another $20B in Funding for Musk's xAI, Despite Grok Controversy",
+      "duplicate_of_url": "https://www.ft.com/content/f87bde18-ffd4-4e47-a5c8-a3e2099e08f9",
+      "duplicate_of_title": "Musk’s xAI raises $20bn in funding round that doubles valuation",
+      "similarity": 0.836752712726593,
+      "dedup_type": "semantic_llm",
+      "reason": "Same xAI $20B funding round announcement from different sources on consecutive days. Despite different headlines and the new article mentioning 'Grok Controversy,' both cover the identical funding event."
+    },
+    {
+      "removed_url": "https://analyticsindiamag.com/ai-news-updates/xai-closes-20-bn-funding-round-to-accelerate-grok-training-data-centres/",
+      "removed_title": "xAI Closes $20 Bn Funding Round to Accelerate Grok Training, Data Centres",
+      "duplicate_of_url": "https://techcrunch.com/2026/01/06/xai-says-it-raised-20b-in-series-e-funding/",
+      "duplicate_of_title": "xAI says it raised $20B in Series E funding",
+      "similarity": 0.8518620729446411,
+      "dedup_type": "semantic_llm",
+      "reason": "Same xAI Series E $20B funding round with additional details (breakdown of equity vs debt, user metrics, investor names). This is the same funding announcement from different sources with varying levels of detail."
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import anthropic
 load_dotenv()
 
 from src.utils import load_prompt
+from src.config import load_config_settings
 from src.tracking import track_llm_cost, debug_log, track_time
 
 
@@ -37,25 +38,48 @@ class EnrichedArticle(TypedDict):
     layer: str
 
 
-# Valid values for metadata fields
-VALID_REGIONS = {
+# Default valid values (fallback if not in config.json)
+DEFAULT_VALID_REGIONS = {
     "north_america", "latin_america", "europe", "middle_east",
     "africa", "south_asia", "southeast_asia", "east_asia",
     "oceania", "global", "unknown"
 }
 
-VALID_CATEGORIES = {
+DEFAULT_VALID_CATEGORIES = {
     "funding", "acquisition", "product_launch", "partnership",
-    "earnings", "expansion", "executive", "ipo", "layoff", "other"
+    "earnings", "expansion", "executive", "ipo",
+    "regulation", "strategy", "research"
 }
 
-VALID_LAYERS = {
+DEFAULT_VALID_LAYERS = {
     "chips_infra", "foundation_models", "finetuning_mlops",
     "b2b_apps", "consumer_apps"
 }
 
 # Batch size for LLM calls
 BATCH_SIZE = 15
+
+
+def _get_valid_values() -> tuple[set, set, set, str, str, str]:
+    """
+    Load valid values from config.json for current config.
+
+    Returns:
+        Tuple of (valid_regions, valid_categories, valid_layers,
+                  default_region, default_category, default_layer)
+    """
+    config = load_config_settings()
+
+    valid_regions = set(config.get("valid_regions", DEFAULT_VALID_REGIONS))
+    valid_categories = set(config.get("valid_categories", DEFAULT_VALID_CATEGORIES))
+    valid_layers = set(config.get("valid_layers", DEFAULT_VALID_LAYERS))
+
+    # Determine defaults based on what's available
+    default_region = "unknown" if "unknown" in valid_regions else "global"
+    default_category = "general" if "general" in valid_categories else list(valid_categories)[0]
+    default_layer = "b2b_apps" if "b2b_apps" in valid_layers else list(valid_layers)[0]
+
+    return valid_regions, valid_categories, valid_layers, default_region, default_category, default_layer
 
 
 def extract_metadata(state: dict) -> dict:
@@ -77,6 +101,11 @@ def extract_metadata(state: dict) -> dict:
         if not filtered_articles:
             return {"enriched_articles": []}
 
+        # Load config-specific valid values
+        valid_regions, valid_categories, valid_layers, default_region, default_category, default_layer = _get_valid_values()
+        debug_log(f"[NODE: extract_metadata] Valid categories: {valid_categories}")
+        debug_log(f"[NODE: extract_metadata] Valid layers: {valid_layers}")
+
         # Process in batches
         all_extractions: dict[str, dict] = {}
 
@@ -87,7 +116,7 @@ def extract_metadata(state: dict) -> dict:
 
             debug_log(f"[NODE: extract_metadata] Processing batch {batch_num}/{total_batches}")
 
-            extractions = _extract_batch(batch)
+            extractions = _extract_batch(batch, default_region, default_category, default_layer)
             all_extractions.update(extractions)
 
         # Apply extractions
@@ -99,9 +128,9 @@ def extract_metadata(state: dict) -> dict:
 
             enriched_article: EnrichedArticle = {
                 **article,
-                "region": _validate_value(extraction.get("region"), VALID_REGIONS, "unknown"),
-                "category": _validate_value(extraction.get("category"), VALID_CATEGORIES, "other"),
-                "layer": _validate_value(extraction.get("layer"), VALID_LAYERS, "b2b_apps"),
+                "region": _validate_value(extraction.get("region"), valid_regions, default_region),
+                "category": _validate_value(extraction.get("category"), valid_categories, default_category),
+                "layer": _validate_value(extraction.get("layer"), valid_layers, default_layer),
             }
             enriched_articles.append(enriched_article)
 
@@ -113,17 +142,25 @@ def extract_metadata(state: dict) -> dict:
         return {"enriched_articles": enriched_articles}
 
 
-def _extract_batch(articles: list[dict]) -> dict[str, dict]:
+def _extract_batch(
+    articles: list[dict],
+    default_region: str = "unknown",
+    default_category: str = "general",
+    default_layer: str = "b2b_apps"
+) -> dict[str, dict]:
     """
     Extract metadata for a batch of articles using LLM.
 
     Args:
         articles: List of article dicts
+        default_region: Default region value on parse error
+        default_category: Default category value on parse error
+        default_layer: Default layer value on parse error
 
     Returns:
         Dict mapping URL to extraction {region, category, layer}
     """
-    # Load system prompt
+    # Load system prompt (config-aware)
     system_prompt = load_prompt("extract_metadata_system_prompt.md")
 
     # Prepare articles for LLM
@@ -172,9 +209,9 @@ def _extract_batch(articles: list[dict]) -> dict[str, dict]:
             url = item.get("url", "")
             if url:
                 extractions[url] = {
-                    "region": item.get("region", "unknown"),
-                    "category": item.get("category", "other"),
-                    "layer": item.get("layer", "b2b_apps"),
+                    "region": item.get("region", default_region),
+                    "category": item.get("category", default_category),
+                    "layer": item.get("layer", default_layer),
                 }
 
         return extractions
@@ -183,7 +220,7 @@ def _extract_batch(articles: list[dict]) -> dict[str, dict]:
         debug_log(f"[NODE: extract_metadata] ERROR parsing response: {e}", "error")
         # Return defaults on error
         return {
-            a.get("link", ""): {"region": "unknown", "category": "other", "layer": "b2b_apps"}
+            a.get("link", ""): {"region": default_region, "category": default_category, "layer": default_layer}
             for a in articles
         }
 

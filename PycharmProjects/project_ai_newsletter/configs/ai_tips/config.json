@@ -1,0 +1,15 @@
+{
+  "name": "ai_tips",
+  "description": "AI usage tips, tutorials, guides, and workflows for tools like Claude, ChatGPT, Midjourney, ComfyUI, etc.",
+  "default_max_age_hours": 72,
+  "html_exclusions": [],
+  "valid_regions": ["global"],
+  "valid_categories": [
+    "prompting", "image_gen", "video_gen", "audio",
+    "agents", "coding", "automation", "rag", "general"
+  ],
+  "valid_layers": [
+    "text_llm", "image_gen", "video_gen", "audio",
+    "code_assist", "multimodal"
+  ]
+}

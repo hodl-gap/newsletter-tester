@@ -18,6 +18,7 @@ from typing import TypedDict
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG
 from src.tracking import debug_log, reset_cost_tracker, cost_tracker
 
 # Import node functions
@@ -113,7 +114,8 @@ def build_graph() -> StateGraph:
 
 def run(
     lookback_hours: int = 48,
-    input_sources: list[str] = None
+    input_sources: list[str] = None,
+    config: str = DEFAULT_CONFIG
 ) -> dict:
     """
     Run the deduplication pipeline.
@@ -124,15 +126,20 @@ def run(
         input_sources: List of source types to include.
                        Default: ["rss", "html", "twitter"] (all sources).
                        Options: "rss", "html", "twitter"
+        config: Configuration name (default: business_news).
 
     Returns:
         Final state with deduplication results.
     """
+    # Set active configuration
+    set_config(config)
+
     if input_sources is None:
         input_sources = ["rss", "html", "twitter"]
 
     debug_log("=" * 60)
     debug_log("STARTING DEDUPLICATION PIPELINE (LAYER 3)")
+    debug_log(f"CONFIG: {config}")
     debug_log(f"LOOKBACK HOURS: {lookback_hours}")
     debug_log(f"INPUT SOURCES: {input_sources}")
     debug_log("=" * 60)
@@ -195,12 +202,26 @@ def run(
 
 
 if __name__ == "__main__":
-    result = run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run deduplication pipeline (Layer 3)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--lookback-hours", type=int, default=48, help="Lookback hours for historical articles (default: 48)")
+    parser.add_argument("--input-sources", nargs="*", default=["rss", "html", "twitter"],
+                       help="Input sources to include (default: rss html twitter)")
+
+    args = parser.parse_args()
+
+    result = run(
+        config=args.config,
+        lookback_hours=args.lookback_hours,
+        input_sources=args.input_sources
+    )
 
     # Print output locations
     report = result.get("dedup_report", {})
     print(f"\nDeduplication complete!")
-    print(f"  Report: data/dedup_report.json")
-    print(f"  JSON:   data/merged_news_deduped.json")
-    print(f"  CSV:    data/merged_news_deduped.csv")
+    print(f"  Report: data/{args.config}/dedup_report.json")
+    print(f"  JSON:   data/{args.config}/merged_news_deduped.json")
+    print(f"  CSV:    data/{args.config}/merged_news_deduped.csv")
     print(f"  Unique articles: {report.get('summary', {}).get('unique_kept', 0)}")

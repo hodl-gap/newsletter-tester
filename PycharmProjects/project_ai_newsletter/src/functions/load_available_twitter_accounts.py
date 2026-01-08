@@ -9,12 +9,13 @@ import json
 from pathlib import Path
 from typing import TypedDict, Optional
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
-# Input file path
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
-AVAILABILITY_FILE = DATA_DIR / "twitter_availability.json"
+def _get_availability_file() -> Path:
+    """Get path for twitter_availability.json."""
+    return get_data_dir() / "twitter_availability.json"
 
 
 class AvailableAccountInfo(TypedDict):
@@ -41,12 +42,13 @@ def load_available_twitter_accounts(state: dict) -> dict:
         debug_log("[NODE: load_available_twitter_accounts] Entering")
 
         handle_filter = state.get("handle_filter")
+        availability_file = _get_availability_file()
 
         # Check if availability file exists
-        if not AVAILABILITY_FILE.exists():
+        if not availability_file.exists():
             debug_log(
                 f"[NODE: load_available_twitter_accounts] "
-                f"File not found: {AVAILABILITY_FILE}. Run Layer 1 first.",
+                f"File not found: {availability_file}. Run Layer 1 first.",
                 "error"
             )
             return {
@@ -56,7 +58,7 @@ def load_available_twitter_accounts(state: dict) -> dict:
 
         # Load availability data
         try:
-            with open(AVAILABILITY_FILE, "r", encoding="utf-8") as f:
+            with open(availability_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
         except (json.JSONDecodeError, IOError) as e:
             debug_log(

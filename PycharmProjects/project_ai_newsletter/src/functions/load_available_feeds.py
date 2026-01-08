@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import TypedDict
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
@@ -41,7 +42,7 @@ def load_available_feeds(state: dict) -> dict:
             debug_log(f"[NODE: load_available_feeds] Filtering for sources: {source_filter}")
 
         # Read RSS availability data
-        data_path = Path("data/rss_availability.json")
+        data_path = get_data_dir() / "rss_availability.json"
         if not data_path.exists():
             debug_log("[NODE: load_available_feeds] ERROR: rss_availability.json not found", "error")
             return {"available_feeds": []}

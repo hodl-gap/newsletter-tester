@@ -1,0 +1,12 @@
+{
+  "accounts": [
+    {"handle": "@Sumanth_077", "category": "AI tips"}
+  ],
+  "settings": {
+    "scrape_delay_min": 55,
+    "scrape_delay_max": 65,
+    "max_age_hours": 72,
+    "inactivity_threshold_days": 14,
+    "cache_ttl_hours": 24
+  }
+}

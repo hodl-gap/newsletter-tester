@@ -63,6 +63,55 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 
 ## Architecture
 
+### Config-Driven Architecture
+
+The pipeline supports multiple configurations (e.g., `business_news`, `academic_papers`) where each config has its own:
+- **Prompts** (`configs/{name}/prompts/`) - LLM prompts that define filtering/extraction behavior
+- **Input URLs** (`configs/{name}/input_urls.json`) - Sources to scrape
+- **Twitter accounts** (`configs/{name}/twitter_accounts.json`) - Twitter handles to follow
+- **HTML exclusions** (`configs/{name}/config.json` → `html_exclusions`) - Sources to skip for HTML scraping
+- **Output data** (`data/{name}/`) - All pipeline outputs isolated per config
+
+**Default config:** `business_news`
+
+**Available configs:**
+| Config | Description | Sources |
+|--------|-------------|---------|
+| `business_news` | AI business news (funding, M&A, launches) | 60+ RSS feeds, Twitter accounts |
+| `ai_tips` | AI usage tips, tutorials, workflows | marktechpost.com, byhand.ai, @Sumanth_077 |
+
+**Usage:**
+```python
+# Default (uses business_news)
+content_orchestrator.run()
+
+# Explicit config
+content_orchestrator.run(config="business_news")
+content_orchestrator.run(config="ai_tips")
+
+# CLI
+python content_orchestrator.py --config=ai_tips
+```
+
+**Adding a new config:**
+```bash
+# 1. Create config directory
+mkdir -p configs/academic_papers/prompts
+
+# 2. Create prompts (define your filtering/extraction logic)
+cp configs/business_news/prompts/*.md configs/academic_papers/prompts/
+# Edit prompts to match new domain
+
+# 3. Create input sources
+vim configs/academic_papers/input_urls.json
+
+# 4. Create config.json (optional: html_exclusions, default_max_age_hours)
+echo '{"name": "academic_papers", "html_exclusions": []}' > configs/academic_papers/config.json
+
+# 5. Run pipeline - outputs go to data/academic_papers/
+python content_orchestrator.py --config=academic_papers
+```
+
 ### Folder Structure
 
 ```
@@ -81,10 +130,11 @@ project_ai_newsletter/
 ├── twitter_login.py           # Twitter: Alternative Playwright login (less reliable)
 ├── src/
 │   ├── __init__.py
+│   ├── config.py             # Config management (set_config, get_data_dir, etc.)
 │   ├── models.py             # All LLM model definitions and helpers
-│   ├── utils.py              # Utility functions (prompt loading, etc.)
+│   ├── utils.py              # Utility functions (config-aware prompt loading)
 │   ├── tracking.py           # Time and cost tracking utilities
-│   ├── database.py           # SQLite database (articles, discarded_articles, dedup_log)
+│   ├── database.py           # SQLite database (config-aware path)
 │   └── functions/            # Node functions (one file per function)
 │       ├── __init__.py
 │       │── # Layer 0 functions
@@ -140,39 +190,45 @@ project_ai_newsletter/
 │       ├── filter_by_date_twitter.py
 │       ├── build_twitter_output.py
 │       └── save_twitter_content.py
-├── prompts/                  # All LLM prompts (markdown format)
+├── configs/                  # Config-specific settings per pipeline type
+│   └── business_news/        # Default config (current pipeline)
+│       ├── prompts/          # Config-specific LLM prompts
+│       │   ├── filter_system_prompt.md       # Filtering criteria
+│       │   ├── extract_metadata_system_prompt.md
+│       │   └── generate_summary_system_prompt.md
+│       ├── input_urls.json   # URLs to process (Layer 0/1 input)
+│       ├── twitter_accounts.json  # Twitter accounts to scrape
+│       └── config.json       # Config settings (html_exclusions, default_max_age_hours)
+├── prompts/                  # Shared prompts (Layer 0/1/3, non-config-specific)
 │   │── # Layer 0 prompts
 │   ├── assess_credibility_system_prompt.md
 │   │── # Layer 1 prompts
 │   ├── discover_rss_agent_system_prompt.md
 │   ├── classify_feeds_system_prompt.md
-│   │── # Layer 2 prompts
-│   ├── filter_business_news_system_prompt.md
-│   ├── extract_metadata_system_prompt.md
-│   ├── generate_summary_system_prompt.md
 │   │── # Layer 3 prompts
 │   ├── confirm_duplicate_system_prompt.md
 │   │── # HTML Layer 1 prompts
 │   ├── analyze_listing_page_system_prompt.md
 │   └── analyze_article_page_system_prompt.md
-├── data/                     # Input/output data files
-│   ├── input_urls.json       # URLs to process (Layer 0/1 input)
-│   ├── source_quality.json   # Source quality ratings (Layer 0 output)
-│   ├── rss_availability.json # RSS discovery results (Layer 1 output)
-│   ├── aggregated_news.json  # Aggregated content (Layer 2 output)
-│   ├── aggregated_news.csv   # CSV format output (Layer 2 output)
-│   ├── discarded_news.csv    # Filtered-out articles with reasons (Layer 2 output)
-│   ├── articles.db           # SQLite database (Layer 3)
-│   ├── aggregated_news_deduped.json  # Deduplicated content (Layer 3 output)
-│   ├── aggregated_news_deduped.csv   # CSV format output (Layer 3 output)
-│   ├── dedup_report.json     # Deduplication report (Layer 3 output)
-│   ├── html_availability.json     # HTML L1 output: Scrapability configs
-│   ├── twitter_accounts.json      # Twitter accounts config (Twitter input)
-│   ├── twitter_availability.json  # Twitter L1 output: Account status
-│   ├── twitter_raw_cache.json     # Twitter L1 output: Cached tweets for L2
-│   ├── twitter_news.json          # Twitter L2 output: Aggregated content
-│   ├── twitter_news.csv           # Twitter L2 output: CSV format
-│   └── twitter_discarded.csv      # Twitter L2 output: Filtered-out tweets
+├── data/                     # Output data files (organized by config)
+│   └── business_news/        # Outputs for business_news config
+│       ├── rss_availability.json # RSS discovery results (Layer 1 output)
+│       ├── aggregated_news.json  # Aggregated content (Layer 2 output)
+│       ├── aggregated_news.csv   # CSV format output (Layer 2 output)
+│       ├── discarded_news.csv    # Filtered-out articles with reasons
+│       ├── articles.db           # SQLite database (Layer 3)
+│       ├── merged_news_deduped.json  # Deduplicated content (Layer 3 output)
+│       ├── merged_news_deduped.csv   # CSV format output (Layer 3 output)
+│       ├── dedup_report.json     # Deduplication report (Layer 3 output)
+│       ├── html_availability.json     # HTML L1 output: Scrapability configs
+│       ├── html_news.json             # HTML L2 output: Scraped content
+│       ├── html_news.csv              # HTML L2 output: CSV format
+│       ├── html_discarded.csv         # HTML L2 output: Filtered-out articles
+│       ├── twitter_availability.json  # Twitter L1 output: Account status
+│       ├── twitter_raw_cache.json     # Twitter L1 output: Cached tweets for L2
+│       ├── twitter_news.json          # Twitter L2 output: Aggregated content
+│       ├── twitter_news.csv           # Twitter L2 output: CSV format
+│       └── twitter_discarded.csv      # Twitter L2 output: Filtered-out tweets
 ├── chrome_data/                   # Browser data (gitignored)
 │   └── twitter_cookies.json       # Twitter session cookies (required for scraping)
 ├── debug.log                 # Debug log file (auto-generated)
@@ -229,24 +285,32 @@ llm = get_model("gpt-4o")
 | Content summarization | claude-sonnet / gpt-4o |
 | Complex reasoning | claude-sonnet / gpt-4o |
 
-### 4. Prompts (`prompts/`)
+### 4. Prompts
 
-- **All LLM prompts** must be stored in the `prompts/` folder
+Prompts are stored in two locations:
+
+**Config-specific prompts** (`configs/{name}/prompts/`):
+- Define the "business logic" for filtering, extraction, and summarization
+- Loaded from active config directory (set via `set_config()`)
+- Each config can customize what content to keep/discard
+- Files: `filter_system_prompt.md`, `extract_metadata_system_prompt.md`, `generate_summary_system_prompt.md`
+
+**Shared prompts** (`prompts/`):
+- Layer 0/1/3 prompts that are config-independent
+- Used as fallback if not found in config directory
+- Files: `assess_credibility_system_prompt.md`, `discover_rss_agent_system_prompt.md`, `classify_feeds_system_prompt.md`, `confirm_duplicate_system_prompt.md`, etc.
+
+**Rules:**
 - Format: Markdown (`.md`)
-- Naming convention: `{function_name}_{description}_prompt.md`
-  - Example: `summarize_article_system_prompt.md`
-  - Example: `generate_newsletter_user_prompt.md`
 - Prompts must be loaded from files, never hardcoded in function files
 - Use placeholders like `{variable}` for dynamic content
 
 ```python
-# Example prompt loading
-from pathlib import Path
+# Example prompt loading (config-aware)
+from src.utils import load_prompt
 
-def load_prompt(filename: str) -> str:
-    return Path(f"prompts/{filename}").read_text()
-
-prompt = load_prompt("summarize_article_system_prompt.md")
+# Loads from configs/{active_config}/prompts/ first, falls back to prompts/
+prompt = load_prompt("filter_system_prompt.md")
 ```
 
 ### 5. Tests (`tests/`)
@@ -374,26 +438,35 @@ def run():
 
 ## Output Files
 
+All output files are stored in `data/{config_name}/` (e.g., `data/business_news/`).
+
 | File | Description |
 |------|-------------|
-| `data/source_quality.json` | Layer 0 output: Source credibility ratings ("quality" or "crude") |
-| `data/rss_availability.json` | Layer 1 output: RSS feed discovery results |
-| `data/aggregated_news.json` | Layer 2 output: AI business news with metadata |
-| `data/aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
-| `data/discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |
-| `data/articles.db` | SQLite database with articles, embeddings, discarded articles, and dedup logs |
-| `data/merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Twitter) |
-| `data/merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
-| `data/dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
-| `data/html_availability.json` | HTML L1 output: Scrapability configs with CSS selectors |
-| `data/html_news.json` | HTML L2 output: AI business news from scraped sources |
-| `data/html_news.csv` | HTML L2 output: Same as JSON in tabular format |
-| `data/html_discarded.csv` | HTML L2 output: Filtered-out articles with discard reasons |
-| `data/twitter_availability.json` | Twitter L1 output: Account status and activity metrics |
-| `data/twitter_raw_cache.json` | Twitter L1 output: Cached tweets for L2 consumption |
-| `data/twitter_news.json` | Twitter L2 output: AI business news from tweets |
-| `data/twitter_news.csv` | Twitter L2 output: Same as JSON in tabular format |
-| `data/twitter_discarded.csv` | Twitter L2 output: Filtered-out tweets with discard reasons |
+| `source_quality.json` | Layer 0 output: Source credibility ratings ("quality" or "crude") |
+| `rss_availability.json` | Layer 1 output: RSS feed discovery results |
+| `aggregated_news.json` | Layer 2 output: AI business news with metadata |
+| `aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
+| `discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |
+| `articles.db` | SQLite database with articles, embeddings, discarded articles, and dedup logs |
+| `merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Twitter) |
+| `merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
+| `dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
+| `html_availability.json` | HTML L1 output: Scrapability configs with CSS selectors |
+| `html_news.json` | HTML L2 output: AI business news from scraped sources |
+| `html_news.csv` | HTML L2 output: Same as JSON in tabular format |
+| `html_discarded.csv` | HTML L2 output: Filtered-out articles with discard reasons |
+| `twitter_availability.json` | Twitter L1 output: Account status and activity metrics |
+| `twitter_raw_cache.json` | Twitter L1 output: Cached tweets for L2 consumption |
+| `twitter_news.json` | Twitter L2 output: AI business news from tweets |
+| `twitter_news.csv` | Twitter L2 output: Same as JSON in tabular format |
+| `twitter_discarded.csv` | Twitter L2 output: Filtered-out tweets with discard reasons |
+
+**Input files** are stored in `configs/{config_name}/`:
+| File | Description |
+|------|-------------|
+| `input_urls.json` | URLs to process (Layer 0/1 input) |
+| `twitter_accounts.json` | Twitter accounts to scrape |
+| `config.json` | Config settings: `html_exclusions`, `default_max_age_hours`, `valid_regions`, `valid_categories`, `valid_layers` |
 
 ### Database Tables (`data/articles.db`)
 
@@ -405,6 +478,80 @@ def run():
 
 ---
 
+## Metadata Schema
+
+Each config defines its own valid values for `region`, `category`, and `layer` fields in `config.json`. The `extract_metadata` function reads these values and validates LLM output against them.
+
+### business_news Config
+
+**region** - Geographic region where the primary company is headquartered:
+| Value | Description |
+|-------|-------------|
+| `north_america` | USA, Canada, Mexico |
+| `latin_america` | South America, Central America, Caribbean |
+| `europe` | UK, EU countries, Switzerland, Norway |
+| `middle_east` | UAE, Saudi Arabia, Israel, etc. |
+| `africa` | All African countries |
+| `south_asia` | India, Pakistan, Bangladesh, Sri Lanka |
+| `southeast_asia` | Singapore, Indonesia, Vietnam, Thailand, Malaysia, Philippines |
+| `east_asia` | China, Japan, South Korea, Taiwan, Hong Kong |
+| `oceania` | Australia, New Zealand |
+| `global` | Multiple companies from different regions |
+| `unknown` | Cannot determine headquarters |
+
+**category** - Type of business news (11 categories):
+| Value | Description |
+|-------|-------------|
+| `funding` | Investment rounds (Seed, Series A/B/C/D, growth equity, debt) |
+| `acquisition` | M&A activity (acquisitions, mergers, acqui-hires) |
+| `product_launch` | New product/service announcements, hardware/software releases |
+| `partnership` | Strategic partnerships, collaborations, integrations |
+| `earnings` | Revenue reports, profit/loss, financial results, valuations |
+| `expansion` | New markets, geographic expansion, new offices, workforce growth |
+| `executive` | Leadership changes, key hires, board appointments, workforce reductions |
+| `ipo` | IPO filings, SPAC mergers, public listings |
+| `regulation` | Regulatory actions, investigations, compliance, legal settlements |
+| `strategy` | Corporate strategy announcements, roadmaps, vision statements |
+| `research` | Benchmark releases, open-source models, technical milestones |
+
+**layer** - Position in AI value chain (5-tier model):
+| Value | Description |
+|-------|-------------|
+| `chips_infra` | Semiconductors (NVIDIA, AMD), GPUs, TPUs, cloud, data centers |
+| `foundation_models` | Base LLM companies (OpenAI, Anthropic, Google DeepMind, Mistral) |
+| `finetuning_mlops` | MLOps platforms, fine-tuning tools, vector databases (W&B, HuggingFace) |
+| `b2b_apps` | Enterprise AI applications, vertical AI solutions |
+| `consumer_apps` | Consumer-facing AI products, chatbots, creative AI tools |
+
+### ai_tips Config
+
+**region** - Always `global` (tips are universal)
+
+**category** - AI topic/domain (9 categories):
+| Value | Description |
+|-------|-------------|
+| `prompting` | Prompt engineering, chain-of-thought, few-shot, templates |
+| `image_gen` | Midjourney, DALL-E, Stable Diffusion, ComfyUI, Flux |
+| `video_gen` | Runway, Pika, Sora, Kling, video generation/editing |
+| `audio` | Voice cloning, text-to-speech, music generation |
+| `agents` | AI agents, autonomous systems, tool use, MCP, function calling |
+| `coding` | Cursor, Copilot, Claude Code, code generation, debugging |
+| `automation` | Workflows, Zapier/Make integrations, no-code AI |
+| `rag` | Retrieval augmented generation, embeddings, vector databases |
+| `general` | General AI tips that don't fit above categories |
+
+**layer** - AI modality/tool type (6 layers):
+| Value | Description |
+|-------|-------------|
+| `text_llm` | Text-based LLMs (Claude, ChatGPT, Gemini, Llama) |
+| `image_gen` | Image generation tools (Midjourney, DALL-E, Stable Diffusion) |
+| `video_gen` | Video generation tools (Runway, Pika, Sora) |
+| `audio` | Audio/voice tools (ElevenLabs, Suno, Udio, Whisper) |
+| `code_assist` | Code assistants (Cursor, Copilot, Claude Code, Windsurf) |
+| `multimodal` | Multiple modalities or cross-tool content |
+
+---
+
 ## Running the Pipelines
 
 ### Layer 0: Source Quality Assessment (Optional)
@@ -412,33 +559,39 @@ def run():
 ```python
 import layer0_orchestrator
 
-# Run full quality assessment
+# Run full quality assessment (default config: business_news)
 layer0_orchestrator.run()
 
 # Run for specific URLs only (substring match)
 layer0_orchestrator.run(url_filter=['techcrunch', 'inc42'])
+
+# Run for a different config
+layer0_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
 - Fetches homepage and about page for each source
 - LLM assesses credibility based on domain reputation and content
 - Outputs `source_quality: "quality"` or `"crude"` per source
-- Results saved to `data/source_quality.json`
+- Results saved to `data/{config}/source_quality.json`
 
 ### Layer 1: RSS Discovery
 
 ```python
 import rss_orchestrator
 
-# Run full discovery (re-checks ALL sources)
+# Run full discovery (default config: business_news)
 rss_orchestrator.run()
 
 # Run for specific URLs only (substring match)
 rss_orchestrator.run(url_filter=['.co.kr', 'techcrunch'])
+
+# Run for a different config
+rss_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
-- Reads from `input_urls.json` (L0 integration disabled)
+- Reads from `configs/{config}/input_urls.json`
 - URL filter for testing specific sources
 - Results merge with existing `rss_availability.json` (doesn't overwrite)
 - Freshness check: AI feeds older than 7 days fall back to main feed
@@ -472,19 +625,23 @@ discover_with_agent -> classify_all_feeds -> merge_results -> save_results
 ```python
 import html_layer1_orchestrator
 
-# Run full discovery (all unavailable sources)
+# Run full discovery (default config: business_news)
 html_layer1_orchestrator.run()
 
 # Run for specific URLs only (substring match)
 html_layer1_orchestrator.run(url_filter=['pulsenews', 'rundown'])
+
+# Run for a different config
+html_layer1_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
+- Respects `html_exclusions` from `config.json` (skips specified domains)
 - Tests HTTP accessibility with browser-like headers
 - Detects bot protection (Cloudflare, CAPTCHA, JS-redirect)
 - LLM analyzes listing page structure (article URL patterns)
 - LLM analyzes article pages (CSS selectors for extraction)
-- Results merge with existing `html_availability.json`
+- Results merge with existing `data/{config}/html_availability.json`
 
 **Pipeline Flow:**
 ```
@@ -508,7 +665,7 @@ save_html_availability
 ```python
 import html_layer2_orchestrator
 
-# Run full scraping (all scrapable sources with full config)
+# Run full scraping (default config: business_news)
 html_layer2_orchestrator.run()
 
 # Run for specific URLs only (substring match)
@@ -516,6 +673,9 @@ html_layer2_orchestrator.run(url_filter=['rundown', 'pulsenews'])
 
 # Custom article age cutoff (e.g., last 48 hours)
 html_layer2_orchestrator.run(max_age_hours=48)
+
+# Run for a different config
+html_layer2_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
@@ -524,7 +684,7 @@ html_layer2_orchestrator.run(max_age_hours=48)
 - Fetches individual articles and extracts content via CSS selectors
 - Parses dates using discovered formats
 - Reuses L2 pipeline nodes (filter, metadata, summaries)
-- Outputs to separate files (html_news.json/csv)
+- Outputs to `data/{config}/html_news.json/csv`
 
 **Pipeline Flow:**
 ```
@@ -538,19 +698,18 @@ generate_summaries → build_output_dataframe → save_html_content
 - Sources without full config (missing article_page) are skipped
 - Max 20 articles per source to avoid overwhelming sites
 - 0.5s delay between article fetches
-- **No deduplication yet** - HTML articles may duplicate RSS articles (TODO: integrate with Layer 3)
 
 **Output:**
-- `data/html_news.json` - Scraped AI business news with metadata
-- `data/html_news.csv` - CSV format output
-- `data/html_discarded.csv` - Filtered-out articles with discard reasons
+- `data/{config}/html_news.json` - Scraped AI business news with metadata
+- `data/{config}/html_news.csv` - CSV format output
+- `data/{config}/html_discarded.csv` - Filtered-out articles with discard reasons
 
 ### Layer 2: Content Aggregation
 
 ```python
 import content_orchestrator
 
-# Run full aggregation (default: 24-hour article cutoff)
+# Run full aggregation (default config: business_news)
 content_orchestrator.run()
 
 # Run for specific sources only (substring match on source name or URL)
@@ -561,6 +720,9 @@ content_orchestrator.run(max_age_hours=48)
 
 # Combine filters
 content_orchestrator.run(source_filter=['techcrunch'], max_age_hours=72)
+
+# Run for a different config
+content_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
@@ -569,6 +731,7 @@ content_orchestrator.run(source_filter=['techcrunch'], max_age_hours=72)
 - URL deduplication against SQLite database (skips already-processed articles)
 - Discarded articles exported with reasons
 - Adaptive batch retry on LLM parse errors
+- Outputs to `data/{config}/aggregated_news.json/csv`
 
 **Pipeline Flow:**
 ```
@@ -582,7 +745,7 @@ generate_summaries -> build_output_dataframe -> save_aggregated_content
 ```python
 import dedup_orchestrator
 
-# Run deduplication on all Layer 2 outputs (default: RSS + HTML + Twitter)
+# Run deduplication on all Layer 2 outputs (default config: business_news)
 dedup_orchestrator.run()
 
 # Custom lookback period (e.g., last 7 days)
@@ -591,6 +754,9 @@ dedup_orchestrator.run(lookback_hours=168)
 # Select specific input sources
 dedup_orchestrator.run(input_sources=["rss", "html"])  # Exclude Twitter
 dedup_orchestrator.run(input_sources=["rss"])  # RSS only (backward compatible)
+
+# Run for a different config
+dedup_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
@@ -603,6 +769,7 @@ dedup_orchestrator.run(input_sources=["rss"])  # RSS only (backward compatible)
 - Cross-source duplicate detection (same news from different pipelines)
 - Stores articles with embeddings to SQLite for future comparison
 - First run seeds database without deduplication
+- Outputs to `data/{config}/merged_news_deduped.json/csv`
 
 **Pipeline Flow:**
 ```
@@ -617,10 +784,10 @@ export_dedup_report
 - `data/twitter_news.json` - Twitter Layer 2 output
 
 **Output Files:**
-- `data/merged_news_deduped.json` - Deduplicated articles from all sources
-- `data/merged_news_deduped.csv` - CSV format with source_type column
-- `data/dedup_report.json` - Deduplication statistics (includes cross-source stats)
-- `data/articles.db` - SQLite database with embeddings
+- `data/{config}/merged_news_deduped.json` - Deduplicated articles from all sources
+- `data/{config}/merged_news_deduped.csv` - CSV format with source_type column
+- `data/{config}/dedup_report.json` - Deduplication statistics (includes cross-source stats)
+- `data/{config}/articles.db` - SQLite database with embeddings
 
 **Cost Estimate:**
 - Embeddings (OpenAI): ~$0.001 per run
@@ -632,11 +799,14 @@ export_dedup_report
 ```python
 import twitter_layer1_orchestrator
 
-# Run full discovery (all accounts)
+# Run full discovery (default config: business_news)
 twitter_layer1_orchestrator.run()
 
 # Run for specific handles only (substring match)
 twitter_layer1_orchestrator.run(handle_filter=['@OpenAI'])
+
+# Run for a different config
+twitter_layer1_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
@@ -644,11 +814,11 @@ twitter_layer1_orchestrator.run(handle_filter=['@OpenAI'])
 - Analyzes account activity (tweets per day, last tweet date)
 - Marks accounts as "active" or "inactive" (no tweets in N days)
 - Caches raw tweets for Layer 2 (no re-scraping needed)
-- Results merge with existing `twitter_availability.json`
+- Results merge with existing `data/{config}/twitter_availability.json`
 
 **Output Files:**
-- `data/twitter_availability.json` - Account status and metrics
-- `data/twitter_raw_cache.json` - Raw tweets for Layer 2
+- `data/{config}/twitter_availability.json` - Account status and metrics
+- `data/{config}/twitter_raw_cache.json` - Raw tweets for Layer 2
 
 **Pipeline Flow:**
 ```
@@ -661,7 +831,7 @@ save_twitter_availability
 ```python
 import twitter_layer2_orchestrator
 
-# Run full aggregation (default: 24-hour tweet cutoff)
+# Run full aggregation (default config: business_news)
 twitter_layer2_orchestrator.run()
 
 # Run for specific handles only (substring match)
@@ -672,6 +842,9 @@ twitter_layer2_orchestrator.run(max_age_hours=168)
 
 # Combine filters
 twitter_layer2_orchestrator.run(handle_filter=['@OpenAI'], max_age_hours=72)
+
+# Run for a different config
+twitter_layer2_orchestrator.run(config="academic_papers")
 ```
 
 **Features:**
@@ -680,6 +853,7 @@ twitter_layer2_orchestrator.run(handle_filter=['@OpenAI'], max_age_hours=72)
 - Reuses `filter_business_news`, `extract_metadata`, `generate_summaries` from RSS Layer 2
 - Same 8-field output schema as RSS pipeline
 - Discarded tweets exported with reasons
+- Outputs to `data/{config}/twitter_news.json/csv`
 
 **Pipeline Flow:**
 ```
@@ -690,7 +864,7 @@ generate_summaries → build_twitter_output → save_twitter_content
 
 ### Twitter Configuration
 
-Edit `data/twitter_accounts.json` to add/remove accounts:
+Edit `configs/{config}/twitter_accounts.json` to add/remove accounts:
 
 ```json
 {

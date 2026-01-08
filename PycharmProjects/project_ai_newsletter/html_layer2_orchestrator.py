@@ -19,6 +19,7 @@ from typing import TypedDict, Optional
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG
 from src.tracking import debug_log, reset_cost_tracker, cost_tracker, track_time
 
 # HTML Layer 2 specific nodes
@@ -133,7 +134,11 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(url_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> dict:
+def run(
+    url_filter: Optional[list[str]] = None,
+    max_age_hours: int = 24,
+    config: str = DEFAULT_CONFIG
+) -> dict:
     """
     Run the HTML content scraping pipeline.
 
@@ -145,13 +150,18 @@ def run(url_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> dict
                    Example: ['rundown', 'pulsenews']
         max_age_hours: Maximum article age in hours. Articles older than this
                       are dropped before LLM filtering. Default: 24.
+        config: Configuration name (default: business_news).
 
     Returns:
         Final state with scraped and enriched content.
     """
+    # Set active configuration
+    set_config(config)
+
     with track_time("html_layer2_pipeline"):
         debug_log("=" * 60)
         debug_log("HTML LAYER 2: CONTENT SCRAPING")
+        debug_log(f"CONFIG: {config}")
         debug_log("=" * 60)
         if url_filter:
             debug_log(f"URL FILTER: {url_filter}")
@@ -196,30 +206,20 @@ def run(url_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> dict
 # =============================================================================
 
 if __name__ == "__main__":
-    import sys
+    import argparse
 
-    # Parse command line arguments
-    url_filter = None
-    max_age_hours = 24
+    parser = argparse.ArgumentParser(description="Run HTML content scraping (HTML Layer 2)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--url-filter", nargs="*", help="Filter for specific URLs")
+    parser.add_argument("--max-age-hours", type=int, default=24, help="Max article age in hours (default: 24)")
 
-    args = sys.argv[1:]
-    i = 0
-    while i < len(args):
-        if args[i] == "--max-age" and i + 1 < len(args):
-            max_age_hours = int(args[i + 1])
-            i += 2
-        else:
-            # Assume it's a URL filter
-            if url_filter is None:
-                url_filter = []
-            url_filter.append(args[i])
-            i += 1
+    args = parser.parse_args()
 
-    if url_filter:
-        print(f"Filtering to URLs containing: {url_filter}")
-    print(f"Max article age: {max_age_hours} hours")
-
-    result = run(url_filter=url_filter, max_age_hours=max_age_hours)
+    result = run(
+        config=args.config,
+        url_filter=args.url_filter,
+        max_age_hours=args.max_age_hours
+    )
 
     # Print quick summary
     save_status = result.get("save_status", {})

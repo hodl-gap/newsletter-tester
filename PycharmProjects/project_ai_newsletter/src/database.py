@@ -22,7 +22,12 @@ from src.tracking import debug_log
 # Configuration
 # =============================================================================
 
-DB_PATH = Path(__file__).parent.parent / "data" / "articles.db"
+from src.config import get_data_dir
+
+
+def get_db_path() -> Path:
+    """Get database path for current config."""
+    return get_data_dir() / "articles.db"
 
 SCHEMA_SQL = """
 -- Main articles table with full metadata for deduplication
@@ -104,14 +109,15 @@ class ArticleDatabase:
     - Deduplication logging (for audit trail)
     """
 
-    def __init__(self, db_path: Path = DB_PATH):
+    def __init__(self, db_path: Path = None):
         """
         Initialize the database connection.
 
         Args:
             db_path: Path to the SQLite database file.
+                     If None, uses config-aware default from get_db_path().
         """
-        self.db_path = db_path
+        self.db_path = db_path if db_path is not None else get_db_path()
         self._ensure_data_dir()
         self._init_db()
 

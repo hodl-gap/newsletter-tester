@@ -1,0 +1,166 @@
+{
+  "total": 23,
+  "articles": [
+    {
+      "source_name": "36Kr",
+      "title": "出海价值洼地：我在拉美一线看到的真实机会",
+      "url": "https://36kr.com/p/3628862062347528?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "General business/investment strategy article about Chinese companies going international - not AI-specific"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "100天，10亿人，一个超级入口：高德不再只是地图",
+      "url": "https://36kr.com/p/3628814355268616?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Amap (Gaode Maps) feature coverage - mapping/navigation service, not AI company business news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "铲屎官养不活宠物医院",
+      "url": "https://36kr.com/p/3628717277758725?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Pet hospital IPO news - veterinary services, not AI business"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "8点1氪丨机长、副机长被传驾驶舱内打架，长荣航空回应；小米正式回应米黑KOL合作事件；霸王茶姬通报“徒手搅拌奶茶”事件",
+      "url": "https://36kr.com/p/3628610343650565?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "News roundup of various business/corporate events - not focused on AI companies"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "科氪 | CES 2026：ROG重磅发布幻系列全能笔记本新品及系列背包产品",
+      "url": "https://36kr.com/p/3627939586999300?f=rss",
+      "pub_date": "2026-01-06",
+      "discard_reason": "ROG gaming laptop product announcements - consumer electronics, not AI company business news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "香飘飘「绕不动」地球了？",
+      "url": "https://36kr.com/p/3627483217560832?f=rss",
+      "pub_date": "2026-01-06",
+      "discard_reason": "Xicha (tea chain) financial news - consumer beverage business, not AI"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "欣界能源已给亿航216系列eVTOL供应固态锂金属电池，深圳海目星为设备总包商",
+      "url": "https://36kr.com/newsflashes/3628990953620740?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "eVTOL battery supply - electric vehicle infrastructure, not AI company business"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "意大利电信、Fastweb与沃达丰达成网络共享协议",
+      "url": "https://36kr.com/newsflashes/3628984403772678?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Telecom network sharing agreement - telecommunications infrastructure, not AI"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "国务院国资委主任张玉卓：中央企业要大力发展战略性新兴产业与未来产业，开辟增长的“第二曲线”",
+      "url": "https://36kr.com/newsflashes/3628977649779714?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Government official statement on strategic industries - policy announcement, not AI company business news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "山东：鼓励外资、民营等资本来鲁投资发展航空维修产业",
+      "url": "https://36kr.com/newsflashes/3628970807805189?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Provincial government aviation manufacturing policy - industrial policy, not AI company news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "瑞银新一轮裁员即将启动，亚洲区又一位资深老将据悉已离职",
+      "url": "https://36kr.com/newsflashes/3628967663551750?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "UBS executive departure - general banking/finance executive news, not AI company"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "知情人士：今日召开的动力和储能电池行业座谈会仍围绕“反内卷”",
+      "url": "https://36kr.com/newsflashes/3628961940505862?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Battery industry meeting about price competition - traditional energy sector, not AI"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "花旗、摩根大通因佣金过低放弃参与印度国家银行旗下14亿美元基金IPO",
+      "url": "https://36kr.com/newsflashes/3628958002758917?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Fintech IPO cancellation - financial services, not AI company"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "美国将签证保证金国家名单扩大至38国",
+      "url": "https://36kr.com/newsflashes/3628951180461317?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "US visa policy update - government regulation, not AI company news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "现货黄金、现货白银走低",
+      "url": "https://36kr.com/newsflashes/3628937639904261?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Commodity market prices - precious metals trading, not AI"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "高盛建议2026年超配A股和H股 预计MSCI中国指数今年上涨20%",
+      "url": "https://36kr.com/newsflashes/3628932494427399?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Stock market analysis/investment recommendation - financial analysis, not AI company news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "三大指数午后集体翻绿",
+      "url": "https://36kr.com/newsflashes/3628921093981187?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Stock market movement summary - market data, not AI company business news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "沪深两市成交额突破2万亿元",
+      "url": "https://36kr.com/newsflashes/3628909455164675?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Stock market trading volume data - market activity, not AI company news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "三星显示器与英特尔合作开发节能型OLED技术",
+      "url": "https://36kr.com/newsflashes/3628892336604416?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Samsung/Intel OLED technology partnership - semiconductor/display technology, not AI company"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "恒生科技指数午后跌超2%",
+      "url": "https://36kr.com/newsflashes/3628899186131969?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Index fund price movement - market data, not AI company business news"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "工银投资等在宁夏成立股权投资基金，出资额10亿元",
+      "url": "https://36kr.com/newsflashes/3628842676110345?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Investment fund establishment - traditional finance/private equity, not AI company"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "瑞银：香港市场2026年IPO规模有望超过3000亿港元",
+      "url": "https://36kr.com/newsflashes/3628841656911106?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Hong Kong IPO market forecast - general finance prediction, not AI company specific"
+    },
+    {
+      "source_name": "36Kr",
+      "title": "腾讯理财通亲情账户上线",
+      "url": "https://36kr.com/newsflashes/3628816487728385?f=rss",
+      "pub_date": "2026-01-07",
+      "discard_reason": "Tencent Finance product feature update - fintech/banking service, not AI business news. Company is a traditional tech/finance company, not operating in AI value chain"
+    }
+  ]
+}

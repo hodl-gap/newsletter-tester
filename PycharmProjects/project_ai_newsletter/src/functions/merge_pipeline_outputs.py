@@ -8,21 +8,18 @@ into a single list for deduplication.
 import json
 from pathlib import Path
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
-# =============================================================================
-# Configuration
-# =============================================================================
-
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
-
-# Input files from each pipeline (priority order: RSS > HTML > Twitter)
-INPUT_FILES = {
-    "rss": DATA_DIR / "aggregated_news.json",
-    "html": DATA_DIR / "html_news.json",
-    "twitter": DATA_DIR / "twitter_news.json",
-}
+def _get_input_files() -> dict:
+    """Get input file paths for each pipeline (priority order: RSS > HTML > Twitter)."""
+    data_dir = get_data_dir()
+    return {
+        "rss": data_dir / "aggregated_news.json",
+        "html": data_dir / "html_news.json",
+        "twitter": data_dir / "twitter_news.json",
+    }
 
 
 # =============================================================================
@@ -54,6 +51,8 @@ def merge_pipeline_outputs(state: dict) -> dict:
         input_sources = state.get("input_sources", ["rss", "html", "twitter"])
         debug_log(f"[NODE: merge_pipeline_outputs] Input sources: {input_sources}")
 
+        input_files = _get_input_files()
+
         # Track statistics
         stats = {
             "by_source_type": {},
@@ -71,7 +70,7 @@ def merge_pipeline_outputs(state: dict) -> dict:
             if source_type not in input_sources:
                 continue
 
-            file_path = INPUT_FILES.get(source_type)
+            file_path = input_files.get(source_type)
             if not file_path:
                 continue
 

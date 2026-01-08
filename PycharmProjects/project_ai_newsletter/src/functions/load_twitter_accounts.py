@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import TypedDict
 
+from src.config import get_twitter_accounts_path
 from src.tracking import debug_log, track_time
 
 
@@ -42,7 +43,7 @@ def load_twitter_accounts(state: dict) -> dict:
             debug_log(f"[NODE: load_twitter_accounts] Filtering for handles: {handle_filter}")
 
         # Read Twitter accounts config
-        data_path = Path("data/twitter_accounts.json")
+        data_path = get_twitter_accounts_path()
         if not data_path.exists():
             debug_log("[NODE: load_twitter_accounts] ERROR: twitter_accounts.json not found", "error")
             return {"twitter_accounts": [], "twitter_settings": {}}

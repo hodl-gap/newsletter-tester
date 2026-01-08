@@ -14,7 +14,7 @@ from src.tracking import debug_log, track_time
 
 # Patterns that indicate a failed/error summary from the LLM
 FAILED_SUMMARY_PATTERNS = [
-    r"^Unable to (?:process|summarize)",
+    r"^Unable to (?:process|summarize|generate)",
     r"insufficient (?:content|information)",
     r"(?:corrupted|encrypted|unreadable)",
     r"^This page contains only",

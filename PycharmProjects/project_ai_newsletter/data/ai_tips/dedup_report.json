@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-01-08T05:00:37.548848",
+  "is_first_run": false,
+  "summary": {
+    "total_input": 4,
+    "unique_kept": 2,
+    "duplicates_removed": 2,
+    "url_duplicates": 0,
+    "semantic_auto_duplicates": 2,
+    "semantic_llm_confirmed": 0,
+    "stored_to_db": 2
+  },
+  "by_source_type": {
+    "rss": 2
+  },
+  "cross_source_duplicates": 0,
+  "merge_stats": {
+    "by_source_type": {
+      "rss": {
+        "loaded": 2,
+        "kept": 2,
+        "url_collisions": 0
+      },
+      "html": {
+        "loaded": 0,
+        "kept": 0,
+        "url_collisions": 0
+      },
+      "twitter": {
+        "loaded": 2,
+        "kept": 2,
+        "url_collisions": 0
+      }
+    },
+    "url_collisions": 0,
+    "total_before_dedup": 4,
+    "total_after_dedup": 4
+  },
+  "cost": {
+    "total_cost": "$0.0000",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_calls": 0
+  },
+  "duplicates": [
+    {
+      "removed_url": "https://x.com/Sumanth_077/status/2008898618959540589",
+      "removed_title": "You can now make Claude Code, Gemini CLI, and other coding agents 10x more powerful by giving them l...",
+      "duplicate_of_url": "https://x.com/Sumanth_077/status/2008898618959540589",
+      "duplicate_of_title": "You can now make Claude Code, Gemini CLI, and other coding agents 10x more powerful by giving them l...",
+      "similarity": 1.0000003576278687,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    },
+    {
+      "removed_url": "https://x.com/Sumanth_077/status/2008898647304630710",
+      "removed_title": "Byterover works exactly like Git. You push your local context to a remote workspace, and your teamma...",
+      "duplicate_of_url": "https://x.com/Sumanth_077/status/2008898647304630710",
+      "duplicate_of_title": "Byterover works exactly like Git. You push your local context to a remote workspace, and your teamma...",
+      "similarity": 1.0,
+      "dedup_type": "semantic_auto",
+      "reason": "Auto-detected duplicate"
+    }
+  ]
+}

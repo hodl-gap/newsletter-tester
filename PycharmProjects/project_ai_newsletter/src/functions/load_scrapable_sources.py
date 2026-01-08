@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import TypedDict, Optional
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
@@ -45,7 +46,7 @@ def load_scrapable_sources(state: dict) -> dict:
         url_filter = state.get("url_filter")
 
         # Load html_availability.json
-        html_file = Path("data/html_availability.json")
+        html_file = get_data_dir() / "html_availability.json"
         if not html_file.exists():
             debug_log("[NODE: load_scrapable_sources] html_availability.json not found", "error")
             return {"scrapable_sources": []}

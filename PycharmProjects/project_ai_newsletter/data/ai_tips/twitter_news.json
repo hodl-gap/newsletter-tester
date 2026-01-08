@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "timestamp": "2026-01-08T04:38:57.876583",
+    "source": "twitter",
+    "total_tweets": 2,
+    "accounts_scraped": [],
+    "cost": {
+      "total_cost": "$0.0199",
+      "input_tokens": 3551,
+      "output_tokens": 615,
+      "llm_calls": 3
+    },
+    "by_category": {
+      "Other": 2
+    },
+    "by_region": {
+      "Global": 2
+    },
+    "by_layer": {
+      "B2B Applications": 2
+    },
+    "by_handle": {
+      "@Sumanth_077": 2
+    }
+  },
+  "articles": [
+    {
+      "date": "2026-01-07",
+      "source": "@Sumanth_077",
+      "region": "Global",
+      "category": "Other",
+      "layer": "B2B Applications",
+      "contents": "Add persistent long-term memory to Claude Code, Gemini CLI, and other coding agents with a single line of code to run locally. This enhancement allows AI coding assistants to retain context and improve performance across multiple sessions without external dependencies.",
+      "url": "https://x.com/Sumanth_077/status/2008898618959540589",
+      "title": "You can now make Claude Code, Gemini CLI, and other coding agents 10x more powerful by giving them l..."
+    },
+    {
+      "date": "2026-01-07",
+      "source": "@Sumanth_077",
+      "region": "Global",
+      "category": "Other",
+      "layer": "B2B Applications",
+      "contents": "Use Byterover to manage AI coding agent context like Git version control—push local context to shared workspaces and pull it across Cursor, Windsurf, and Claude Code. Teams can maintain a single source of truth for AI-assisted development across different editors.",
+      "url": "https://x.com/Sumanth_077/status/2008898647304630710",
+      "title": "Byterover works exactly like Git. You push your local context to a remote workspace, and your teamma..."
+    }
+  ]
+}

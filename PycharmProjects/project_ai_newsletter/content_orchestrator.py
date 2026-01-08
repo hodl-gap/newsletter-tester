@@ -15,6 +15,7 @@ from typing import TypedDict, Optional
 
 from langgraph.graph import StateGraph, START, END
 
+from src.config import set_config, DEFAULT_CONFIG
 from src.tracking import debug_log, reset_cost_tracker, cost_tracker
 
 # Import node functions
@@ -111,7 +112,11 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(source_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> dict:
+def run(
+    source_filter: Optional[list[str]] = None,
+    max_age_hours: int = 24,
+    config: str = DEFAULT_CONFIG
+) -> dict:
     """
     Run the content aggregation pipeline.
 
@@ -120,12 +125,17 @@ def run(source_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> d
                       If None, all available sources are used.
         max_age_hours: Maximum article age in hours. Articles older than this
                       are dropped before LLM filtering. Default: 24.
+        config: Configuration name (default: business_news).
 
     Returns:
         Final state with aggregated content.
     """
+    # Set active configuration
+    set_config(config)
+
     debug_log("=" * 60)
     debug_log("STARTING CONTENT AGGREGATION PIPELINE")
+    debug_log(f"CONFIG: {config}")
     if source_filter:
         debug_log(f"SOURCE FILTER: {source_filter}")
     debug_log(f"MAX AGE HOURS: {max_age_hours}")
@@ -163,7 +173,20 @@ def run(source_filter: Optional[list[str]] = None, max_age_hours: int = 24) -> d
 
 
 if __name__ == "__main__":
-    result = run()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run content aggregation pipeline (Layer 2)")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
+    parser.add_argument("--source-filter", nargs="*", help="Filter for specific sources")
+    parser.add_argument("--max-age-hours", type=int, default=24, help="Max article age in hours (default: 24)")
+
+    args = parser.parse_args()
+
+    result = run(
+        config=args.config,
+        source_filter=args.source_filter,
+        max_age_hours=args.max_age_hours
+    )
 
     # Print quick summary
     save_status = result.get("save_status", {})

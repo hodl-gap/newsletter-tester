@@ -1,0 +1,27 @@
+{
+  "name": "business_news",
+  "description": "AI business news aggregation - funding, M&A, product launches, partnerships",
+  "default_max_age_hours": 24,
+  "html_exclusions": [
+    {"domain": "asiatechreview.com", "reason": "Domain inaccessible"},
+    {"domain": "hai.stanford.edu", "reason": "Annual report, not news"},
+    {"domain": "whitecase.com", "reason": "Law firm, not media"},
+    {"domain": "foreignaffairsforum.ae", "reason": "Think tank, not news"},
+    {"domain": "reuters.com", "reason": "DataDome protection"},
+    {"domain": "wsj.com", "reason": "Paywalled"}
+  ],
+  "valid_regions": [
+    "north_america", "latin_america", "europe", "middle_east",
+    "africa", "south_asia", "southeast_asia", "east_asia",
+    "oceania", "global", "unknown"
+  ],
+  "valid_categories": [
+    "funding", "acquisition", "product_launch", "partnership",
+    "earnings", "expansion", "executive", "ipo",
+    "regulation", "strategy", "research"
+  ],
+  "valid_layers": [
+    "chips_infra", "foundation_models", "finetuning_mlops",
+    "b2b_apps", "consumer_apps"
+  ]
+}

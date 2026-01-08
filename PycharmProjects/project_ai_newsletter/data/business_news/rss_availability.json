@@ -1139,11 +1139,30 @@
       "main_feed_latest_date": null,
       "ai_feed_latest_date": null,
       "fallback_reason": null
+    },
+    {
+      "url": "https://news.hada.io/new",
+      "status": "available",
+      "main_feed_url": "https://news.hada.io/rss/news",
+      "ai_feed_url": null,
+      "tech_feed_url": null,
+      "science_feed_url": null,
+      "directory_page_url": null,
+      "is_ai_focused": false,
+      "recommended_feed": "main_feed_url",
+      "recommended_feed_url": "https://news.hada.io/rss/news",
+      "method": "agent_browse",
+      "notes": "Found RSS feed link in the website's HTML. The feed appears to be publicly accessible.",
+      "has_full_content": false,
+      "http_fetch_works": null,
+      "main_feed_latest_date": null,
+      "ai_feed_latest_date": null,
+      "fallback_reason": null
     }
   ],
-  "timestamp": "2026-01-06T05:59:02.169609",
-  "total": 60,
-  "available": 32,
+  "timestamp": "2026-01-08T02:40:37.287523",
+  "total": 61,
+  "available": 33,
   "paywalled": 8,
   "unavailable": 20,
   "ai_focused": 1,
@@ -1152,5 +1171,5 @@
   "has_science_feed": 1,
   "with_full_content": 12,
   "with_http_fetch": 11,
-  "no_content_access": 9
+  "no_content_access": 10
 }

@@ -9,24 +9,8 @@ import json
 from pathlib import Path
 from typing import TypedDict
 
+from src.config import get_data_dir, load_config_settings
 from src.tracking import debug_log, track_time
-
-
-# Sources to exclude from HTML scraping analysis
-EXCLUDED_SOURCES = [
-    # Domain inaccessible
-    "asiatechreview.com",
-    # Annual report, not news
-    "hai.stanford.edu",
-    # Law firm, not media
-    "whitecase.com",
-    # Think tank, not news
-    "foreignaffairsforum.ae",
-    # DataDome protection (known blocked)
-    "reuters.com",
-    # Likely paywalled
-    "wsj.com",
-]
 
 
 class SourceInfo(TypedDict):
@@ -50,8 +34,14 @@ def load_unavailable_sources(state: dict) -> dict:
 
         url_filter = state.get("url_filter")
 
+        # Load exclusions from config
+        config_settings = load_config_settings()
+        html_exclusions = config_settings.get("html_exclusions", [])
+        excluded_domains = [e["domain"] for e in html_exclusions]
+        debug_log(f"[NODE: load_unavailable_sources] Loaded {len(excluded_domains)} exclusions from config")
+
         # Load rss_availability.json
-        rss_file = Path("data/rss_availability.json")
+        rss_file = get_data_dir() / "rss_availability.json"
         if not rss_file.exists():
             debug_log("[NODE: load_unavailable_sources] rss_availability.json not found", "error")
             return {"sources_to_test": []}
@@ -73,8 +63,8 @@ def load_unavailable_sources(state: dict) -> dict:
         for source in unavailable:
             url = source.get("url", "")
 
-            # Check if source should be excluded
-            is_excluded = any(excl in url.lower() for excl in EXCLUDED_SOURCES)
+            # Check if source should be excluded (based on config)
+            is_excluded = any(excl in url.lower() for excl in excluded_domains)
             if is_excluded:
                 excluded_count += 1
                 debug_log(f"[NODE: load_unavailable_sources] Excluding: {url}")

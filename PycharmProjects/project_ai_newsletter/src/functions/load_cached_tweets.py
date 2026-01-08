@@ -10,12 +10,13 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+from src.config import get_data_dir
 from src.tracking import debug_log, track_time
 
 
-# Input file path
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
-CACHE_FILE = DATA_DIR / "twitter_raw_cache.json"
+def _get_cache_file() -> Path:
+    """Get path for twitter_raw_cache.json."""
+    return get_data_dir() / "twitter_raw_cache.json"
 
 
 def load_cached_tweets(state: dict) -> dict:
@@ -37,17 +38,19 @@ def load_cached_tweets(state: dict) -> dict:
 
         debug_log(f"[NODE: load_cached_tweets] Loading tweets for {len(available_handles)} accounts")
 
+        cache_file = _get_cache_file()
+
         # Check if cache file exists
-        if not CACHE_FILE.exists():
+        if not cache_file.exists():
             debug_log(
-                f"[NODE: load_cached_tweets] Cache not found: {CACHE_FILE}. Run Layer 1 first.",
+                f"[NODE: load_cached_tweets] Cache not found: {cache_file}. Run Layer 1 first.",
                 "error"
             )
             return {"raw_tweets": []}
 
         # Load cache data
         try:
-            with open(CACHE_FILE, "r", encoding="utf-8") as f:
+            with open(cache_file, "r", encoding="utf-8") as f:
                 cache_data = json.load(f)
         except (json.JSONDecodeError, IOError) as e:
             debug_log(f"[NODE: load_cached_tweets] Error reading cache: {e}", "error")
