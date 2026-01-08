@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS articles (
     url_hash TEXT NOT NULL,
     title TEXT NOT NULL,
     summary TEXT,
+    full_content TEXT,
     source TEXT NOT NULL,
     source_type TEXT DEFAULT 'rss',
     pub_date TEXT NOT NULL,
@@ -143,6 +144,8 @@ class ArticleDatabase:
 
             # Migration: Add source_type column if missing (for existing DBs)
             self._migrate_source_type(conn)
+            # Migration: Add full_content column if missing (for existing DBs)
+            self._migrate_full_content(conn)
             # Migration: Add new dedup_log columns if missing (for existing DBs)
             self._migrate_dedup_log(conn)
 
@@ -161,6 +164,20 @@ class ArticleDatabase:
                 conn.execute("CREATE INDEX IF NOT EXISTS idx_source_type ON articles(source_type)")
                 conn.commit()
                 debug_log("[DB] Migration complete: source_type column added")
+        except Exception as e:
+            debug_log(f"[DB] Migration warning: {e}", "warning")
+
+    def _migrate_full_content(self, conn):
+        """Add full_content column to existing databases."""
+        try:
+            cursor = conn.execute("PRAGMA table_info(articles)")
+            columns = [row[1] for row in cursor.fetchall()]
+
+            if "full_content" not in columns:
+                debug_log("[DB] Migrating: Adding full_content column")
+                conn.execute("ALTER TABLE articles ADD COLUMN full_content TEXT")
+                conn.commit()
+                debug_log("[DB] Migration complete: full_content column added")
         except Exception as e:
             debug_log(f"[DB] Migration warning: {e}", "warning")
 
@@ -271,14 +288,15 @@ class ArticleDatabase:
             with self._connection() as conn:
                 conn.execute(
                     """INSERT INTO articles
-                       (url, url_hash, title, summary, source, source_type, pub_date,
+                       (url, url_hash, title, summary, full_content, source, source_type, pub_date,
                         region, category, layer, embedding)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (
                         url,
                         url_hash,
                         article.get("title", ""),
                         article.get("contents", article.get("summary", "")),
+                        article.get("full_content", ""),
                         article.get("source", ""),
                         article.get("source_type", "rss"),
                         article.get("date", article.get("pub_date", "")),
@@ -322,14 +340,15 @@ class ArticleDatabase:
                 try:
                     conn.execute(
                         """INSERT INTO articles
-                           (url, url_hash, title, summary, source, source_type, pub_date,
+                           (url, url_hash, title, summary, full_content, source, source_type, pub_date,
                             region, category, layer, embedding)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                         (
                             url,
                             url_hash,
                             article.get("title", ""),
                             article.get("contents", article.get("summary", "")),
+                            article.get("full_content", ""),
                             article.get("source", ""),
                             article.get("source_type", "rss"),
                             article.get("date", article.get("pub_date", "")),

@@ -31,7 +31,8 @@ class OutputRecord(TypedDict):
     layer: str          # AI value chain layer
     contents: str       # Tweet summary
     url: str            # Tweet URL
-    title: str          # Original tweet text
+    title: str          # Korean headline
+    full_content: str   # Original tweet text (for re-processing)
 
 
 def _is_failed_summary(contents: str) -> bool:
@@ -91,9 +92,8 @@ def build_twitter_output(state: dict) -> dict:
                 })
                 continue  # Skip adding to output
 
-            # Truncate tweet text for title (first 100 chars)
-            full_text = tweet.get("full_text", tweet.get("title", ""))
-            title = full_text[:100] + "..." if len(full_text) > 100 else full_text
+            # Use LLM-generated Korean title
+            title = tweet.get("title", "")
 
             record: OutputRecord = {
                 "date": tweet.get("pub_date", ""),
@@ -104,6 +104,7 @@ def build_twitter_output(state: dict) -> dict:
                 "contents": contents,
                 "url": tweet.get("url", tweet.get("link", "")),
                 "title": title,
+                "full_content": tweet.get("full_text", tweet.get("description", "")),
             }
             output_data.append(record)
 

@@ -25,7 +25,8 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 **Layer 2: Content Aggregation** (depends on Layer 1)
 - Fetch actual content from discovered sources
 - Filter for AI business news
-- Generate concise English summaries (1-2 sentences)
+- Generate concise Korean summaries (1-2 sentences, terse wire-service style)
+- Generate Korean headlines (preserves already-Korean titles)
 - Extract metadata (region, category, AI layer)
 - URL deduplication against historical DB (saves LLM costs)
 

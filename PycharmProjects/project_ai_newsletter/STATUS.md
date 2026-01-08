@@ -27,12 +27,20 @@ All layers complete and operational:
 
 ## Recent Improvements (2026-01-08)
 
-1. **HTML Exclusions Moved to Config**
+1. **Korean Translation for Titles and Summaries**
+   - All output now in Korean (한국어) instead of English
+   - LLM generates both `title` (Korean headline) and `summary` (Korean content)
+   - Terse wire-service style: "~기록.", "~예정." (no "~다" endings)
+   - Company names kept in original form (OpenAI, not 오픈에이아이)
+   - Already-Korean titles preserved (not regenerated)
+   - Modified: `generate_summary_system_prompt.md`, `generate_summaries.py`, `build_twitter_output.py`
+
+2. **HTML Exclusions Moved to Config**
    - Moved hardcoded `EXCLUDED_SOURCES` from Python to `config.json`
    - Per-config exclusions with reasons (`html_exclusions` field)
    - No code changes needed to add/remove exclusions
 
-2. **Fixed Failed Summary Detection**
+3. **Fixed Failed Summary Detection**
    - Added "generate" to `FAILED_SUMMARY_PATTERNS` regex
    - Now correctly discards articles with "Unable to generate summary..." errors
    - Fixed in: `build_output_dataframe.py`, `build_twitter_output.py`

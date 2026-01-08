@@ -148,9 +148,17 @@ generate_summaries → build_output_dataframe → save_html_content
 
 ## Layer 2: Content Aggregation - COMPLETE
 
-### Mandatory English Summaries - IMPLEMENTED (2026-01-05)
+### Korean Titles and Summaries - IMPLEMENTED (2026-01-08)
 
-**All articles now get LLM-generated English summaries** (1-2 sentences).
+**All articles now get LLM-generated Korean titles and summaries.**
+- Terse wire-service style: "~기록.", "~예정." (no "~다" endings)
+- Company names kept in original form (OpenAI, not 오픈에이아이)
+- Already-Korean titles preserved (not regenerated)
+
+### Mandatory English Summaries - REPLACED (2026-01-05 → 2026-01-08)
+
+~~All articles now get LLM-generated English summaries (1-2 sentences).~~
+Replaced by Korean output on 2026-01-08.
 
 ### Pipeline Flow
 ```

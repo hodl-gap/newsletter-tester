@@ -1,9 +1,9 @@
 """
 Generate Summaries Node
 
-Generates LLM summaries for ALL articles. Each summary is:
-- 1-2 sentences (concise)
-- In English (translated if source is non-English)
+Generates LLM titles and summaries for ALL articles. Each output is:
+- title: Concise Korean headline (preserves original if already Korean)
+- summary: 1-2 sentences in Korean (terse wire-service style)
 - Contains key business facts (company, action, numbers, geography)
 """
 
@@ -28,13 +28,13 @@ FALLBACK_BATCH_SIZES = [7, 5]
 
 def generate_summaries(state: dict) -> dict:
     """
-    Generate LLM summaries for ALL articles.
+    Generate LLM titles and summaries for ALL articles.
 
     Args:
         state: Pipeline state with 'enriched_articles'
 
     Returns:
-        Dict with updated 'enriched_articles' (with 'contents' field)
+        Dict with updated 'enriched_articles' (with 'title' and 'contents' fields)
     """
     with track_time("generate_summaries"):
         debug_log("[NODE: generate_summaries] Entering")
@@ -45,16 +45,19 @@ def generate_summaries(state: dict) -> dict:
         if not enriched_articles:
             return {"enriched_articles": enriched_articles}
 
-        # Generate summaries for all articles
-        all_summaries = _generate_summaries_with_retry(enriched_articles)
+        # Generate titles and summaries for all articles
+        all_summaries, all_titles = _generate_summaries_with_retry(enriched_articles)
 
-        # Apply summaries to articles
+        # Apply titles and summaries to articles
         summarized_count = 0
         fallback_count = 0
 
         for article in enriched_articles:
             url = article.get("link", "")
             if url in all_summaries and all_summaries[url]:
+                # Use LLM-generated Korean title if available
+                if url in all_titles and all_titles[url]:
+                    article["title"] = all_titles[url]
                 article["contents"] = all_summaries[url]
                 article["content_source"] = "llm_summary"
                 summarized_count += 1
@@ -70,9 +73,9 @@ def generate_summaries(state: dict) -> dict:
         return {"enriched_articles": enriched_articles}
 
 
-def _generate_summaries_with_retry(articles: list[dict]) -> dict[str, str]:
+def _generate_summaries_with_retry(articles: list[dict]) -> tuple[dict[str, str], dict[str, str]]:
     """
-    Generate summaries for all articles with adaptive batch retry.
+    Generate titles and summaries for all articles with adaptive batch retry.
 
     On parse errors, retries with smaller batch sizes (10 -> 7 -> 5).
 
@@ -80,9 +83,10 @@ def _generate_summaries_with_retry(articles: list[dict]) -> dict[str, str]:
         articles: List of articles to summarize
 
     Returns:
-        Dict mapping URL to summary
+        Tuple of (summaries dict, titles dict) mapping URL to content
     """
     all_summaries: dict[str, str] = {}
+    all_titles: dict[str, str] = {}
 
     # Process in batches
     for i in range(0, len(articles), BATCH_SIZE):
@@ -92,13 +96,14 @@ def _generate_summaries_with_retry(articles: list[dict]) -> dict[str, str]:
 
         debug_log(f"[NODE: generate_summaries] Processing batch {batch_num}/{total_batches}")
 
-        summaries = _summarize_batch_with_retry(batch)
+        summaries, titles = _summarize_batch_with_retry(batch)
         all_summaries.update(summaries)
+        all_titles.update(titles)
 
-    return all_summaries
+    return all_summaries, all_titles
 
 
-def _summarize_batch_with_retry(articles: list[dict]) -> dict[str, str]:
+def _summarize_batch_with_retry(articles: list[dict]) -> tuple[dict[str, str], dict[str, str]]:
     """
     Summarize a batch with automatic retry on smaller batch sizes.
 
@@ -106,13 +111,13 @@ def _summarize_batch_with_retry(articles: list[dict]) -> dict[str, str]:
         articles: List of articles to summarize
 
     Returns:
-        Dict mapping URL to summary
+        Tuple of (summaries dict, titles dict) mapping URL to content
     """
     # Try with full batch first
-    success, summaries = _summarize_batch(articles, max_tokens=2048)
+    success, summaries, titles = _summarize_batch(articles, max_tokens=2048)
 
     if success:
-        return summaries
+        return summaries, titles
 
     # Retry with smaller batch sizes
     for fallback_size in FALLBACK_BATCH_SIZES:
@@ -120,30 +125,32 @@ def _summarize_batch_with_retry(articles: list[dict]) -> dict[str, str]:
 
         all_success = True
         temp_summaries: dict[str, str] = {}
+        temp_titles: dict[str, str] = {}
 
         for i in range(0, len(articles), fallback_size):
             sub_batch = articles[i:i + fallback_size]
             # Increase max_tokens for smaller batches
             max_tokens = 2048 if fallback_size >= 7 else 3072
 
-            success, sub_summaries = _summarize_batch(sub_batch, max_tokens=max_tokens)
+            success, sub_summaries, sub_titles = _summarize_batch(sub_batch, max_tokens=max_tokens)
 
             if success:
                 temp_summaries.update(sub_summaries)
+                temp_titles.update(sub_titles)
             else:
                 all_success = False
                 break
 
         if all_success:
             debug_log(f"[NODE: generate_summaries] Retry with batch size {fallback_size} succeeded")
-            return temp_summaries
+            return temp_summaries, temp_titles
 
     # All retries failed - return empty (will fall back to descriptions)
     debug_log(f"[NODE: generate_summaries] All retries failed for {len(articles)} articles", "error")
-    return {}
+    return {}, {}
 
 
-def _summarize_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool, dict[str, str]]:
+def _summarize_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool, dict[str, str], dict[str, str]]:
     """
     Summarize a single batch of articles using LLM.
 
@@ -152,7 +159,7 @@ def _summarize_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool
         max_tokens: Maximum tokens for LLM response
 
     Returns:
-        Tuple of (success: bool, summaries: dict mapping URL to summary)
+        Tuple of (success: bool, summaries: dict, titles: dict)
     """
     # Load system prompt
     system_prompt = load_prompt("generate_summary_system_prompt.md")
@@ -200,17 +207,21 @@ def _summarize_batch(articles: list[dict], max_tokens: int = 2048) -> tuple[bool
         result = _parse_llm_response(response_text)
 
         summaries = {}
+        titles = {}
         for item in result.get("summaries", []):
             url = item.get("url", "")
             summary = item.get("summary", "")
+            title = item.get("title", "")
             if url and summary:
                 summaries[url] = summary
+            if url and title:
+                titles[url] = title
 
-        return True, summaries
+        return True, summaries, titles
 
     except Exception as e:
         debug_log(f"[NODE: generate_summaries] ERROR parsing response: {e}", "error")
-        return False, {}
+        return False, {}, {}
 
 
 def _clean_and_truncate(content: str, max_length: int = 3000) -> str:

@@ -31,6 +31,7 @@ class OutputRecord(TypedDict):
     contents: str       # Article summary
     url: str            # Article URL
     title: str          # Article title (bonus field)
+    full_content: str   # Original article text (for re-processing)
 
 
 def _is_failed_summary(contents: str) -> bool:
@@ -99,6 +100,7 @@ def build_output_dataframe(state: dict) -> dict:
                 "contents": contents,
                 "url": article.get("link", ""),
                 "title": article.get("title", ""),
+                "full_content": article.get("full_content") or article.get("description", ""),
             }
             output_data.append(record)
 
