@@ -29,6 +29,11 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 - Generate Korean headlines (preserves already-Korean titles)
 - Extract metadata (region, category, AI layer)
 - URL deduplication against historical DB (saves LLM costs)
+- **Summary validation & retry** (added 2026-01-10):
+  - Validates: length < 250 chars, Korean ratio ≥ 30%, not just copied content
+  - Auto-retries up to 3x with stronger prompts on validation failure
+  - Tracks `content_source` (llm_summary, llm_summary_retry, description_fallback)
+  - Tracks `fallback_reason` for debugging failed summaries
 
 **Layer 3: Deduplication** (runs after Layer 2)
 - Semantic deduplication using OpenAI embeddings
@@ -36,7 +41,8 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 - Three-tier classification: unique (<0.75), ambiguous (0.75-0.90), duplicate (>0.90)
 - LLM confirmation for ambiguous cases only (cost-optimized)
 - Stores articles with embeddings to SQLite for future comparison
-- Output: `aggregated_news_deduped.json`, `dedup_report.json`
+- Exports full DB with `is_new` flag for dashboard (all historical + new articles)
+- Output: `merged_news_deduped.json`, `dedup_report.json`, `all_articles.json`
 
 **HTML Layer 1: Scrapability Discovery** (runs on RSS L1 "unavailable" sources)
 - Analyzes sources without RSS to determine if they can be scraped via HTTP
@@ -58,6 +64,7 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 - **Requires authenticated session cookies** (see Twitter Authentication below)
 - Same LLM filtering and metadata extraction as Layer 2
 - Rate-limited (55-65s randomized delay between accounts)
+- **Multi-config consolidation:** When running multiple configs, handles are deduplicated and scraped once
 - Output: Same 8-field schema as RSS pipeline
 
 ---
@@ -81,14 +88,46 @@ The pipeline supports multiple configurations (e.g., `business_news`, `academic_
 | `business_news` | AI business news (funding, M&A, launches) | 60+ RSS feeds, Twitter accounts |
 | `ai_tips` | AI usage tips, tutorials, workflows | marktechpost.com, byhand.ai, @Sumanth_077 |
 
-**Usage:**
-```python
-# Default (uses business_news)
-content_orchestrator.run()
+### Main Orchestrator (Recommended)
 
-# Explicit config
+The main `orchestrator.py` runs the **full pipeline** for one or multiple configs. When running multiple configs, Twitter scraping is automatically consolidated (each handle scraped once).
+
+```bash
+# Single config - runs all layers
+python orchestrator.py --config business_news
+
+# Multiple configs - Twitter automatically consolidated
+python orchestrator.py --configs business_news ai_tips
+
+# Skip discovery layers (faster, reuse existing L1 data)
+python orchestrator.py --configs business_news ai_tips --skip-rss-l1 --skip-html-l1
+
+# Only run specific layers
+python orchestrator.py --configs business_news ai_tips --only twitter dedup
+```
+
+**Pipeline Order:**
+1. RSS L1 (per config) → RSS L2 (per config)
+2. HTML L1 (per config) → HTML L2 (per config)
+3. **Twitter L1 (CONSOLIDATED if multi-config)** → Twitter L2 (per config)
+4. Dedup L3 (per config)
+
+**Incremental L1 Layers:**
+- RSS L1 and HTML L1 run in **incremental mode by default** (skip sources checked within 7 days)
+- This makes daily runs fast while still processing all fresh content in L2/L3
+- To force full rescan on L1, run the individual orchestrators with `--full-rescan`:
+  ```bash
+  python rss_orchestrator.py --config business_news --full-rescan
+  python html_layer1_orchestrator.py --config business_news --full-rescan
+  ```
+
+### Individual Orchestrators
+
+For running specific layers independently:
+
+```python
+# RSS Layer 2 only
 content_orchestrator.run(config="business_news")
-content_orchestrator.run(config="ai_tips")
 
 # CLI
 python content_orchestrator.py --config=ai_tips
@@ -117,7 +156,7 @@ python content_orchestrator.py --config=academic_papers
 
 ```
 project_ai_newsletter/
-├── orchestrator.py           # Main orchestrator (placeholder)
+├── orchestrator.py           # Main orchestrator (runs full pipeline)
 ├── layer0_orchestrator.py    # Layer 0: Source quality assessment
 ├── rss_orchestrator.py       # Layer 1: RSS discovery orchestrator
 ├── content_orchestrator.py   # Layer 2: Content aggregation orchestrator
@@ -189,6 +228,7 @@ project_ai_newsletter/
 │       ├── load_available_twitter_accounts.py
 │       ├── load_cached_tweets.py
 │       ├── filter_by_date_twitter.py
+│       ├── fetch_link_content.py
 │       ├── build_twitter_output.py
 │       └── save_twitter_content.py
 ├── configs/                  # Config-specific settings per pipeline type
@@ -212,6 +252,8 @@ project_ai_newsletter/
 │   ├── analyze_listing_page_system_prompt.md
 │   └── analyze_article_page_system_prompt.md
 ├── data/                     # Output data files (organized by config)
+│   ├── shared/               # Shared data across configs
+│   │   └── twitter_raw_cache.json  # Multi-config Twitter cache
 │   └── business_news/        # Outputs for business_news config
 │       ├── rss_availability.json # RSS discovery results (Layer 1 output)
 │       ├── aggregated_news.json  # Aggregated content (Layer 2 output)
@@ -285,6 +327,10 @@ llm = get_model("gpt-4o")
 | Metadata extraction | claude-sonnet / gpt-4o |
 | Content summarization | claude-sonnet / gpt-4o |
 | Complex reasoning | claude-sonnet / gpt-4o |
+
+**GPT-5 Notes:**
+- Use `max_completion_tokens` (not `max_tokens`) for OpenAI GPT-5 models
+- Set higher limits (4096+) for Korean output - JSON truncation causes parse errors
 
 ### 4. Prompts
 
@@ -452,6 +498,8 @@ All output files are stored in `data/{config_name}/` (e.g., `data/business_news/
 | `merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Twitter) |
 | `merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
 | `dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
+| `all_articles.json` | Layer 3 output: Full database export with `is_new` flag for dashboard |
+| `all_articles.csv` | Layer 3 output: Same as JSON in tabular format |
 | `html_availability.json` | HTML L1 output: Scrapability configs with CSS selectors |
 | `html_news.json` | HTML L2 output: AI business news from scraped sources |
 | `html_news.csv` | HTML L2 output: Same as JSON in tabular format |
@@ -581,8 +629,14 @@ layer0_orchestrator.run(config="academic_papers")
 ```python
 import rss_orchestrator
 
-# Run full discovery (default config: business_news)
+# Incremental mode (default) - only check stale sources (>7 days)
 rss_orchestrator.run()
+
+# Force full rescan - re-check all sources
+rss_orchestrator.run(full_rescan=True)
+
+# Custom refresh period (14 days)
+rss_orchestrator.run(refresh_days=14)
 
 # Run for specific URLs only (substring match)
 rss_orchestrator.run(url_filter=['.co.kr', 'techcrunch'])
@@ -591,19 +645,37 @@ rss_orchestrator.run(url_filter=['.co.kr', 'techcrunch'])
 rss_orchestrator.run(config="academic_papers")
 ```
 
+**CLI Usage:**
+```bash
+# Incremental mode (default)
+python rss_orchestrator.py --config business_news
+
+# Force full rescan
+python rss_orchestrator.py --config business_news --full-rescan
+
+# Custom refresh period
+python rss_orchestrator.py --config business_news --refresh-days 14
+
+# Combine with URL filter
+python rss_orchestrator.py --config business_news --url-filter techcrunch
+```
+
 **Features:**
 - Reads from `configs/{config}/input_urls.json`
+- **Incremental Mode (Default):** Skips sources checked within `refresh_days` (default: 7)
 - URL filter for testing specific sources
 - Results merge with existing `rss_availability.json` (doesn't overwrite)
 - Freshness check: AI feeds older than 7 days fall back to main feed
 - **RSS Directory Scanning:** Scans `/about/rss`, `/feeds` pages for topic-specific feeds
 - For non-AI-focused sites, prefers tech feed > AI feed > main feed
 
-**Re-Run Behavior:**
-- Layer 1 is NOT incremental - re-checks ALL sources every run
-- Results are **merged** with existing entries (update existing, add new, preserve old)
-- Old entries may lack newer fields (e.g., `ai_feed_latest_date`, `fallback_reason`)
-- To update specific sources: `rss_orchestrator.run(url_filter=['techcabal'])`
+**Incremental Behavior:**
+- Each result entry has a `last_checked` timestamp
+- Sources checked within `refresh_days` are skipped (default: 7 days)
+- New URLs (not in file) are always processed
+- Entries without `last_checked` are treated as stale and re-checked
+- Use `--full-rescan` to force re-checking all sources
+- Output shows `last_run_processed` and `last_run_skipped` counts
 
 **Pipeline Flow:**
 ```
@@ -620,14 +692,21 @@ discover_with_agent -> classify_all_feeds -> merge_results -> save_results
 - `recommended_feed_url`: Best feed to use based on site type
 - `ai_feed_latest_date`: ISO date of latest AI feed article (for freshness)
 - `fallback_reason`: Why main feed was used (e.g., "stale_ai_feed")
+- `last_checked`: ISO timestamp of when this URL was last checked
 
 ### HTML Layer 1: Scrapability Discovery
 
 ```python
 import html_layer1_orchestrator
 
-# Run full discovery (default config: business_news)
+# Incremental mode (default) - only check stale sources (>7 days)
 html_layer1_orchestrator.run()
+
+# Force full rescan - re-check all sources
+html_layer1_orchestrator.run(full_rescan=True)
+
+# Custom refresh period (14 days)
+html_layer1_orchestrator.run(refresh_days=14)
 
 # Run for specific URLs only (substring match)
 html_layer1_orchestrator.run(url_filter=['pulsenews', 'rundown'])
@@ -636,13 +715,33 @@ html_layer1_orchestrator.run(url_filter=['pulsenews', 'rundown'])
 html_layer1_orchestrator.run(config="academic_papers")
 ```
 
+**CLI Usage:**
+```bash
+# Incremental mode (default)
+python html_layer1_orchestrator.py --config business_news
+
+# Force full rescan
+python html_layer1_orchestrator.py --config business_news --full-rescan
+
+# Custom refresh period
+python html_layer1_orchestrator.py --config business_news --refresh-days 14
+```
+
 **Features:**
+- **Incremental Mode (Default):** Skips sources checked within `refresh_days` (default: 7)
 - Respects `html_exclusions` from `config.json` (skips specified domains)
 - Tests HTTP accessibility with browser-like headers
 - Detects bot protection (Cloudflare, CAPTCHA, JS-redirect)
 - LLM analyzes listing page structure (article URL patterns)
 - LLM analyzes article pages (CSS selectors for extraction)
 - Results merge with existing `data/{config}/html_availability.json`
+
+**Incremental Behavior:**
+- Each result entry has an `analyzed_at` timestamp
+- Sources checked within `refresh_days` are skipped (default: 7 days)
+- New sources (not in file) are always processed
+- Use `--full-rescan` to force re-checking all sources
+- Output shows `last_run_processed` and `last_run_skipped` counts
 
 **Pipeline Flow:**
 ```
@@ -660,6 +759,7 @@ save_html_availability
 - `article_page.date_selector`: CSS selector for date
 - `recommendation.approach`: "http_simple", "playwright", "not_recommended"
 - `recommendation.confidence`: 0.0-1.0
+- `analyzed_at`: ISO timestamp of when this source was last analyzed
 
 ### HTML Layer 2: Content Scraping
 
@@ -800,14 +900,29 @@ export_dedup_report
 ```python
 import twitter_layer1_orchestrator
 
-# Run full discovery (default config: business_news)
-twitter_layer1_orchestrator.run()
+# Single-config: Run for one config
+twitter_layer1_orchestrator.run(config="business_news")
 
-# Run for specific handles only (substring match)
-twitter_layer1_orchestrator.run(handle_filter=['@OpenAI'])
+# Single-config: Filter specific handles
+twitter_layer1_orchestrator.run(config="business_news", handle_filter=['@OpenAI'])
 
-# Run for a different config
-twitter_layer1_orchestrator.run(config="academic_papers")
+# Multi-config: Consolidated scraping (each handle scraped ONCE)
+twitter_layer1_orchestrator.run_multi(configs=["business_news", "ai_tips"])
+
+# Multi-config: Full pipeline (L1 + L2 for each config)
+twitter_layer1_orchestrator.run_all(configs=["business_news", "ai_tips"])
+```
+
+**CLI Usage:**
+```bash
+# Single-config
+python twitter_layer1_orchestrator.py --config=business_news
+
+# Multi-config (consolidated L1 only)
+python twitter_layer1_orchestrator.py --configs business_news ai_tips
+
+# Multi-config with full pipeline (L1 + L2 for each config)
+python twitter_layer1_orchestrator.py --configs business_news ai_tips --run-all
 ```
 
 **Features:**
@@ -815,11 +930,15 @@ twitter_layer1_orchestrator.run(config="academic_papers")
 - Analyzes account activity (tweets per day, last tweet date)
 - Marks accounts as "active" or "inactive" (no tweets in N days)
 - Caches raw tweets for Layer 2 (no re-scraping needed)
-- Results merge with existing `data/{config}/twitter_availability.json`
+- **Multi-config mode:** Deduplicates handles across configs, scrapes each once
+- Results merge with existing availability files
 
-**Output Files:**
+**Output Files (single-config):**
 - `data/{config}/twitter_availability.json` - Account status and metrics
 - `data/{config}/twitter_raw_cache.json` - Raw tweets for Layer 2
+
+**Output Files (multi-config):**
+- `data/shared/twitter_raw_cache.json` - Shared cache for all configs
 
 **Pipeline Flow:**
 ```
@@ -833,24 +952,31 @@ save_twitter_availability
 import twitter_layer2_orchestrator
 
 # Run full aggregation (default config: business_news)
-twitter_layer2_orchestrator.run()
+twitter_layer2_orchestrator.run(config="business_news")
 
 # Run for specific handles only (substring match)
-twitter_layer2_orchestrator.run(handle_filter=['@OpenAI'])
+twitter_layer2_orchestrator.run(config="business_news", handle_filter=['@OpenAI'])
 
 # Custom tweet age cutoff (e.g., last 7 days)
-twitter_layer2_orchestrator.run(max_age_hours=168)
+twitter_layer2_orchestrator.run(config="business_news", max_age_hours=168)
 
-# Combine filters
-twitter_layer2_orchestrator.run(handle_filter=['@OpenAI'], max_age_hours=72)
+# Use shared cache (after running multi-config L1)
+twitter_layer2_orchestrator.run(config="business_news", use_shared_cache=True)
+```
 
-# Run for a different config
-twitter_layer2_orchestrator.run(config="academic_papers")
+**CLI Usage:**
+```bash
+# Standard (reads from config-specific cache)
+python twitter_layer2_orchestrator.py --config=business_news
+
+# Use shared cache (after multi-config L1)
+python twitter_layer2_orchestrator.py --config=business_news --use-shared-cache
 ```
 
 **Features:**
 - Reads from Layer 1 output (only active accounts)
 - Uses cached tweets (no re-scraping)
+- **Shared cache mode:** Reads from `data/shared/` and filters to config's handles
 - Reuses `filter_business_news`, `extract_metadata`, `generate_summaries` from RSS Layer 2
 - Same 8-field output schema as RSS pipeline
 - Discarded tweets exported with reasons
@@ -859,8 +985,8 @@ twitter_layer2_orchestrator.run(config="academic_papers")
 **Pipeline Flow:**
 ```
 load_available_accounts → load_cached_tweets → filter_by_date_twitter →
-adapt_tweets_to_articles → filter_business_news → extract_metadata →
-generate_summaries → build_twitter_output → save_twitter_content
+fetch_link_content → adapt_tweets_to_articles → filter_business_news →
+extract_metadata → generate_summaries → build_twitter_output → save_twitter_content
 ```
 
 ### Twitter Configuration

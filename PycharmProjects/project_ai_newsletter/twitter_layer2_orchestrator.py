@@ -6,8 +6,8 @@ Uses cached tweets instead of re-scraping.
 
 Pipeline Flow:
     load_available_accounts -> load_cached_tweets -> filter_by_date_twitter ->
-    adapt_tweets_to_articles -> filter_business_news -> extract_metadata ->
-    generate_summaries -> build_twitter_output -> save_twitter_content
+    fetch_link_content -> adapt_tweets_to_articles -> filter_business_news ->
+    extract_metadata -> generate_summaries -> build_twitter_output -> save_twitter_content
 
 Input:
     - data/twitter_availability.json (from Layer 1)
@@ -30,6 +30,7 @@ from src.tracking import debug_log, reset_cost_tracker, cost_tracker, track_time
 from src.functions.load_available_twitter_accounts import load_available_twitter_accounts
 from src.functions.load_cached_tweets import load_cached_tweets
 from src.functions.filter_by_date_twitter import filter_by_date_twitter
+from src.functions.fetch_link_content import fetch_link_content
 from src.functions.build_twitter_output import build_twitter_output
 from src.functions.save_twitter_content import save_twitter_content
 
@@ -52,6 +53,9 @@ class TwitterAggregationState(TypedDict):
 
     # Optional: maximum tweet age in hours (default: 24)
     max_age_hours: Optional[int]
+
+    # Optional: read from shared cache instead of config-specific cache
+    use_shared_cache: bool
 
     # From load_available_twitter_accounts
     available_accounts: list[dict]
@@ -119,6 +123,7 @@ def build_graph() -> StateGraph:
     graph.add_node("load_available_twitter_accounts", load_available_twitter_accounts)
     graph.add_node("load_cached_tweets", load_cached_tweets)
     graph.add_node("filter_by_date_twitter", filter_by_date_twitter)
+    graph.add_node("fetch_link_content", fetch_link_content)
     graph.add_node("adapt_tweets_to_articles", adapt_tweets_to_articles)
     graph.add_node("filter_business_news", filter_business_news)
     graph.add_node("extract_metadata", extract_metadata)
@@ -130,7 +135,8 @@ def build_graph() -> StateGraph:
     graph.add_edge(START, "load_available_twitter_accounts")
     graph.add_edge("load_available_twitter_accounts", "load_cached_tweets")
     graph.add_edge("load_cached_tweets", "filter_by_date_twitter")
-    graph.add_edge("filter_by_date_twitter", "adapt_tweets_to_articles")
+    graph.add_edge("filter_by_date_twitter", "fetch_link_content")
+    graph.add_edge("fetch_link_content", "adapt_tweets_to_articles")
     graph.add_edge("adapt_tweets_to_articles", "filter_business_news")
     graph.add_edge("filter_business_news", "extract_metadata")
     graph.add_edge("extract_metadata", "generate_summaries")
@@ -149,7 +155,8 @@ def build_graph() -> StateGraph:
 def run(
     handle_filter: Optional[list[str]] = None,
     max_age_hours: int = 24,
-    config: str = DEFAULT_CONFIG
+    config: str = DEFAULT_CONFIG,
+    use_shared_cache: bool = False,
 ) -> dict:
     """
     Run the Twitter Layer 2 aggregation pipeline.
@@ -162,6 +169,9 @@ def run(
         max_age_hours: Maximum tweet age in hours. Tweets older than this
                       are dropped before LLM filtering. Default: 24.
         config: Configuration name (default: business_news).
+        use_shared_cache: If True, reads from data/shared/twitter_raw_cache.json
+                         instead of data/{config}/twitter_raw_cache.json.
+                         Use this after running twitter_multi_orchestrator.
 
     Returns:
         Final state with aggregated content.
@@ -175,6 +185,7 @@ def run(
     if handle_filter:
         debug_log(f"HANDLE FILTER: {handle_filter}")
     debug_log(f"MAX AGE HOURS: {max_age_hours}")
+    debug_log(f"USE SHARED CACHE: {use_shared_cache}")
     debug_log("=" * 60)
 
     # Reset cost tracker
@@ -188,6 +199,7 @@ def run(
         initial_state: TwitterAggregationState = {
             "handle_filter": handle_filter,
             "max_age_hours": max_age_hours,
+            "use_shared_cache": use_shared_cache,
             "available_accounts": [],
             "twitter_settings": {},
             "raw_tweets": [],
@@ -217,13 +229,19 @@ if __name__ == "__main__":
     parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
     parser.add_argument("--handle-filter", nargs="*", help="Filter for specific handles")
     parser.add_argument("--max-age-hours", type=int, default=24, help="Max tweet age in hours (default: 24)")
+    parser.add_argument(
+        "--use-shared-cache",
+        action="store_true",
+        help="Read from shared cache (data/shared/) instead of config-specific cache"
+    )
 
     args = parser.parse_args()
 
     result = run(
         config=args.config,
         handle_filter=args.handle_filter,
-        max_age_hours=args.max_age_hours
+        max_age_hours=args.max_age_hours,
+        use_shared_cache=args.use_shared_cache,
     )
 
     # Print quick summary
