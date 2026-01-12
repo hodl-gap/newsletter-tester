@@ -191,6 +191,7 @@ All layers complete and operational:
 ### Medium Priority
 - Consider scheduled runs (cron/GitHub Actions)
 - Build frontend/newsletter output format
+- Use `browser-use` package for anti-bot news sources (Cloudflare, CAPTCHA-protected sites)
 
 ---
 
