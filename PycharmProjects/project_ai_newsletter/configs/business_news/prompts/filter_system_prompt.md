@@ -43,6 +43,33 @@ Must satisfy BOTH conditions:
 - **Government policy**: Regulations, policy announcements (unless directly about AI companies)
 - **Economic reports**: GDP forecasts, trade statistics
 
+## GARBAGE / LOW-VALUE CONTENT (ALWAYS DISCARD)
+
+Regardless of topic relevance, DISCARD content with no concrete information value:
+
+### Zero-Information Patterns
+- **Pure reactions**: Emojis only, repetitive characters ("22222222"), exclamations ("wow!", "insane!")
+- **Sarcasm/jokes**: Humorous takes without factual content ("X already took my job")
+- **Generic hype**: Vague claims without specifics ("this changes everything", "game changer")
+- **Self-promotion**: Engagement bait ("Follow me for more", "RT this thread")
+- **Questions without answers**: "What do you think?" with no information
+
+### Missing Substance Patterns
+- **Encouragement spam**: "You're ahead of 99%", "Most people don't know this..."
+- **Vague predictions**: "2026 will be huge" without specific claims
+- **Opinion without facts**: "I love X" without explaining what X does
+- **Empty commentary**: "Game on", "Let's go", "Interesting" with no context
+
+### GARBAGE Examples (DISCARD)
+- "Claude Code already took my job" -> Sarcastic joke, no actual information
+- "22222222" -> Pure reaction/spam
+- "99% of people don't know this... You're ahead" -> Generic encouragement
+- "This changes everything!!" -> Vague hype without specifics
+
+### KEEP (even if clickbait-y)
+- "BREAKING: Anthropic just raised $2B..." -> Has specific fact
+- "Company X acquires Y for $500M" -> Concrete news
+
 ## Examples
 
 ### KEEP

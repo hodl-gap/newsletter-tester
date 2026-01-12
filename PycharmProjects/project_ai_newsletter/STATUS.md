@@ -28,6 +28,28 @@ All layers complete and operational:
 
 ## Recent Improvements (2026-01-12)
 
+### Garbage Filtering for Twitter Pipeline
+
+**Problem:** Low-quality tweets passing through filters despite having no information value (sarcasm, reactions, generic hype).
+
+**Solution Implemented:**
+
+Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
+- `configs/business_news/prompts/filter_system_prompt.md`
+- `configs/ai_tips/prompts/filter_system_prompt.md`
+
+**Filters added for:**
+- Pure reactions (emojis, repetitive characters like "22222222")
+- Sarcasm/jokes ("X already took my job")
+- Generic hype ("this changes everything" without specifics)
+- Encouragement spam ("99% don't know...", "You're ahead")
+- Self-promotion/engagement bait
+- Complaints without solutions
+
+**Preserves:** Clickbait-y content WITH actual facts/specifics.
+
+---
+
 ### URL Content Fetching for Link-Only Tweets
 
 **Problem:** Link-only tweets (just URL or minimal text with URL) passed through with either:
@@ -195,51 +217,9 @@ All layers complete and operational:
 
 ---
 
-## TODO: Garbage Filtering (Twitter)
+## COMPLETE: Garbage Filtering (Twitter)
 
-**Problem:** Low-quality tweets passing through filters despite having no information value.
-
-**Examples of garbage that passed:**
-| Type | Example | Source |
-|------|---------|--------|
-| Sarcasm/joke | "Claude Code already took my job" | @donvito |
-| Pure reaction | "22222222 🤣🤣🤣🤣" | @seti_park |
-| Wishful comment | "If only we had unlimited @ManusAI creds" | @donvito |
-| Generic shill | "99% of people don't know... You're ahead. Don't stop." | @alexfinn |
-| Empty hype | "Here's the truth nobody wants to admit: [generic claim]" | @hasantoxr |
-
-**Proposed Filter Additions (for `filter_system_prompt.md`):**
-
-```markdown
-## REJECT: Low-Quality / No-Information Content
-
-Reject tweets that contain NO concrete or actionable information:
-
-1. **Sarcasm/Jokes** - Ironic statements with no literal meaning
-   - "X already took my job" (sarcastic, not factual)
-   - Excessive emojis/reactions without content ("🤣🤣🤣", "wow", "lol")
-
-2. **Wishful/Hypothetical** - Speculation without facts
-   - "If only we had...", "Imagine if..."
-   - Questions without answers or insights
-
-3. **Generic Encouragement/Shill** - Flattery with no specific content
-   - "99% of people don't know...", "You're ahead of the competition"
-   - Motivational statements without actionable tips
-
-4. **Empty Hype Claims** - Bold claims without supporting detail
-   - "Here's the truth nobody wants to admit:" followed by generic opinion
-   - Exaggerated claims with no specifics
-
-NOTE: Keep content that has substance even if clickbait-y:
-- "BREAKING: [actual news with details]" → KEEP (has info)
-- Reviews/후기 with actual insights → KEEP (has experience)
-- Link-only tweets → Now handled by `fetch_link_content` node (2026-01-12)
-```
-
-**Implementation Options:**
-1. Add to existing `filter_system_prompt.md` (recommended - no new LLM call)
-2. Separate quality filter step after business filter (more accurate but +cost)
+**Implemented:** 2026-01-12 (see Recent Improvements section above)
 
 ---
 

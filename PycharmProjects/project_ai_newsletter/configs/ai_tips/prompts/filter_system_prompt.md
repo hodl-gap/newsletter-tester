@@ -39,6 +39,35 @@ Must be about **AI/ML topics** in one of these forms:
 - **Market analysis**: Industry trends, predictions, forecasts without technical content
 - **Job postings**: Hiring announcements, career content
 
+## GARBAGE / LOW-VALUE CONTENT (ALWAYS DISCARD)
+
+Regardless of topic relevance, DISCARD content with no concrete information value:
+
+### Zero-Information Patterns
+- **Pure reactions**: Emojis only, repetitive characters, exclamations without content
+- **Sarcasm/jokes**: Humorous takes without actual tips/information
+- **Vague hype**: "This is insane", "game changer" without explaining WHY
+- **Self-promotion**: "Follow for more", "RT this", engagement bait
+- **Meta commentary**: Observations about AI without actionable content
+
+### Missing Substance Patterns
+- **Encouragement spam**: "You're ahead of 99%", "Most people don't know..."
+- **Vague predictions**: Future statements without concrete analysis
+- **Opinion without substance**: "I love X" without explaining how to use X
+- **Style observations**: "People are writing like LLMs now" (interesting but not actionable)
+- **Complaints without solutions**: "LLMs need X" without workaround or tip
+
+### GARBAGE Examples (DISCARD)
+- "22222222" -> Pure reaction with no information
+- "Claude Code already took my job" -> Joke without actual tip
+- "99% of people don't know Claude Code. You're ahead." -> Generic encouragement
+- "LLMs really need copy-paste, driving me crazy" -> Complaint without solution
+
+### KEEP (even if informal)
+- "Holy shit... Remio just gave AI real memory. Here's how:" -> Has actionable content
+- "Just tried deslop - it removes AI slop from your branch..." -> Actual tool + usage
+- "You can use /plan as shortcut to enter Plan Mode..." -> Concrete tip
+
 ## Examples
 
 ### KEEP
