@@ -67,6 +67,15 @@ AI Newsletter Aggregator - a system to collect and aggregate content from variou
 - **Multi-config consolidation:** When running multiple configs, handles are deduplicated and scraped once
 - Output: Same 8-field schema as RSS pipeline
 
+**Browser-Use Layer 2: Blocked Sources** (runs after HTML L2)
+- Scrapes sources blocked by CAPTCHA/Cloudflare using `browser-use` package
+- Uses Claude Sonnet as LLM-driven browser agent (navigates, waits, extracts)
+- Configured in `config.json["browser_use_sources"]`
+- Enabled sources: Economic Times, SCMP, CNBC
+- Feeds into existing L2 pipeline (filter, metadata, summaries)
+- Output: `data/browser_use_news.json`, `data/browser_use_news.csv`
+- Cost: ~$0.30-0.50 per source per run
+
 ---
 
 ## Architecture
@@ -109,8 +118,9 @@ python orchestrator.py --configs business_news ai_tips --only twitter dedup
 **Pipeline Order:**
 1. RSS L1 (per config) → RSS L2 (per config)
 2. HTML L1 (per config) → HTML L2 (per config)
-3. **Twitter L1 (CONSOLIDATED if multi-config)** → Twitter L2 (per config)
-4. Dedup L3 (per config)
+3. Browser-Use L2 (per config) - blocked sources via LLM-driven browser
+4. **Twitter L1 (CONSOLIDATED if multi-config)** → Twitter L2 (per config)
+5. Dedup L3 (per config)
 
 **Incremental L1 Layers:**
 - RSS L1 and HTML L1 run in **incremental mode by default** (skip sources checked within 7 days)
@@ -163,6 +173,7 @@ project_ai_newsletter/
 ├── dedup_orchestrator.py     # Layer 3: Deduplication orchestrator
 ├── html_layer1_orchestrator.py    # HTML L1: Scrapability discovery
 ├── html_layer2_orchestrator.py    # HTML L2: Content scraping
+├── browser_use_orchestrator.py    # Browser-Use L2: Blocked sources (CAPTCHA/Cloudflare)
 ├── twitter_orchestrator.py   # Twitter: Tweet scraping pipeline (legacy)
 ├── twitter_layer1_orchestrator.py  # Twitter L1: Account discovery
 ├── twitter_layer2_orchestrator.py  # Twitter L2: Content aggregation
@@ -219,6 +230,11 @@ project_ai_newsletter/
 │       ├── parse_article_content.py
 │       ├── adapt_html_to_articles.py
 │       ├── save_html_content.py
+│       │── # Browser-Use L2 functions
+│       ├── load_browser_use_sources.py
+│       ├── fetch_with_browser_agent.py
+│       ├── adapt_browser_use_to_articles.py
+│       ├── save_browser_use_content.py
 │       │── # Twitter L1 functions
 │       ├── load_twitter_accounts.py
 │       ├── fetch_twitter_content.py
@@ -267,6 +283,10 @@ project_ai_newsletter/
 │       ├── html_news.json             # HTML L2 output: Scraped content
 │       ├── html_news.csv              # HTML L2 output: CSV format
 │       ├── html_discarded.csv         # HTML L2 output: Filtered-out articles
+│       ├── browser_use_news.json      # Browser-Use L2 output: Blocked sources content
+│       ├── browser_use_news.csv       # Browser-Use L2 output: CSV format
+│       ├── browser_use_discarded.csv  # Browser-Use L2 output: Filtered-out articles
+│       ├── browser_use_failures.json  # Browser-Use L2 output: Failed sources
 │       ├── twitter_availability.json  # Twitter L1 output: Account status
 │       ├── twitter_raw_cache.json     # Twitter L1 output: Cached tweets for L2
 │       ├── twitter_news.json          # Twitter L2 output: Aggregated content
@@ -495,7 +515,7 @@ All output files are stored in `data/{config_name}/` (e.g., `data/business_news/
 | `aggregated_news.csv` | Layer 2 output: Same as JSON in tabular format |
 | `discarded_news.csv` | Layer 2 output: Filtered-out articles with discard reasons |
 | `articles.db` | SQLite database with articles, embeddings, discarded articles, and dedup logs |
-| `merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Twitter) |
+| `merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Browser-Use + Twitter) |
 | `merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
 | `dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
 | `all_articles.json` | Layer 3 output: Full database export with `is_new` flag for dashboard |
@@ -504,6 +524,10 @@ All output files are stored in `data/{config_name}/` (e.g., `data/business_news/
 | `html_news.json` | HTML L2 output: AI business news from scraped sources |
 | `html_news.csv` | HTML L2 output: Same as JSON in tabular format |
 | `html_discarded.csv` | HTML L2 output: Filtered-out articles with discard reasons |
+| `browser_use_news.json` | Browser-Use L2 output: AI business news from blocked sources |
+| `browser_use_news.csv` | Browser-Use L2 output: Same as JSON in tabular format |
+| `browser_use_discarded.csv` | Browser-Use L2 output: Filtered-out articles with discard reasons |
+| `browser_use_failures.json` | Browser-Use L2 output: Failed sources with error details |
 | `twitter_availability.json` | Twitter L1 output: Account status and activity metrics |
 | `twitter_raw_cache.json` | Twitter L1 output: Cached tweets for L2 consumption |
 | `twitter_news.json` | Twitter L2 output: AI business news from tweets |
@@ -804,6 +828,52 @@ generate_summaries → build_output_dataframe → save_html_content
 - `data/{config}/html_news.json` - Scraped AI business news with metadata
 - `data/{config}/html_news.csv` - CSV format output
 - `data/{config}/html_discarded.csv` - Filtered-out articles with discard reasons
+
+### Browser-Use Layer 2: Blocked Sources
+
+```python
+import browser_use_orchestrator
+
+# Run full scraping (default config: business_news)
+browser_use_orchestrator.run()
+
+# Run for specific URLs only (substring match)
+browser_use_orchestrator.run(url_filter=['economictimes', 'scmp'])
+
+# Custom article age cutoff (e.g., last 48 hours)
+browser_use_orchestrator.run(max_age_hours=48)
+
+# Run for a different config
+browser_use_orchestrator.run(config="academic_papers")
+```
+
+**Features:**
+- Uses `browser-use` package with Claude Sonnet for LLM-driven browser navigation
+- Bypasses CAPTCHA/Cloudflare protection by using real browser
+- Agent waits for challenges, navigates pages, extracts article data
+- Configured via `config.json["browser_use_sources"]`
+- Reuses L2 pipeline nodes (filter, metadata, summaries)
+- Outputs to `data/{config}/browser_use_news.json/csv`
+
+**Pipeline Flow:**
+```
+load_browser_use_sources → fetch_with_browser_agent → adapt_browser_use_to_articles →
+filter_by_date → filter_business_news → extract_metadata →
+generate_summaries → build_output_dataframe → save_browser_use_content
+```
+
+**Enabled Sources (business_news config):**
+- Economic Times (tech.economictimes.indiatimes.com)
+- SCMP (scmp.com/tech)
+- CNBC (cnbc.com/technology/)
+
+**Cost:** ~$0.30-0.50 per source per run (uses Claude Sonnet)
+
+**Output:**
+- `data/{config}/browser_use_news.json` - Scraped AI business news with metadata
+- `data/{config}/browser_use_news.csv` - CSV format output
+- `data/{config}/browser_use_discarded.csv` - Filtered-out articles with discard reasons
+- `data/{config}/browser_use_failures.json` - Failed sources with error details
 
 ### Layer 2: Content Aggregation
 

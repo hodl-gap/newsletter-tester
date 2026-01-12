@@ -10,6 +10,19 @@
     {"domain": "reuters.com", "reason": "DataDome protection"},
     {"domain": "wsj.com", "reason": "Paywalled"}
   ],
+  "browser_use_sources": [
+    {"url": "https://tech.economictimes.indiatimes.com/", "enabled": true, "name": "Economic Times"},
+    {"url": "https://www.scmp.com/tech", "enabled": true, "name": "SCMP"},
+    {"url": "https://www.cnbc.com/technology/", "enabled": true, "name": "CNBC"},
+    {"url": "https://www.thenationalnews.com/business/technology/", "enabled": false, "name": "The National News"},
+    {"url": "https://financeme.com/", "enabled": false, "name": "Finance ME"},
+    {"url": "https://baobabnetwork.com/", "enabled": false, "name": "Baobab Network"}
+  ],
+  "browser_use_settings": {
+    "headless": false,
+    "max_articles_per_source": 5,
+    "model": "claude-sonnet-4-20250514"
+  },
   "valid_regions": [
     "north_america", "latin_america", "europe", "middle_east",
     "africa", "south_asia", "southeast_asia", "east_asia",

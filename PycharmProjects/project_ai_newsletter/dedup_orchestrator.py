@@ -2,7 +2,7 @@
 Deduplication Orchestrator - Layer 3 Pipeline
 
 This orchestrator deduplicates articles from Layer 2 outputs using:
-1. Multi-source merging (RSS, HTML, Twitter with URL dedup)
+1. Multi-source merging (RSS, HTML, Browser-Use, Twitter with URL dedup)
 2. Semantic deduplication (embeddings + LLM for ambiguous cases)
 
 Pipeline Flow:
@@ -41,7 +41,7 @@ class DeduplicationState(TypedDict):
     """
     # Input configuration
     lookback_hours: int
-    input_sources: list[str]  # ["rss", "html", "twitter"]
+    input_sources: list[str]  # ["rss", "html", "browser_use", "twitter"]
 
     # From merge_pipeline_outputs
     articles_to_check: list[dict]
@@ -124,8 +124,8 @@ def run(
         lookback_hours: Number of hours to look back for historical articles.
                        Default: 48 (compare against last 2 days).
         input_sources: List of source types to include.
-                       Default: ["rss", "html", "twitter"] (all sources).
-                       Options: "rss", "html", "twitter"
+                       Default: ["rss", "html", "browser_use", "twitter"] (all sources).
+                       Options: "rss", "html", "browser_use", "twitter"
         config: Configuration name (default: business_news).
 
     Returns:
@@ -135,7 +135,7 @@ def run(
     set_config(config)
 
     if input_sources is None:
-        input_sources = ["rss", "html", "twitter"]
+        input_sources = ["rss", "html", "browser_use", "twitter"]
 
     debug_log("=" * 60)
     debug_log("STARTING DEDUPLICATION PIPELINE (LAYER 3)")
@@ -207,8 +207,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run deduplication pipeline (Layer 3)")
     parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
     parser.add_argument("--lookback-hours", type=int, default=48, help="Lookback hours for historical articles (default: 48)")
-    parser.add_argument("--input-sources", nargs="*", default=["rss", "html", "twitter"],
-                       help="Input sources to include (default: rss html twitter)")
+    parser.add_argument("--input-sources", nargs="*", default=["rss", "html", "browser_use", "twitter"],
+                       help="Input sources to include (default: rss html browser_use twitter)")
 
     args = parser.parse_args()
 

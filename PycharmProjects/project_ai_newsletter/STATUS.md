@@ -8,6 +8,7 @@ All layers complete and operational:
 - Layer 0 (Source Quality): DISABLED
 - Layer 1 (RSS Discovery): COMPLETE
 - HTML Layer 1/2 (Scrapability + Scraping): COMPLETE
+- **Browser-Use L2 (Blocked Sources): COMPLETE** - LLM-driven browser for CAPTCHA/Cloudflare sites
 - Layer 2 (Content Aggregation): COMPLETE + **Validation/Retry**
 - Layer 3 (Deduplication): COMPLETE
 - Twitter Layer 1/2: COMPLETE
@@ -27,6 +28,41 @@ All layers complete and operational:
 ---
 
 ## Recent Improvements (2026-01-12)
+
+### Browser-Use Integration for Blocked Sources
+
+**Problem:** Several high-quality news sources (Economic Times, SCMP, CNBC) blocked by CAPTCHA/Cloudflare, inaccessible via HTTP scraping.
+
+**Solution Implemented:**
+
+1. **New Pipeline Layer** (`browser_use_orchestrator.py`)
+   - Uses `browser-use` package with Claude Sonnet for LLM-driven browsing
+   - Agent navigates pages, waits for challenges, extracts article data
+   - Runs between HTML L2 and Twitter in main orchestrator
+
+2. **Enabled Sources** (3 active):
+   - Economic Times (tech.economictimes.indiatimes.com)
+   - SCMP (scmp.com/tech)
+   - CNBC (cnbc.com/technology/)
+
+3. **New Files Created:**
+   - `browser_use_orchestrator.py` - Main orchestrator
+   - `src/functions/load_browser_use_sources.py` - Config loader
+   - `src/functions/fetch_with_browser_agent.py` - LLM-driven scraper
+   - `src/functions/adapt_browser_use_to_articles.py` - Format adapter
+   - `src/functions/save_browser_use_content.py` - Output saver
+
+4. **Integration:**
+   - Added to main `orchestrator.py` as Phase 5
+   - Added to `merge_pipeline_outputs.py` (priority: RSS > HTML > browser_use > Twitter)
+   - Added to `dedup_orchestrator.py` default sources
+   - New CLI flags: `--skip-browser-use`, `--only browser-use`
+
+5. **Cost:** ~$0.30-0.50 per source per run (uses Claude Sonnet)
+
+6. **Output:** `data/{config}/browser_use_news.json`, `browser_use_news.csv`, `browser_use_failures.json`
+
+---
 
 ### Garbage Filtering for Twitter Pipeline
 
@@ -213,7 +249,6 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
 ### Medium Priority
 - Consider scheduled runs (cron/GitHub Actions)
 - Build frontend/newsletter output format
-- Use `browser-use` package for anti-bot news sources (Cloudflare, CAPTCHA-protected sites)
 
 ---
 
@@ -224,5 +259,11 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
 ---
 
 ## COMPLETE: URL Content Fetching for Link-Only Tweets
+
+**Implemented:** 2026-01-12 (see Recent Improvements section above)
+
+---
+
+## COMPLETE: Browser-Use for Blocked Sources
 
 **Implemented:** 2026-01-12 (see Recent Improvements section above)

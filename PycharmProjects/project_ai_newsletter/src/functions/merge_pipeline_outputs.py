@@ -1,7 +1,7 @@
 """
 Merge Pipeline Outputs Node
 
-Merges articles from RSS, HTML, and Twitter Layer 2 pipelines
+Merges articles from RSS, HTML, Browser-Use, and Twitter Layer 2 pipelines
 into a single list for deduplication.
 """
 
@@ -13,11 +13,12 @@ from src.tracking import debug_log, track_time
 
 
 def _get_input_files() -> dict:
-    """Get input file paths for each pipeline (priority order: RSS > HTML > Twitter)."""
+    """Get input file paths for each pipeline (priority order: RSS > HTML > browser_use > Twitter)."""
     data_dir = get_data_dir()
     return {
         "rss": data_dir / "aggregated_news.json",
         "html": data_dir / "html_news.json",
+        "browser_use": data_dir / "browser_use_news.json",
         "twitter": data_dir / "twitter_news.json",
     }
 
@@ -28,16 +29,16 @@ def _get_input_files() -> dict:
 
 def merge_pipeline_outputs(state: dict) -> dict:
     """
-    Merge articles from RSS, HTML, and Twitter pipelines.
+    Merge articles from RSS, HTML, Browser-Use, and Twitter pipelines.
 
-    - Adds 'source_type' field to each article ("rss", "html", "twitter")
-    - Performs URL deduplication at merge point (priority: RSS > HTML > Twitter)
+    - Adds 'source_type' field to each article ("rss", "html", "browser_use", "twitter")
+    - Performs URL deduplication at merge point (priority: RSS > HTML > browser_use > Twitter)
     - Handles missing/empty files gracefully
 
     Args:
         state: Pipeline state with optional 'input_sources' list
                to select which pipelines to include.
-               Default: ["rss", "html", "twitter"]
+               Default: ["rss", "html", "browser_use", "twitter"]
 
     Returns:
         Dict with:
@@ -47,8 +48,8 @@ def merge_pipeline_outputs(state: dict) -> dict:
     with track_time("merge_pipeline_outputs"):
         debug_log("[NODE: merge_pipeline_outputs] Entering")
 
-        # Get configured input sources (default: all three)
-        input_sources = state.get("input_sources", ["rss", "html", "twitter"])
+        # Get configured input sources (default: all four)
+        input_sources = state.get("input_sources", ["rss", "html", "browser_use", "twitter"])
         debug_log(f"[NODE: merge_pipeline_outputs] Input sources: {input_sources}")
 
         input_files = _get_input_files()
@@ -65,8 +66,8 @@ def merge_pipeline_outputs(state: dict) -> dict:
         all_articles = []
         seen_urls = set()
 
-        # Process in priority order: RSS > HTML > Twitter
-        for source_type in ["rss", "html", "twitter"]:
+        # Process in priority order: RSS > HTML > browser_use > Twitter
+        for source_type in ["rss", "html", "browser_use", "twitter"]:
             if source_type not in input_sources:
                 continue
 
