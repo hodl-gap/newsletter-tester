@@ -64,6 +64,29 @@ All layers complete and operational:
 
 ---
 
+### Summary Regeneration Fix
+
+**Problem:** 6 articles in DB had broken summaries that `regenerate_summaries.py` couldn't fix:
+- 5 articles with `too_long` summaries (700-1700+ chars)
+- 1 article with `not_korean` validation failure
+
+**Root Causes Found:**
+
+1. **Token limit too low** - `max_completion_tokens=2048` in `_retry_single_article()` was insufficient; model needed ~2800 tokens for longer Korean summaries
+2. **Korean ratio too strict** - 30% threshold rejected valid Korean content with English proper nouns (e.g., "Hugging Face Transformers", "FastAI")
+
+**Fixes Applied:**
+
+| File | Change |
+|------|--------|
+| `src/functions/generate_summaries.py:418` | `max_completion_tokens`: 2048 → 4096 |
+| `src/functions/generate_summaries.py:32` | `MIN_KOREAN_RATIO`: 0.3 → 0.2 |
+| `src/database.py:446` | Korean ratio threshold: 0.3 → 0.2 |
+
+**Result:** All 6 broken summaries regenerated successfully.
+
+---
+
 ### Garbage Filtering for Twitter Pipeline
 
 **Problem:** Low-quality tweets passing through filters despite having no information value (sarcasm, reactions, generic hype).

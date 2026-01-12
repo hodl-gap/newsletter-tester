@@ -367,6 +367,119 @@ class ArticleDatabase:
         debug_log(f"[DB] Inserted {inserted}/{len(articles)} articles")
         return inserted
 
+    def update_summary(
+        self,
+        url: str,
+        new_summary: str,
+        new_title: Optional[str] = None
+    ) -> bool:
+        """
+        Update the summary (and optionally title) for an existing article.
+
+        Used by regenerate_summaries.py to fix bad summaries.
+
+        Args:
+            url: The article URL to update.
+            new_summary: The new summary text.
+            new_title: Optional new title.
+
+        Returns:
+            True if updated, False if URL not found.
+        """
+        url_hash = self._hash_url(url)
+
+        with self._connection() as conn:
+            if new_title:
+                result = conn.execute(
+                    "UPDATE articles SET summary = ?, title = ? WHERE url_hash = ?",
+                    (new_summary, new_title, url_hash)
+                )
+            else:
+                result = conn.execute(
+                    "UPDATE articles SET summary = ? WHERE url_hash = ?",
+                    (new_summary, url_hash)
+                )
+            conn.commit()
+
+            if result.rowcount > 0:
+                debug_log(f"[DB] Updated summary for: {url[:50]}...")
+                return True
+            else:
+                debug_log(f"[DB] URL not found for update: {url[:50]}...", "warning")
+                return False
+
+    def get_articles_needing_regeneration(self, max_summary_length: int = 250) -> list[dict]:
+        """
+        Find articles with bad summaries that need regeneration.
+
+        Criteria:
+        - Summary too long (> max_summary_length chars)
+        - Summary has no Korean characters (< 30% Korean)
+
+        Args:
+            max_summary_length: Maximum acceptable summary length.
+
+        Returns:
+            List of article dicts needing regeneration.
+        """
+        import re
+
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM articles ORDER BY created_at DESC"
+            ).fetchall()
+
+            bad_articles = []
+            for row in rows:
+                article = self._row_to_dict(row, with_embedding=False)
+                summary = article.get("summary", "")
+
+                # Check if too long
+                if len(summary) > max_summary_length:
+                    article["regenerate_reason"] = "too_long"
+                    bad_articles.append(article)
+                    continue
+
+                # Check if not Korean (< 20% Korean chars - allows English proper nouns)
+                korean_chars = len(re.findall(r'[가-힣]', summary))
+                total_chars = len(re.findall(r'[a-zA-Z가-힣0-9]', summary))
+                if total_chars > 0 and korean_chars / total_chars < 0.2:
+                    article["regenerate_reason"] = "not_korean"
+                    bad_articles.append(article)
+
+            debug_log(f"[DB] Found {len(bad_articles)} articles needing regeneration")
+            return bad_articles
+
+    def delete_articles_batch(self, urls: list[str]) -> int:
+        """
+        Delete multiple articles by URL in a single transaction.
+
+        Used for garbage cleanup - removes articles that fail the garbage filter.
+
+        Args:
+            urls: List of article URLs to delete.
+
+        Returns:
+            Number of articles successfully deleted.
+        """
+        if not urls:
+            return 0
+
+        url_hashes = [self._hash_url(url) for url in urls]
+
+        with self._connection() as conn:
+            deleted = 0
+            for url_hash in url_hashes:
+                result = conn.execute(
+                    "DELETE FROM articles WHERE url_hash = ?",
+                    (url_hash,)
+                )
+                deleted += result.rowcount
+            conn.commit()
+
+        debug_log(f"[DB] Deleted {deleted}/{len(urls)} articles")
+        return deleted
+
     # -------------------------------------------------------------------------
     # Discarded Articles Storage
     # -------------------------------------------------------------------------
@@ -467,6 +580,25 @@ class ArticleDatabase:
     def is_empty(self) -> bool:
         """Check if database has no articles."""
         return self.get_article_count() == 0
+
+    def get_all_articles(self, with_embeddings: bool = False) -> list[dict]:
+        """
+        Get all articles from the database (all time).
+
+        Args:
+            with_embeddings: Whether to include embeddings (default: False for exports).
+
+        Returns:
+            List of article dicts ordered by created_at DESC.
+        """
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM articles ORDER BY created_at DESC"
+            ).fetchall()
+
+            articles = [self._row_to_dict(row, with_embeddings) for row in rows]
+            debug_log(f"[DB] Retrieved all {len(articles)} articles from database")
+            return articles
 
     def _row_to_dict(self, row: sqlite3.Row, with_embedding: bool = True) -> dict:
         """Convert database row to dict with optional numpy embedding."""
