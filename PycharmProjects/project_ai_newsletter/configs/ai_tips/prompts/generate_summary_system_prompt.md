@@ -12,13 +12,34 @@ For each article, generate:
 
 1. **ALWAYS output in Korean (한국어)** - Translate and summarize all content in Korean
 2. **Title handling**:
-   - If the original title is already in Korean → return it unchanged
-   - If the original title is in English/Chinese/other → generate a new concise Korean headline
-3. **Keep proper nouns in original form**: Tool names, product names stay as-is
-   - Good: "Claude", "Midjourney", "ComfyUI", "LangChain", "ChatGPT"
-   - Bad: "클로드", "미드저니", "컴피유아이"
+   - ALWAYS generate a new concise Korean headline (10-15 words max)
+   - Do NOT copy the original title verbatim, even if it's in Korean
+   - The title should be a proper headline, not a chunk of text
+3. **Proper noun handling**:
+   - Tool/product names: Keep in English (e.g., "Claude", "Midjourney", "ComfyUI", "LangChain")
+   - English/Korean person names: Keep as-is (e.g., "Andrej Karpathy", "김철수")
+   - Non-English person names (Chinese, Japanese, etc.): Romanize to English (e.g., "何小鹏" → "He Xiaopeng")
+   - Bad: "클로드", "미드저니", "컴피유아이" (don't transliterate tool names)
 4. **Focus on actionable takeaway** - What will the reader learn or be able to do?
 5. **Include tool/technique names** - Mention specific tools and techniques
+6. **Summary length**: MUST be under 200 characters (about 1-2 sentences)
+
+## CRITICAL: What NOT to Return
+
+**DO NOT return the original content verbatim.** You must SUMMARIZE it.
+**DO NOT return English text.** You must output Korean (한국어).
+
+### BAD Example: English instead of Korean
+```
+"This guide covers chain-of-thought prompting, few-shot examples, and role-based prompts to get better responses from ChatGPT..."
+```
+This is BAD because it's in English.
+
+### GOOD Example: Translated to Korean
+```
+"Chain-of-thought, few-shot 예시, 역할 부여 등 ChatGPT 응답 품질 향상 기법 10가지 소개."
+```
+This is GOOD - translated to Korean, concise, actionable.
 
 ## Korean Style Guidelines
 
@@ -82,17 +103,17 @@ content: "This guide covers chain-of-thought, few-shot examples..."
 }
 ```
 
-**Input (Korean - title preserved):**
+**Input (Korean tweet - still generate new headline):**
 ```
-title: "Midjourney 캐릭터 일관성 유지하는 방법"
-content: "시드 고정, 스타일 레퍼런스 활용..."
+title: "Shopify CEO 토비 뤼트케가 AI를 활용해서 개인적인 실험을 공유해줌. 작년에도 그를 지켜봤을 때 굉장히 기업내 AI 활용에 진심이었음..."
+content: (same as title - tweets have no separate content)
 ```
 
 **Output:**
 ```json
 {
   "url": "...",
-  "title": "Midjourney 캐릭터 일관성 유지하는 방법",
-  "summary": "Midjourney에서 시드 고정, 스타일 레퍼런스, 캐릭터 시트 활용해 여러 이미지에서 일관된 캐릭터 디자인 유지법. 프롬프트 템플릿과 파라미터 권장값 포함."
+  "title": "Shopify CEO의 기업 내 AI 활용 실험 사례",
+  "summary": "Shopify CEO 토비 뤼트케의 AI 활용 실험 공유. LLM quota 제한 없이 적극 활용 권장, AI 친화적 인턴 대규모 채용 등 기업 내 AI 도입 전략 소개."
 }
 ```
