@@ -101,6 +101,8 @@ The pipeline supports multiple configurations (e.g., `business_news`, `academic_
 
 The main `orchestrator.py` runs the **full pipeline** for one or multiple configs. When running multiple configs, Twitter scraping is automatically consolidated (each handle scraped once).
 
+**Cache Workflow (default):** RSS feeds are fetched and cached first, then processed through LLM. This enables frequent RSS fetching without expensive LLM calls.
+
 ```bash
 # Single config - runs all layers
 python orchestrator.py --config business_news
@@ -113,14 +115,31 @@ python orchestrator.py --configs business_news ai_tips --skip-rss-l1 --skip-html
 
 # Only run specific layers
 python orchestrator.py --configs business_news ai_tips --only twitter dedup
+
+# Disable cache workflow (fetch live in RSS L2)
+python orchestrator.py --configs business_news ai_tips --no-cache
 ```
 
 **Pipeline Order:**
-1. RSS L1 (per config) → RSS L2 (per config)
-2. HTML L1 (per config) → HTML L2 (per config)
-3. Browser-Use L2 (per config) - blocked sources via LLM-driven browser
-4. **Twitter L1 (CONSOLIDATED if multi-config)** → Twitter L2 (per config)
-5. Dedup L3 (per config)
+1. RSS L1 (per config) - discovery
+2. RSS Fetch (per config) - cache population (no LLM)
+3. RSS L2 (per config) - content aggregation from cache
+4. HTML L1 (per config) → HTML L2 (per config)
+5. Browser-Use L2 (per config) - blocked sources via LLM-driven browser
+6. **Twitter L1 (CONSOLIDATED if multi-config)** → Twitter L2 (per config)
+7. Dedup L3 (per config)
+
+**Recommended Cron Schedule:**
+```bash
+# Every 1 hour - cache RSS feeds (fast, no LLM cost)
+0 * * * * cd /path/to/project && python rss_fetch_orchestrator.py --configs business_news ai_tips
+
+# Every 12 hours - full pipeline using cached articles
+0 */12 * * * cd /path/to/project && python orchestrator.py --configs business_news ai_tips --skip-rss-fetch --skip-rss-l1 --skip-html-l1
+```
+
+- `--skip-rss-fetch`: Cache already populated from hourly runs
+- `--skip-rss-l1 --skip-html-l1`: Discovery layers only need weekly runs
 
 **Incremental L1 Layers:**
 - RSS L1 and HTML L1 run in **incremental mode by default** (skip sources checked within 7 days)
@@ -177,10 +196,12 @@ project_ai_newsletter/
 ├── twitter_orchestrator.py   # Twitter: Tweet scraping pipeline (legacy)
 ├── twitter_layer1_orchestrator.py  # Twitter L1: Account discovery
 ├── twitter_layer2_orchestrator.py  # Twitter L2: Content aggregation
+├── rss_fetch_orchestrator.py  # RSS: Cache-based fetching (frequent runs)
 ├── twitter_cdp_login.py       # Twitter: CDP cookie extraction script
 ├── twitter_login.py           # Twitter: Alternative Playwright login (less reliable)
 ├── cleanup_garbage.py         # One-time: Remove garbage articles from DB
 ├── regenerate_summaries.py    # One-time: Fix bad summaries in DB
+├── analyze_rss_frequency.py   # One-time: Analyze RSS feed update frequency
 ├── src/
 │   ├── __init__.py
 │   ├── config.py             # Config management (set_config, get_data_dir, etc.)
@@ -208,6 +229,10 @@ project_ai_newsletter/
 │       ├── build_output_dataframe.py
 │       ├── save_aggregated_content.py
 │       ├── check_url_duplicates.py
+│       │── # RSS Cache functions
+│       ├── save_rss_cache.py
+│       ├── load_rss_cache.py
+│       ├── archive_rss_cache.py
 │       │── # Layer 3 functions
 │       ├── merge_pipeline_outputs.py
 │       ├── generate_embeddings.py
@@ -293,7 +318,9 @@ project_ai_newsletter/
 │       ├── twitter_raw_cache.json     # Twitter L1 output: Cached tweets for L2
 │       ├── twitter_news.json          # Twitter L2 output: Aggregated content
 │       ├── twitter_news.csv           # Twitter L2 output: CSV format
-│       └── twitter_discarded.csv      # Twitter L2 output: Filtered-out tweets
+│       ├── twitter_discarded.csv      # Twitter L2 output: Filtered-out tweets
+│       ├── rss_cache.json             # RSS cache: Raw articles for batch processing
+│       └── rss_cache_archive.json     # RSS cache archive: Last 7 days of processed
 ├── chrome_data/                   # Browser data (gitignored)
 │   └── twitter_cookies.json       # Twitter session cookies (required for scraping)
 ├── debug.log                 # Debug log file (auto-generated)
@@ -877,6 +904,30 @@ generate_summaries → build_output_dataframe → save_browser_use_content
 - `data/{config}/browser_use_discarded.csv` - Filtered-out articles with discard reasons
 - `data/{config}/browser_use_failures.json` - Failed sources with error details
 
+### RSS Fetch (Cache-Based Workflow)
+
+For high-frequency feeds, separate RSS fetching from LLM processing:
+
+```bash
+# Frequent job (every 1-3 hours) - fast, no LLM costs
+python rss_fetch_orchestrator.py --config business_news
+python rss_fetch_orchestrator.py --configs business_news ai_tips  # Multi-config
+
+# Batch job (every 12 hours) - process cached articles through LLM
+python content_orchestrator.py --config business_news --from-cache
+```
+
+**Features:**
+- Fetches RSS and caches raw articles (no LLM processing)
+- Deduplicates within cache by URL
+- Cache file: `data/{config}/rss_cache.json`
+- After LLM processing, cache is archived and cleared
+
+**Pipeline Flow:**
+```
+load_available_feeds -> fetch_rss_content -> save_rss_cache
+```
+
 ### Layer 2: Content Aggregation
 
 ```python
@@ -884,6 +935,9 @@ import content_orchestrator
 
 # Run full aggregation (default config: business_news)
 content_orchestrator.run()
+
+# Run from cached articles (after running rss_fetch_orchestrator)
+content_orchestrator.run(from_cache=True)
 
 # Run for specific sources only (substring match on source name or URL)
 content_orchestrator.run(source_filter=['techcabal', '36kr'])
@@ -904,13 +958,21 @@ content_orchestrator.run(config="academic_papers")
 - URL deduplication against SQLite database (skips already-processed articles)
 - Discarded articles exported with reasons
 - Adaptive batch retry on LLM parse errors
+- **Cache mode (`--from-cache`)**: Load from RSS cache, archive after processing
 - Outputs to `data/{config}/aggregated_news.json/csv`
 
-**Pipeline Flow:**
+**Pipeline Flow (live mode):**
 ```
 load_available_feeds -> fetch_rss_content -> check_url_duplicates ->
 filter_by_date -> filter_business_news -> extract_metadata ->
 generate_summaries -> build_output_dataframe -> save_aggregated_content
+```
+
+**Pipeline Flow (cache mode with `--from-cache`):**
+```
+load_rss_cache -> check_url_duplicates -> filter_by_date ->
+filter_business_news -> extract_metadata -> generate_summaries ->
+build_output_dataframe -> save_aggregated_content -> archive_rss_cache
 ```
 
 ### Layer 3: Deduplication (Cross-Pipeline)

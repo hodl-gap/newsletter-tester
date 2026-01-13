@@ -29,6 +29,92 @@ All layers complete and operational:
 
 ## Recent Improvements (2026-01-13)
 
+### Separated RSS Fetching from LLM Processing
+
+**Goal:** Allow frequent RSS fetching (every 1-3 hours) without running expensive LLM processing every time.
+
+**New Workflow:**
+```bash
+# Frequent job (every 1-3 hours) - fast, no LLM costs
+python rss_fetch_orchestrator.py --configs business_news ai_tips
+
+# Batch job (every 12 hours) - process cached articles through LLM
+python content_orchestrator.py --config business_news --from-cache
+```
+
+**New Files Created:**
+| File | Purpose |
+|------|---------|
+| `rss_fetch_orchestrator.py` | Lightweight RSS fetcher, saves to cache |
+| `src/functions/save_rss_cache.py` | Appends articles to cache (deduped by URL) |
+| `src/functions/load_rss_cache.py` | Loads articles from cache for processing |
+| `src/functions/archive_rss_cache.py` | Archives processed articles, clears cache |
+
+**Modified:**
+| File | Change |
+|------|--------|
+| `content_orchestrator.py` | Added `--from-cache` flag for cache-based processing |
+
+**Cache Files:**
+- `data/{config}/rss_cache.json` - Active cache (cleared after processing)
+- `data/{config}/rss_cache_archive.json` - Archive (keeps last 7 days)
+
+**Deduplication:**
+- Within cache: by URL (repeated fetches don't duplicate)
+- Against DB: existing `check_url_duplicates` node (already-processed articles skipped)
+
+**Main Orchestrator Integration:**
+- Cache workflow is now the **default** in `orchestrator.py`
+- Use `--no-cache` flag to disable and fetch live
+- Pipeline order: RSS L1 → RSS Fetch (cache) → RSS L2 (from cache) → ...
+
+**Recommended Cron Schedule:**
+```bash
+# Every 1 hour - cache RSS feeds (fast, no LLM cost)
+0 * * * * cd /path/to/project && python rss_fetch_orchestrator.py --configs business_news ai_tips
+
+# Every 12 hours - full pipeline using cached articles
+0 */12 * * * cd /path/to/project && python orchestrator.py --configs business_news ai_tips --skip-rss-fetch --skip-rss-l1 --skip-html-l1
+```
+
+**Why `--skip-rss-fetch`?** Cache is already populated from hourly runs, no need to fetch again.
+**Why `--skip-rss-l1 --skip-html-l1`?** Discovery layers only need to run occasionally (weekly), not every 12 hours.
+
+---
+
+### RSS Feed Frequency Analysis
+
+**Goal:** Determine optimal pipeline run frequency to avoid missing articles.
+
+**Analysis Tool:** `analyze_rss_frequency.py` - one-time script to check feed item counts and date ranges.
+
+**High-Frequency Feeds (Bottlenecks):**
+
+| Source | Items | Avg Gap | Max Gap | Est./Day | Feed Retention |
+|--------|-------|---------|---------|----------|----------------|
+| news.hada | 10 | 0.1h | 0.5h | ~209 | **~1 hour** ⚠️ |
+| zdnet.co.kr | 29 | 0.1h | 1.3h | ~197 | **~3-4 hours** ⚠️ |
+| rfi.fr | 24 | 0.5h | 1.6h | ~50 | ~12 hours |
+| nytimes | 27 | 0.5h | 5.4h | ~47 | ~14 hours |
+| 36kr | 30 | 0.8h | 14h | ~30 | ~24 hours |
+| agbi | 10 | 1.6h | 7.8h | ~15 | ~16 hours |
+
+**Feed Distribution:**
+- Feeds with <1 day span: 7 (run every 12h recommended)
+- Feeds with 1-3 day span: 11 (run every 24h safe)
+- Feeds with >3 day span: 17 (run every 48h safe)
+
+**Broken Feeds (need attention):**
+- `aibusiness` - 404 error
+- `tech.economictimes`, `asia.nikkei`, `forbes`, `fortune` - no RSS entries
+
+**Recommended Run Frequency:**
+- To catch all articles from news.hada: **every 1 hour**
+- To catch all articles from zdnet: **every 3 hours**
+- For most sources: **every 12 hours** is sufficient
+
+---
+
 ### Fixed `is_new` Flag in `all_articles.json`
 
 **Problem:** The `is_new` flag was marking articles based on whether they were unique in the *current dedup run*, not based on when they were added to the database. This caused all previously-added articles to show `is_new=False` on subsequent runs, even if they were recently added.
@@ -289,9 +375,10 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
 ### High Priority
 - Add more AI-focused RSS sources
 - Enhance filtering & metadata quality
+- Fix broken RSS feeds (aibusiness, tech.economictimes, asia.nikkei, forbes, fortune)
 
 ### Medium Priority
-- Consider scheduled runs (cron/GitHub Actions)
+- Set up scheduled runs (cron/GitHub Actions) - recommend every 3 hours for full coverage
 - Build frontend/newsletter output format
 
 ---

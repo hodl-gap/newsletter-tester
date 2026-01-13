@@ -7,13 +7,14 @@ When running multiple configs, Twitter scraping is automatically consolidated
 
 Pipeline Order:
     1. RSS Layer 1 (per config) - RSS discovery
-    2. RSS Layer 2 (per config) - Content aggregation
-    3. HTML Layer 1 (per config) - Scrapability discovery
-    4. HTML Layer 2 (per config) - Content scraping
-    5. Browser-Use L2 (per config) - Blocked sources via LLM-driven browser
-    6. Twitter Layer 1 (CONSOLIDATED if multi-config) - Account discovery
-    7. Twitter Layer 2 (per config) - Content aggregation
-    8. Dedup Layer 3 (per config) - Semantic deduplication
+    2. RSS Fetch (per config) - Fetch RSS and cache (no LLM)
+    3. RSS Layer 2 (per config) - Content aggregation from cache
+    4. HTML Layer 1 (per config) - Scrapability discovery
+    5. HTML Layer 2 (per config) - Content scraping
+    6. Browser-Use L2 (per config) - Blocked sources via LLM-driven browser
+    7. Twitter Layer 1 (CONSOLIDATED if multi-config) - Account discovery
+    8. Twitter Layer 2 (per config) - Content aggregation
+    9. Dedup Layer 3 (per config) - Semantic deduplication
 
 Usage:
     # Single config
@@ -27,6 +28,9 @@ Usage:
 
     # Only run specific layers
     python orchestrator.py --configs business_news ai_tips --only twitter dedup
+
+    # Disable cache workflow (fetch live in RSS L2)
+    python orchestrator.py --configs business_news ai_tips --no-cache
 """
 
 from typing import Optional
@@ -37,12 +41,14 @@ def run(
     configs: list[str],
     max_age_hours: int = 24,
     skip_rss_l1: bool = False,
+    skip_rss_fetch: bool = False,
     skip_rss_l2: bool = False,
     skip_html_l1: bool = False,
     skip_html_l2: bool = False,
     skip_browser_use: bool = False,
     skip_twitter: bool = False,
     skip_dedup: bool = False,
+    use_cache: bool = True,
 ) -> dict:
     """
     Run the full pipeline for one or multiple configs.
@@ -55,17 +61,20 @@ def run(
         configs: List of config names (e.g., ["business_news", "ai_tips"])
         max_age_hours: Maximum article age in hours (default: 24)
         skip_rss_l1: Skip RSS Layer 1 (discovery)
+        skip_rss_fetch: Skip RSS Fetch (cache population)
         skip_rss_l2: Skip RSS Layer 2 (content aggregation)
         skip_html_l1: Skip HTML Layer 1 (scrapability discovery)
         skip_html_l2: Skip HTML Layer 2 (content scraping)
         skip_browser_use: Skip Browser-Use layer (blocked sources)
         skip_twitter: Skip Twitter layers entirely
         skip_dedup: Skip deduplication layer
+        use_cache: Use cache workflow (RSS Fetch -> RSS L2 from cache). Default: True
 
     Returns:
         Dict with results from each layer/config
     """
     import rss_orchestrator
+    import rss_fetch_orchestrator
     import content_orchestrator
     import html_layer1_orchestrator
     import html_layer2_orchestrator
@@ -80,6 +89,7 @@ def run(
     debug_log("STARTING MAIN ORCHESTRATOR")
     debug_log(f"CONFIGS: {configs}")
     debug_log(f"MULTI-CONFIG MODE: {is_multi_config}")
+    debug_log(f"RSS CACHE MODE: {use_cache}")
     debug_log(f"MAX AGE HOURS: {max_age_hours}")
     debug_log("=" * 70)
 
@@ -88,6 +98,7 @@ def run(
     results = {
         "configs": configs,
         "rss_l1": {},
+        "rss_fetch": {},
         "rss_l2": {},
         "html_l1": {},
         "html_l2": {},
@@ -118,11 +129,31 @@ def run(
         debug_log("\n[SKIPPED] RSS Layer 1")
 
     # =========================================================================
+    # RSS Fetch: Cache Population (per config) - when using cache workflow
+    # =========================================================================
+    if use_cache and not skip_rss_fetch and not skip_rss_l2:
+        debug_log("\n" + "=" * 70)
+        debug_log("PHASE 2a: RSS FETCH (CACHE POPULATION)")
+        debug_log("=" * 70)
+
+        for config in configs:
+            debug_log(f"\n--- RSS Fetch: {config} ---")
+            try:
+                with track_time(f"rss_fetch_{config}"):
+                    result = rss_fetch_orchestrator.run(config=config)
+                    results["rss_fetch"][config] = {"success": True, "result": result}
+            except Exception as e:
+                debug_log(f"RSS Fetch failed for {config}: {e}", "error")
+                results["rss_fetch"][config] = {"success": False, "error": str(e)}
+    elif use_cache:
+        debug_log("\n[SKIPPED] RSS Fetch (cache population)")
+
+    # =========================================================================
     # RSS Layer 2: Content Aggregation (per config)
     # =========================================================================
     if not skip_rss_l2:
         debug_log("\n" + "=" * 70)
-        debug_log("PHASE 2: RSS LAYER 2 (CONTENT AGGREGATION)")
+        debug_log(f"PHASE 2b: RSS LAYER 2 (CONTENT AGGREGATION - {'from cache' if use_cache else 'live fetch'})")
         debug_log("=" * 70)
 
         for config in configs:
@@ -132,6 +163,7 @@ def run(
                     result = content_orchestrator.run(
                         config=config,
                         max_age_hours=max_age_hours,
+                        from_cache=use_cache,
                     )
                     results["rss_l2"][config] = {"success": True, "result": result}
             except Exception as e:
@@ -415,6 +447,7 @@ Examples:
 
     # Skip options
     parser.add_argument("--skip-rss-l1", action="store_true", help="Skip RSS Layer 1")
+    parser.add_argument("--skip-rss-fetch", action="store_true", help="Skip RSS Fetch (cache population)")
     parser.add_argument("--skip-rss-l2", action="store_true", help="Skip RSS Layer 2")
     parser.add_argument("--skip-html-l1", action="store_true", help="Skip HTML Layer 1")
     parser.add_argument("--skip-html-l2", action="store_true", help="Skip HTML Layer 2")
@@ -422,6 +455,10 @@ Examples:
     parser.add_argument("--skip-browser-use", action="store_true", help="Skip Browser-Use layer")
     parser.add_argument("--skip-twitter", action="store_true", help="Skip Twitter layers")
     parser.add_argument("--skip-dedup", action="store_true", help="Skip deduplication")
+
+    # Cache workflow option
+    parser.add_argument("--no-cache", action="store_true",
+                       help="Disable cache workflow - fetch RSS live in Layer 2 instead of using cache")
 
     # Only option (run specific layers only)
     parser.add_argument(
@@ -464,17 +501,23 @@ Examples:
         args.skip_twitter = "twitter" not in only_set
         args.skip_dedup = "dedup" not in only_set
 
+    # Handle --no-cache option
+    use_cache = not getattr(args, 'no_cache', False)
+    skip_rss_fetch = getattr(args, 'skip_rss_fetch', False)
+
     # Run the pipeline
     results = run(
         configs=configs,
         max_age_hours=args.max_age_hours,
         skip_rss_l1=args.skip_rss_l1,
+        skip_rss_fetch=skip_rss_fetch,
         skip_rss_l2=args.skip_rss_l2,
         skip_html_l1=skip_html_l1,
         skip_html_l2=skip_html_l2,
         skip_browser_use=skip_browser_use,
         skip_twitter=args.skip_twitter,
         skip_dedup=args.skip_dedup,
+        use_cache=use_cache,
     )
 
     # Print final summary

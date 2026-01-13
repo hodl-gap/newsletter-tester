@@ -1,6 +1,32 @@
 {
   "accounts": [
-    {"handle": "@Sumanth_077", "category": "AI tips"}
+    {"handle": "@Sumanth_077", "category": "AI tips"},
+    {"handle": "@strength04_x", "category": "AI tips"},
+    {"handle": "@joshpdletter", "category": "AI tips"},
+    {"handle": "@prajwaltomar_", "category": "AI tips"},
+    {"handle": "@hayesdev_", "category": "AI tips"},
+    {"handle": "@yulintwt", "category": "AI tips"},
+    {"handle": "@hasantoxr", "category": "AI tips"},
+    {"handle": "@seti_park", "category": "AI tips"},
+    {"handle": "@alexfinn", "category": "AI tips"},
+    {"handle": "@hasan28d", "category": "AI tips"},
+    {"handle": "@lucas_flatwhite", "category": "AI tips"},
+    {"handle": "@yuchenj_uw", "category": "AI tips"},
+    {"handle": "@dani_avila7", "category": "AI tips"},
+    {"handle": "@lioronai", "category": "AI tips"},
+    {"handle": "@davidsholz", "category": "AI tips"},
+    {"handle": "@nabeelqu", "category": "AI tips"},
+    {"handle": "@bcherny", "category": "AI tips"},
+    {"handle": "@skirano", "category": "AI tips"},
+    {"handle": "@bentossell", "category": "AI tips"},
+    {"handle": "@nikunj", "category": "AI tips"},
+    {"handle": "@minchoi", "category": "AI tips"},
+    {"handle": "@karrisaarinen", "category": "AI tips"},
+    {"handle": "@flowingdata", "category": "AI tips"},
+    {"handle": "@rakyll", "category": "AI tips"},
+    {"handle": "@danmartell", "category": "AI tips"},
+    {"handle": "@donvito", "category": "AI tips"},
+    {"handle": "@eyad_khrais", "category": "AI tips"}
   ],
   "settings": {
     "scrape_delay_min": 55,
