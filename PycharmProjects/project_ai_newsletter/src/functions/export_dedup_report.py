@@ -7,11 +7,12 @@ deduplicated articles to JSON and CSV files.
 
 import json
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
-from src.config import get_data_dir
+from src.config import get_data_dir, get_config
 from src.tracking import debug_log, track_time, cost_tracker
+from src.database import ArticleDatabase
 
 
 def _get_output_paths() -> tuple[Path, Path, Path]:
@@ -129,6 +130,10 @@ def export_dedup_report(state: dict) -> dict:
 
         debug_log(f"[NODE: export_dedup_report] Exported {len(final_unique)} unique articles")
 
+        # Export full database with is_new flag (based on created_at timestamp)
+        lookback_hours = state.get("lookback_hours", 24)
+        _save_all_articles(lookback_hours)
+
         return {"dedup_report": report}
 
 
@@ -184,3 +189,109 @@ def _save_deduped_csv(articles: list[dict], output_path: Path):
             writer.writerow(row)
 
     debug_log(f"[NODE: export_dedup_report] Saved CSV to {output_path}")
+
+
+def _save_all_articles(lookback_hours: int = 24):
+    """
+    Export all articles from DB with is_new flag.
+
+    Creates all_articles.json and all_articles.csv containing:
+    - All historical articles from the database
+    - is_new=True for articles with created_at within lookback_hours
+    - is_new=False for older articles
+    - created_at formatted in HMS (YYYY-MM-DD HH:MM:SS)
+
+    Args:
+        lookback_hours: Hours to look back for marking articles as new (default 24)
+    """
+    data_dir = get_data_dir()
+    json_path = data_dir / "all_articles.json"
+    csv_path = data_dir / "all_articles.csv"
+
+    # Get DB instance
+    db = ArticleDatabase()
+
+    # Get all articles from DB
+    all_articles = db.get_all_articles(with_embeddings=False)
+
+    if not all_articles:
+        debug_log("[NODE: export_dedup_report] No articles in database, skipping all_articles export")
+        return
+
+    # Calculate cutoff time for is_new flag
+    cutoff_time = datetime.now() - timedelta(hours=lookback_hours)
+    debug_log(f"[NODE: export_dedup_report] is_new cutoff: {cutoff_time.strftime('%Y-%m-%d %H:%M:%S')} ({lookback_hours}h lookback)")
+
+    # Mark is_new based on created_at timestamp and format timestamps
+    for article in all_articles:
+        created_at_raw = article.get("created_at")
+        created_at_dt = None
+
+        # Parse created_at to datetime
+        if created_at_raw:
+            try:
+                if isinstance(created_at_raw, str):
+                    if "T" in created_at_raw:
+                        created_at_dt = datetime.fromisoformat(created_at_raw.replace("Z", "+00:00"))
+                        # Remove timezone info for comparison
+                        if created_at_dt.tzinfo:
+                            created_at_dt = created_at_dt.replace(tzinfo=None)
+                    else:
+                        created_at_dt = datetime.strptime(created_at_raw, "%Y-%m-%d %H:%M:%S")
+                else:
+                    created_at_dt = created_at_raw
+                    if created_at_dt.tzinfo:
+                        created_at_dt = created_at_dt.replace(tzinfo=None)
+
+                # Format for output
+                article["created_at"] = created_at_dt.strftime("%Y-%m-%d %H:%M:%S")
+            except Exception:
+                pass  # Keep original if parsing fails
+
+        # Mark as new if created within lookback period
+        article["is_new"] = created_at_dt is not None and created_at_dt >= cutoff_time
+
+    # Count new articles
+    new_count = sum(1 for a in all_articles if a.get("is_new"))
+
+    # Save JSON
+    output = {
+        "metadata": {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "total_articles": len(all_articles),
+            "new_articles": new_count,
+            "config": get_config()
+        },
+        "articles": all_articles
+    }
+
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2, ensure_ascii=False)
+
+    debug_log(f"[NODE: export_dedup_report] Saved all_articles.json ({len(all_articles)} total, {new_count} new)")
+
+    # Save CSV
+    columns = ["date", "source", "source_type", "region", "category", "layer",
+               "title", "summary", "url", "created_at", "is_new"]
+
+    with open(csv_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
+        writer.writeheader()
+
+        for article in all_articles:
+            row = {
+                "date": article.get("pub_date", ""),
+                "source": article.get("source", ""),
+                "source_type": article.get("source_type", "rss"),
+                "region": article.get("region", ""),
+                "category": article.get("category", ""),
+                "layer": article.get("layer", ""),
+                "title": article.get("title", ""),
+                "summary": article.get("summary", ""),
+                "url": article.get("url", ""),
+                "created_at": article.get("created_at", ""),
+                "is_new": article.get("is_new", False),
+            }
+            writer.writerow(row)
+
+    debug_log(f"[NODE: export_dedup_report] Saved all_articles.csv")

@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-01-12
+**Last Updated:** 2026-01-13
 
 ## Current Phase
 
@@ -24,6 +24,27 @@ All layers complete and operational:
 |--------|-------------|---------|
 | `business_news` | AI business news (funding, M&A, launches) | 60+ RSS feeds, 7 Twitter accounts |
 | `ai_tips` | AI usage tips, tutorials, workflows | marktechpost.com, byhand.ai, @Sumanth_077 |
+
+---
+
+## Recent Improvements (2026-01-13)
+
+### Fixed `is_new` Flag in `all_articles.json`
+
+**Problem:** The `is_new` flag was marking articles based on whether they were unique in the *current dedup run*, not based on when they were added to the database. This caused all previously-added articles to show `is_new=False` on subsequent runs, even if they were recently added.
+
+**Root Cause:** `is_new` was set by checking if article URL was in the current run's `final_unique` set, rather than using the `created_at` timestamp.
+
+**Fix Applied:**
+
+| File | Change |
+|------|--------|
+| `src/functions/export_dedup_report.py` | `is_new` now based on `created_at >= (now - lookback_hours)` |
+
+**New Behavior:**
+- `is_new=True` for articles with `created_at` within the lookback period (default 24h)
+- `is_new=False` for older articles
+- `lookback_hours` configurable via pipeline state (default: 24)
 
 ---
 

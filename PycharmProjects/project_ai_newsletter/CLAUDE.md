@@ -179,6 +179,8 @@ project_ai_newsletter/
 ├── twitter_layer2_orchestrator.py  # Twitter L2: Content aggregation
 ├── twitter_cdp_login.py       # Twitter: CDP cookie extraction script
 ├── twitter_login.py           # Twitter: Alternative Playwright login (less reliable)
+├── cleanup_garbage.py         # One-time: Remove garbage articles from DB
+├── regenerate_summaries.py    # One-time: Fix bad summaries in DB
 ├── src/
 │   ├── __init__.py
 │   ├── config.py             # Config management (set_config, get_data_dir, etc.)
@@ -518,7 +520,7 @@ All output files are stored in `data/{config_name}/` (e.g., `data/business_news/
 | `merged_news_deduped.json` | Layer 3 output: Deduplicated news from all sources (RSS + HTML + Browser-Use + Twitter) |
 | `merged_news_deduped.csv` | Layer 3 output: Same as JSON with source_type column |
 | `dedup_report.json` | Layer 3 output: Deduplication statistics with cross-source metrics |
-| `all_articles.json` | Layer 3 output: Full database export with `is_new` flag for dashboard |
+| `all_articles.json` | Layer 3 output: Full database export with `is_new` flag (based on `created_at` within lookback period, default 24h) |
 | `all_articles.csv` | Layer 3 output: Same as JSON in tabular format |
 | `html_availability.json` | HTML L1 output: Scrapability configs with CSS selectors |
 | `html_news.json` | HTML L2 output: AI business news from scraped sources |
@@ -1132,3 +1134,17 @@ Best practices to avoid bans:
 - The authenticated account may be suspended
 - Create a new account and re-authenticate
 - Consider reducing scraping frequency
+
+### Manual Cleanup Scripts
+
+One-time utilities for DB maintenance (not part of regular pipeline):
+
+```bash
+# Remove garbage articles (reactions, hype, link-only)
+python cleanup_garbage.py --configs business_news ai_tips --dry-run
+python cleanup_garbage.py --configs business_news ai_tips --export
+
+# Fix bad summaries (too long, not Korean)
+python regenerate_summaries.py --configs business_news ai_tips --dry-run
+python regenerate_summaries.py --configs business_news ai_tips --export
+```
