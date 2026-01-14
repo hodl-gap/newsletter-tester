@@ -381,6 +381,39 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
 - Set up scheduled runs (cron/GitHub Actions) - recommend every 3 hours for full coverage
 - Build frontend/newsletter output format
 
+### Automation TODO
+
+**Browser-Use Headless Mode (for cron)**
+- Current: `headless: false` in config - Chrome UI pops up via X11
+- Issue: Cron won't work without display/X11 session
+- Options:
+  1. Set `headless: true` in `configs/*/config.json` (simple, may trigger more anti-bot detection)
+  2. Use `xvfb` (virtual framebuffer) on server to fake display
+  3. Keep headed mode, only run cron when logged in with X11
+
+**JSON Sync to Dashboard Repo**
+- Current: Final JSONs exported to `output/` folder for easy referencing
+- Options for syncing to dashboard:
+  1. Raw GitHub URL - Dashboard fetches from `raw.githubusercontent.com` (requires public repo or token)
+  2. Push JSON to dashboard repo - Add script after pipeline to copy & push JSONs
+  3. GitHub Actions - Workflow triggers on JSON changes, pushes to dashboard repo
+  4. Shared S3/GCS bucket - Pipeline writes, dashboard reads (best for scale)
+
+---
+
+## Output Folder (for External Referencing)
+
+The pipeline automatically exports final JSON files to `output/` folder at the end of each run:
+
+| Source | Destination |
+|--------|-------------|
+| `data/business_news/all_articles.json` | `output/news.json` |
+| `data/ai_tips/all_articles.json` | `output/tips.json` |
+
+**Purpose:** Clean, predictable paths for external tools (dashboards, APIs, other repos) to reference without navigating config-specific data folders.
+
+**Added:** 2026-01-14
+
 ---
 
 ## COMPLETE: Garbage Filtering (Twitter)

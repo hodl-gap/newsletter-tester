@@ -321,6 +321,9 @@ project_ai_newsletter/
 │       ├── twitter_discarded.csv      # Twitter L2 output: Filtered-out tweets
 │       ├── rss_cache.json             # RSS cache: Raw articles for batch processing
 │       └── rss_cache_archive.json     # RSS cache archive: Last 7 days of processed
+├── output/                       # Final JSONs for external referencing
+│   ├── news.json                 # Copy of data/business_news/all_articles.json
+│   └── tips.json                 # Copy of data/ai_tips/all_articles.json
 ├── chrome_data/                   # Browser data (gitignored)
 │   └── twitter_cookies.json       # Twitter session cookies (required for scraping)
 ├── debug.log                 # Debug log file (auto-generated)
@@ -535,6 +538,12 @@ def run():
 ## Output Files
 
 All output files are stored in `data/{config_name}/` (e.g., `data/business_news/`).
+
+**Final exports for external referencing** are copied to `output/` folder:
+| File | Source |
+|------|--------|
+| `output/news.json` | `data/business_news/all_articles.json` |
+| `output/tips.json` | `data/ai_tips/all_articles.json` |
 
 | File | Description |
 |------|-------------|

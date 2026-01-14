@@ -332,7 +332,58 @@ def run(
     _print_summary(results)
     cost_tracker.print_summary()
 
+    # =========================================================================
+    # Export to output/ folder (for external referencing)
+    # =========================================================================
+    _export_to_output_folder(configs)
+
     return results
+
+
+def _export_to_output_folder(configs: list[str]) -> None:
+    """
+    Copy final JSON files to output/ folder for external referencing.
+
+    Copies:
+        - data/business_news/all_articles.json -> output/news.json
+        - data/ai_tips/all_articles.json -> output/tips.json
+    """
+    import shutil
+    from pathlib import Path
+
+    # Map config names to output filenames
+    config_to_output = {
+        "business_news": "news.json",
+        "ai_tips": "tips.json",
+    }
+
+    # Get project root (where orchestrator.py lives)
+    project_root = Path(__file__).parent
+    output_dir = project_root / "output"
+
+    # Create output directory if needed
+    output_dir.mkdir(exist_ok=True)
+
+    debug_log("\n" + "-" * 40)
+    debug_log("EXPORTING TO OUTPUT FOLDER")
+    debug_log("-" * 40)
+
+    for config in configs:
+        output_filename = config_to_output.get(config)
+        if not output_filename:
+            debug_log(f"  {config}: No output mapping configured, skipping")
+            continue
+
+        source_path = project_root / "data" / config / "all_articles.json"
+        dest_path = output_dir / output_filename
+
+        if source_path.exists():
+            shutil.copy2(source_path, dest_path)
+            debug_log(f"  {config}: {source_path.name} -> output/{output_filename}")
+        else:
+            debug_log(f"  {config}: Source not found ({source_path})", "warning")
+
+    debug_log(f"Output folder: {output_dir}")
 
 
 def _print_summary(results: dict) -> None:
