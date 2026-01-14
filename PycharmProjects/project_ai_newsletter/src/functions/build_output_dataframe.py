@@ -104,8 +104,8 @@ def build_output_dataframe(state: dict) -> dict:
             }
             output_data.append(record)
 
-        # Sort by date (newest first)
-        output_data.sort(key=lambda x: x["date"], reverse=True)
+        # Sort by date (newest first), handling None/empty dates
+        output_data.sort(key=lambda x: x["date"] or "", reverse=True)
 
         # Log discards
         if failed_summary_discards:

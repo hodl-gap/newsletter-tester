@@ -18,7 +18,8 @@ from src.tracking import debug_log, track_time
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIMENSIONS = 1536
-BATCH_SIZE = 100  # OpenAI recommends batching for efficiency
+BATCH_SIZE = 50  # Reduced from 100 to avoid token limit issues
+MAX_TEXT_LENGTH = 500  # Truncate text to avoid exceeding token limits
 
 
 # =============================================================================
@@ -30,18 +31,25 @@ def create_embedding_text(article: dict) -> str:
     Create text for embedding from article fields.
 
     Combines title and summary for a comprehensive representation.
+    Truncates to MAX_TEXT_LENGTH to avoid token limit issues.
 
     Args:
         article: Article dict with title and contents/summary.
 
     Returns:
-        Formatted text string for embedding.
+        Formatted text string for embedding (truncated if needed).
     """
     title = article.get("title", "")
     summary = article.get("contents", article.get("summary", article.get("description", "")))
 
     # Format: "TITLE: {title} SUMMARY: {summary}"
-    return f"TITLE: {title} SUMMARY: {summary}"
+    text = f"TITLE: {title} SUMMARY: {summary}"
+
+    # Truncate to avoid token limit issues (roughly 4 chars per token)
+    if len(text) > MAX_TEXT_LENGTH:
+        text = text[:MAX_TEXT_LENGTH] + "..."
+
+    return text
 
 
 def get_openai_client() -> OpenAI:
