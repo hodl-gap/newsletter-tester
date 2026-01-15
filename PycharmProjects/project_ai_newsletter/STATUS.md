@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-01-13
+**Last Updated:** 2026-01-14
 
 ## Current Phase
 
@@ -24,6 +24,39 @@ All layers complete and operational:
 |--------|-------------|---------|
 | `business_news` | AI business news (funding, M&A, launches) | 60+ RSS feeds, 7 Twitter accounts |
 | `ai_tips` | AI usage tips, tutorials, workflows | marktechpost.com, byhand.ai, @Sumanth_077 |
+
+---
+
+## Recent Improvements (2026-01-14)
+
+### Bug Fixes
+
+**Browser-Use Date Sorting Error**
+- Fixed `TypeError: '<' not supported between instances of 'NoneType' and 'NoneType'`
+- Cause: `pub_date` was `None` for some articles, breaking date sort
+- Fix: `build_output_dataframe.py` - sort key now handles None: `x["date"] or ""`
+
+**Embedding Token Limit Error**
+- Fixed `Error code: 400 - maximum context length is 8192 tokens`
+- Cause: 163 articles with full text exceeded OpenAI embedding limit
+- Fix: `generate_embeddings.py` - reduced batch size (100→50), truncate text to 500 chars
+
+### New Features
+
+**Output Folder for External Referencing**
+- Pipeline exports final JSONs to `output/` folder after each run
+- `data/business_news/all_articles.json` → `output/news.json`
+- `data/ai_tips/all_articles.json` → `output/tips.json`
+
+**Auto-Push to Coworking Repo**
+- Pipeline automatically pushes output JSONs to coworking repo after each run
+- Target: `ai_dashboard_scraper/output/` in `nathanyjleeprojects/global_markets_insight_coworking`
+- Requires `.env`: `GITHUB_COWORK_TOKEN`, `GITHUB_COWORK_REPO`
+
+**Headless Mode for Browser-Use**
+- Changed `headless: false` → `true` in `configs/business_news/config.json`
+- Enables cron/scheduled runs without X11 display
+- Tested: Works correctly, faster than headed mode (4min vs 9min)
 
 ---
 
