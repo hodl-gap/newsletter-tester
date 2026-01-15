@@ -337,6 +337,11 @@ def run(
     # =========================================================================
     _export_to_output_folder(configs)
 
+    # =========================================================================
+    # Push to coworking repo (if configured)
+    # =========================================================================
+    _push_to_cowork_repo()
+
     return results
 
 
@@ -384,6 +389,117 @@ def _export_to_output_folder(configs: list[str]) -> None:
             debug_log(f"  {config}: Source not found ({source_path})", "warning")
 
     debug_log(f"Output folder: {output_dir}")
+
+
+def _push_to_cowork_repo() -> None:
+    """
+    Push output JSON files to the coworking repository.
+
+    Reads GITHUB_COWORK_TOKEN and GITHUB_COWORK_REPO from environment.
+    Pushes output/news.json and output/tips.json to ai_dashboard_scraper/output/
+    """
+    import os
+    import subprocess
+    import shutil
+    import tempfile
+    from pathlib import Path
+
+    token = os.getenv("GITHUB_COWORK_TOKEN")
+    repo = os.getenv("GITHUB_COWORK_REPO")
+
+    if not token or not repo:
+        debug_log("[COWORK PUSH] Skipping - GITHUB_COWORK_TOKEN or GITHUB_COWORK_REPO not set")
+        return
+
+    debug_log("\n" + "-" * 40)
+    debug_log("PUSHING TO COWORKING REPO")
+    debug_log("-" * 40)
+
+    project_root = Path(__file__).parent
+    output_dir = project_root / "output"
+
+    if not output_dir.exists():
+        debug_log("[COWORK PUSH] Skipping - output folder does not exist")
+        return
+
+    # Use temp directory for clone
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        repo_dir = Path(tmp_dir) / "repo"
+
+        try:
+            # Clone the repo
+            clone_url = f"https://{token}@github.com/{repo}.git"
+            result = subprocess.run(
+                ["git", "clone", "--depth", "1", clone_url, str(repo_dir)],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+
+            if result.returncode != 0:
+                debug_log(f"[COWORK PUSH] Clone failed: {result.stderr}", "error")
+                return
+
+            # Copy output files to target folder
+            target_dir = repo_dir / "ai_dashboard_scraper" / "output"
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            for json_file in output_dir.glob("*.json"):
+                shutil.copy2(json_file, target_dir / json_file.name)
+                debug_log(f"  Copied: {json_file.name}")
+
+            # Configure git
+            subprocess.run(["git", "config", "user.email", "bot@newsletter.ai"], cwd=repo_dir, capture_output=True)
+            subprocess.run(["git", "config", "user.name", "Newsletter Bot"], cwd=repo_dir, capture_output=True)
+
+            # Check if there are changes
+            result = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=repo_dir,
+                capture_output=True,
+                text=True,
+            )
+
+            if not result.stdout.strip():
+                debug_log("[COWORK PUSH] No changes to push")
+                return
+
+            # Commit and push
+            subprocess.run(["git", "add", "."], cwd=repo_dir, capture_output=True)
+
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+            commit_msg = f"Update newsletter data ({timestamp})"
+
+            result = subprocess.run(
+                ["git", "commit", "-m", commit_msg],
+                cwd=repo_dir,
+                capture_output=True,
+                text=True,
+            )
+
+            if result.returncode != 0:
+                debug_log(f"[COWORK PUSH] Commit failed: {result.stderr}", "error")
+                return
+
+            result = subprocess.run(
+                ["git", "push"],
+                cwd=repo_dir,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+
+            if result.returncode != 0:
+                debug_log(f"[COWORK PUSH] Push failed: {result.stderr}", "error")
+                return
+
+            debug_log(f"[COWORK PUSH] Successfully pushed to {repo}")
+
+        except subprocess.TimeoutExpired:
+            debug_log("[COWORK PUSH] Timeout during git operation", "error")
+        except Exception as e:
+            debug_log(f"[COWORK PUSH] Error: {e}", "error")
 
 
 def _print_summary(results: dict) -> None:
