@@ -390,13 +390,10 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
   1. Use `xvfb` (virtual framebuffer) on server to fake display
   2. Keep headed mode, only run cron when logged in with X11
 
-**JSON Sync to Dashboard Repo**
-- Current: Final JSONs exported to `output/` folder for easy referencing
-- Options for syncing to dashboard:
-  1. Raw GitHub URL - Dashboard fetches from `raw.githubusercontent.com` (requires public repo or token)
-  2. Push JSON to dashboard repo - Add script after pipeline to copy & push JSONs
-  3. GitHub Actions - Workflow triggers on JSON changes, pushes to dashboard repo
-  4. Shared S3/GCS bucket - Pipeline writes, dashboard reads (best for scale)
+**JSON Sync to Coworking Repo** ✅ IMPLEMENTED
+- Pipeline automatically pushes `output/news.json` and `output/tips.json` to coworking repo after each run
+- Target: `ai_dashboard_scraper/output/` in `nathanyjleeprojects/global_markets_insight_coworking`
+- Requires `.env` variables: `GITHUB_COWORK_TOKEN`, `GITHUB_COWORK_REPO`
 
 ---
 
