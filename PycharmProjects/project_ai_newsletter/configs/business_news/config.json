@@ -19,8 +19,8 @@
     {"url": "https://baobabnetwork.com/", "enabled": false, "name": "Baobab Network"}
   ],
   "browser_use_settings": {
-    "headless": false,
-    "max_articles_per_source": 5,
+    "headless": true,
+    "max_articles_per_source": 20,
     "model": "claude-sonnet-4-20250514"
   },
   "valid_regions": [
