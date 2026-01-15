@@ -384,12 +384,11 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
 ### Automation TODO
 
 **Browser-Use Headless Mode (for cron)**
-- Current: `headless: false` in config - Chrome UI pops up via X11
-- Issue: Cron won't work without display/X11 session
-- Options:
-  1. Set `headless: true` in `configs/*/config.json` (simple, may trigger more anti-bot detection)
-  2. Use `xvfb` (virtual framebuffer) on server to fake display
-  3. Keep headed mode, only run cron when logged in with X11
+- Current: `headless: true` in config - runs without display (cron-compatible)
+- Tested: Works correctly, actually faster than headed mode (4min vs 9min)
+- Fallback options if headless triggers anti-bot detection:
+  1. Use `xvfb` (virtual framebuffer) on server to fake display
+  2. Keep headed mode, only run cron when logged in with X11
 
 **JSON Sync to Dashboard Repo**
 - Current: Final JSONs exported to `output/` folder for easy referencing
