@@ -24,6 +24,7 @@ All layers complete and operational:
 |--------|-------------|---------|
 | `business_news` | AI business news (funding, M&A, launches) | 60+ RSS feeds, 7 Twitter accounts |
 | `ai_tips` | AI usage tips, tutorials, workflows | marktechpost.com, byhand.ai, @Sumanth_077 |
+| `research` | AI/ML research, benchmarks, technical analysis | Same as ai_tips (mutually exclusive filtering) |
 
 ---
 
@@ -411,8 +412,22 @@ Added "GARBAGE / LOW-VALUE CONTENT" section to both filter prompts:
 - Fix broken RSS feeds (aibusiness, tech.economictimes, asia.nikkei, forbes, fortune)
 
 ### Medium Priority
-- Set up scheduled runs (cron/GitHub Actions) - recommend every 3 hours for full coverage
+- Set up scheduled runs (cron/GitHub Actions) - recommend every 3 hours for full coverage ✅ DONE (2h cache, 12h full pipeline)
 - Build frontend/newsletter output format
+- **DB/Output Management:** Currently pushing entire JSON files to coworking git. Need to address scalability:
+  - Consider incremental sync (only new/updated articles)
+  - Or switch to proper DB sync instead of JSON exports
+  - Or implement pagination/time-windowed exports
+- Add `research` config type ✅ DONE (2026-01-20)
+  - Focus: AI research papers, benchmark reports, industry studies
+  - Output: `research.json`
+  - Shares sources with ai_tips but uses mutually exclusive filter prompts
+- Add `headline_news` config type
+  - Focus: Top/breaking AI news stories
+- Make `layer` field multi-select and add new technology domains:
+  - New layers: `physical_ai` (robotics, embodied AI), `agentic_ai` (AI agents, autonomous workflows)
+  - Allows combinations like `["b2b_apps", "physical_ai"]` or `["consumer_apps", "agentic_ai"]`
+  - Requires: schema change, prompt update, output format update
 
 ### Automation TODO
 

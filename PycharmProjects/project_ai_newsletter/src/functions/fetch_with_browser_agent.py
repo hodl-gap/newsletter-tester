@@ -140,8 +140,15 @@ async def _scrape_source_with_agent(
     """
     from browser_use import Agent, Browser
 
-    # Initialize browser
-    browser = Browser(headless=headless)
+    # Initialize browser for local mode
+    # NOTE: Do NOT pass 'timeout' param - in browser-use 0.11.x it triggers cloud mode!
+    browser = Browser(
+        headless=headless,
+        is_local=True,  # Force local browser
+        use_cloud=False,  # Explicitly disable cloud service
+        minimum_wait_page_load_time=3,  # Wait at least 3s for page load
+        wait_for_network_idle_page_load_time=10,  # Wait for network idle
+    )
 
     task = f"""
     Go to {url} and:

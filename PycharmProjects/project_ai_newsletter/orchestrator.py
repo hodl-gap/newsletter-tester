@@ -352,6 +352,7 @@ def _export_to_output_folder(configs: list[str]) -> None:
     Copies:
         - data/business_news/all_articles.json -> output/news.json
         - data/ai_tips/all_articles.json -> output/tips.json
+        - data/research/all_articles.json -> output/research.json
     """
     import shutil
     from pathlib import Path
@@ -360,6 +361,7 @@ def _export_to_output_folder(configs: list[str]) -> None:
     config_to_output = {
         "business_news": "news.json",
         "ai_tips": "tips.json",
+        "research": "research.json",
     }
 
     # Get project root (where orchestrator.py lives)
@@ -396,7 +398,7 @@ def _push_to_cowork_repo() -> None:
     Push output JSON files to the coworking repository.
 
     Reads GITHUB_COWORK_TOKEN and GITHUB_COWORK_REPO from environment.
-    Pushes output/news.json and output/tips.json to ai_dashboard_scraper/output/
+    Pushes output/*.json (news.json, tips.json, research.json) to ai_dashboard_scraper/output/
     """
     import os
     import subprocess

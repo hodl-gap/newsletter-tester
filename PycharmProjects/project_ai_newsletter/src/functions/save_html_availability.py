@@ -24,7 +24,7 @@ def save_html_availability(state: dict) -> dict:
     Merges with existing results (updates existing entries, adds new ones).
 
     Args:
-        state: Pipeline state with 'final_results'
+        state: Pipeline state with 'final_results' and 'skipped_urls'
 
     Returns:
         Dict with 'output_file' path
@@ -33,6 +33,7 @@ def save_html_availability(state: dict) -> dict:
         debug_log("[NODE: save_html_availability] Entering")
 
         final_results = state.get("final_results", [])
+        skipped_urls = state.get("skipped_urls", [])
         debug_log(f"[NODE: save_html_availability] Saving {len(final_results)} results")
 
         output_file = _get_output_file()
@@ -61,6 +62,11 @@ def save_html_availability(state: dict) -> dict:
             status = r.get("status", "unknown")
             status_counts[status] = status_counts.get(status, 0) + 1
 
+        # Log skipped URLs that were preserved from previous run
+        for url in skipped_urls:
+            if url in results_by_url:
+                debug_log(f"[NODE: save_html_availability] Preserved (skipped): {url}")
+
         # Build output data
         output_data = {
             "results": merged_results,
@@ -70,6 +76,8 @@ def save_html_availability(state: dict) -> dict:
             "requires_js": status_counts.get("requires_js", 0),
             "blocked": status_counts.get("blocked", 0),
             "not_scrapable": status_counts.get("not_scrapable", 0),
+            "last_run_processed": len(final_results),
+            "last_run_skipped": len(skipped_urls),
         }
 
         # Write to file (get_data_dir already creates the directory)
@@ -83,5 +91,7 @@ def save_html_availability(state: dict) -> dict:
         debug_log(f"[NODE: save_html_availability]   Requires JS: {output_data['requires_js']}")
         debug_log(f"[NODE: save_html_availability]   Blocked: {output_data['blocked']}")
         debug_log(f"[NODE: save_html_availability]   Not scrapable: {output_data['not_scrapable']}")
+        debug_log(f"[NODE: save_html_availability]   Last run processed: {output_data['last_run_processed']}")
+        debug_log(f"[NODE: save_html_availability]   Last run skipped: {output_data['last_run_skipped']}")
 
         return {"output_file": str(output_file)}

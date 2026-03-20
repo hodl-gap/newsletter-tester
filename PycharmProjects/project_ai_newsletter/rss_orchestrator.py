@@ -6,7 +6,7 @@ Pipeline: Load URLs -> Test Main RSS -> Test AI Category -> Agent Discovery -> C
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TypedDict
 
@@ -43,11 +43,15 @@ class FinalResult(TypedDict):
     main_feed_latest_date: str | None  # ISO date of latest article in main feed
     ai_feed_latest_date: str | None  # ISO date of latest article in AI feed
     fallback_reason: str | None  # Why main feed was used instead of AI feed (e.g., "stale_ai_feed")
+    last_checked: str | None  # ISO timestamp of when this URL was last checked
 
 
 class RSSDiscoveryState(TypedDict):
     url_filter: list[str] | None  # Optional filter for URLs (substring match)
+    full_rescan: bool  # Force re-check all sources (ignore last_checked)
+    refresh_days: int  # Days before re-checking a source
     input_urls: list[str]
+    skipped_urls: list[str]  # URLs skipped due to recent check
     main_rss_results: list[RSSTestResult]
     directory_results: list[RSSDirectoryResult]  # Results from RSS directory page scan
     ai_category_results: list[AIFeedResult]
@@ -66,6 +70,9 @@ def load_urls(state: RSSDiscoveryState) -> dict:
 
     NOTE: Layer 0 integration is disabled due to reliability issues.
     Previously checked source_quality.json first, now reads directly from input_urls.json.
+
+    Incremental mode (default): Skips URLs checked within refresh_days.
+    Use full_rescan=True to force re-checking all sources.
     """
     with track_time("load_urls"):
         debug_log("[NODE: load_urls] Entering")
@@ -77,7 +84,8 @@ def load_urls(state: RSSDiscoveryState) -> dict:
         with open(input_path) as f:
             data = json.load(f)
         urls = data.get("urls", [])
-        debug_log(f"[NODE: load_urls] Loaded {len(urls)} URLs from file")
+        obsolete_count = len(data.get("obsolete", []))
+        debug_log(f"[NODE: load_urls] Loaded {len(urls)} URLs from file ({obsolete_count} obsolete, skipped)")
 
         # Apply URL filter if specified
         url_filter = state.get("url_filter")
@@ -90,9 +98,18 @@ def load_urls(state: RSSDiscoveryState) -> dict:
             debug_log(f"[NODE: load_urls] Filtered to {len(filtered_urls)} URLs")
             urls = filtered_urls
 
+        # Apply incremental filtering (skip recently-checked URLs)
+        skipped_urls = []
+        if not state.get("full_rescan", False):
+            refresh_days = state.get("refresh_days", 7)
+            urls, skipped_urls = filter_recently_checked(urls, refresh_days)
+            debug_log(f"[NODE: load_urls] Incremental mode: {len(urls)} to process, {len(skipped_urls)} skipped (refresh_days={refresh_days})")
+        else:
+            debug_log("[NODE: load_urls] Full rescan mode: processing all URLs")
+
         debug_log(f"[NODE: load_urls] Output: {urls}")
 
-        return {"input_urls": urls}
+        return {"input_urls": urls, "skipped_urls": skipped_urls}
 
 
 def test_main_rss(state: RSSDiscoveryState) -> dict:
@@ -153,6 +170,73 @@ def test_ai_category_feeds(state: RSSDiscoveryState) -> dict:
 def normalize_url(url: str) -> str:
     """Normalize URL by stripping trailing slashes for consistent lookups."""
     return url.rstrip("/")
+
+
+def filter_recently_checked(urls: list[str], refresh_days: int) -> tuple[list[str], list[str]]:
+    """
+    Filter out URLs that were checked within the refresh period.
+
+    Args:
+        urls: List of URLs to filter
+        refresh_days: Number of days before re-checking a source
+
+    Returns:
+        Tuple of (urls_to_process, skipped_urls)
+    """
+    output_path = get_data_dir() / "rss_availability.json"
+
+    if not output_path.exists():
+        debug_log("[filter_recently_checked] No existing results file, processing all URLs")
+        return urls, []
+
+    try:
+        with open(output_path, "r") as f:
+            existing_data = json.load(f)
+        existing_results = existing_data.get("results", [])
+    except (json.JSONDecodeError, KeyError):
+        debug_log("[filter_recently_checked] Could not parse existing results, processing all URLs")
+        return urls, []
+
+    # Build lookup map of URL -> last_checked timestamp
+    last_checked_map = {}
+    for result in existing_results:
+        url = result.get("url")
+        last_checked = result.get("last_checked")
+        if url:
+            last_checked_map[url] = last_checked
+
+    # Calculate cutoff date
+    cutoff_date = datetime.now() - timedelta(days=refresh_days)
+
+    urls_to_process = []
+    skipped_urls = []
+
+    for url in urls:
+        last_checked_str = last_checked_map.get(url)
+
+        if last_checked_str is None:
+            # New URL or entry without last_checked, needs processing
+            urls_to_process.append(url)
+            debug_log(f"[filter_recently_checked] {url}: PROCESS (new or no timestamp)")
+        else:
+            try:
+                last_checked_dt = datetime.fromisoformat(last_checked_str)
+                if last_checked_dt < cutoff_date:
+                    # Stale entry, needs re-check
+                    urls_to_process.append(url)
+                    days_ago = (datetime.now() - last_checked_dt).days
+                    debug_log(f"[filter_recently_checked] {url}: PROCESS (stale, {days_ago} days ago)")
+                else:
+                    # Recently checked, skip
+                    skipped_urls.append(url)
+                    days_ago = (datetime.now() - last_checked_dt).days
+                    debug_log(f"[filter_recently_checked] {url}: SKIP (fresh, {days_ago} days ago)")
+            except ValueError:
+                # Invalid date format, re-check
+                urls_to_process.append(url)
+                debug_log(f"[filter_recently_checked] {url}: PROCESS (invalid timestamp)")
+
+    return urls_to_process, skipped_urls
 
 
 def discover_with_agent(state: RSSDiscoveryState) -> dict:
@@ -255,6 +339,9 @@ def merge_results(state: RSSDiscoveryState) -> dict:
         classification = state.get("classification", {})
 
         final_results: list[FinalResult] = []
+
+        # Timestamp for when this batch was checked
+        check_timestamp = datetime.now().isoformat()
 
         for url in state["input_urls"]:
             normalized = normalize_url(url)
@@ -374,6 +461,7 @@ def merge_results(state: RSSDiscoveryState) -> dict:
                 "main_feed_latest_date": main_feed_latest_date,
                 "ai_feed_latest_date": ai_feed_latest_date,
                 "fallback_reason": fallback_reason,
+                "last_checked": check_timestamp,
             })
 
         debug_log(f"[NODE: merge_results] Output: {len(final_results)} final results")
@@ -386,6 +474,7 @@ def save_results(state: RSSDiscoveryState) -> dict:
         debug_log("[NODE: save_results] Entering")
 
         new_results = state["final_results"]
+        skipped_urls = state.get("skipped_urls", [])
         output_path = get_data_dir() / "rss_availability.json"
 
         # Load existing results if file exists
@@ -404,6 +493,11 @@ def save_results(state: RSSDiscoveryState) -> dict:
         for result in new_results:
             results_map[result["url"]] = result
             debug_log(f"[NODE: save_results] Updated/added: {result['url']}")
+
+        # Log skipped URLs that were preserved from previous run
+        for url in skipped_urls:
+            if url in results_map:
+                debug_log(f"[NODE: save_results] Preserved (skipped): {url}")
 
         # Convert back to list
         results = list(results_map.values())
@@ -435,6 +529,8 @@ def save_results(state: RSSDiscoveryState) -> dict:
             "with_full_content": with_full_content,
             "with_http_fetch": with_http_fetch,
             "no_content_access": no_content_access,
+            "last_run_processed": len(new_results),
+            "last_run_skipped": len(skipped_urls),
         }
 
         with open(output_path, "w") as f:
@@ -453,6 +549,8 @@ def save_results(state: RSSDiscoveryState) -> dict:
         debug_log(f"  - With full RSS content: {output['with_full_content']}")
         debug_log(f"  - With HTTP fetch: {output['with_http_fetch']}")
         debug_log(f"  - No content access: {output['no_content_access']}")
+        debug_log(f"  - Last run processed: {output['last_run_processed']}")
+        debug_log(f"  - Last run skipped: {output['last_run_skipped']}")
 
         return {}
 
@@ -494,7 +592,12 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> dict:
+def run(
+    url_filter: list[str] | None = None,
+    config: str = DEFAULT_CONFIG,
+    full_rescan: bool = False,
+    refresh_days: int = 7,
+) -> dict:
     """
     Run the RSS discovery pipeline.
 
@@ -502,6 +605,9 @@ def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> di
         url_filter: Optional list of substrings to filter URLs.
                    Only URLs containing any of these substrings will be processed.
         config: Configuration name (default: business_news).
+        full_rescan: If True, re-check all sources regardless of last_checked.
+                    Default is False (incremental mode).
+        refresh_days: Days before re-checking a source (default: 7).
     """
     # Set active configuration
     set_config(config)
@@ -515,6 +621,7 @@ def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> di
     debug_log("=" * 60)
     debug_log("RSS Discovery Pipeline - Layer 1 (v2)")
     debug_log(f"CONFIG: {config}")
+    debug_log(f"MODE: {'Full Rescan' if full_rescan else f'Incremental ({refresh_days} day refresh)'}")
     if url_filter:
         debug_log(f"URL FILTER: {url_filter}")
     debug_log("=" * 60)
@@ -523,7 +630,10 @@ def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> di
 
     initial_state: RSSDiscoveryState = {
         "url_filter": url_filter,
+        "full_rescan": full_rescan,
+        "refresh_days": refresh_days,
         "input_urls": [],
+        "skipped_urls": [],
         "main_rss_results": [],
         "directory_results": [],
         "ai_category_results": [],
@@ -550,7 +660,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run RSS discovery pipeline (Layer 1)")
     parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
     parser.add_argument("--url-filter", nargs="*", help="Filter for specific URLs")
+    parser.add_argument("--full-rescan", action="store_true",
+                       help="Force re-check all sources (ignore last_checked)")
+    parser.add_argument("--refresh-days", type=int, default=7,
+                       help="Days before re-checking a source (default: 7)")
 
     args = parser.parse_args()
 
-    run(config=args.config, url_filter=args.url_filter)
+    run(
+        config=args.config,
+        url_filter=args.url_filter,
+        full_rescan=args.full_rescan,
+        refresh_days=args.refresh_days,
+    )

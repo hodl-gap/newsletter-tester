@@ -1,23 +1,30 @@
 """
 Fetch Twitter Content Node
 
-Scrapes tweets from Twitter/X accounts using Playwright to intercept
-GraphQL API responses. Implements rate limiting between accounts.
+Fetches tweets from Twitter/X accounts using direct HTTP requests to
+Twitter's internal GraphQL API. Uses session cookies for authentication.
 
-Uses persistent browser context to maintain session state and avoid
-being detected as a bot by Twitter.
+Previous approach used Playwright browser automation to intercept GraphQL
+responses. This HTTP-based approach eliminates browser fingerprinting
+(the main bot detection vector), is 10-50x faster, and supports
+cursor-based pagination for fetching multiple pages of tweets.
+
+Account pool support: multiple accounts can be rotated to distribute
+rate limits. Configure accounts in chrome_data/twitter_accounts.json.
 """
 
-import os
 import random
 import time
 from email.utils import parsedate_to_datetime
-from pathlib import Path
 from typing import TypedDict, Optional
 
-from playwright.sync_api import sync_playwright, Response
-
 from src.tracking import debug_log, track_time
+from src.twitter_client import (
+    TwitterClient,
+    AccountPool,
+    CookieExpiredError,
+    RateLimitError,
+)
 
 
 class RawTweet(TypedDict):
@@ -42,41 +49,35 @@ class RawTweet(TypedDict):
     source_name: str            # Same as handle
 
 
-# Default delay between scraping accounts (seconds)
-DEFAULT_SCRAPE_DELAY_MIN = 55
-DEFAULT_SCRAPE_DELAY_MAX = 65
-
-# Playwright timeout (ms)
-PAGE_TIMEOUT = 30000
-WAIT_FOR_API = 5000
-API_RESPONSE_TIMEOUT = 15000  # Timeout for expect_response
+# Delay between scraping different accounts (seconds)
+# Much shorter than browser-based approach since HTTP has no fingerprint to detect
+DEFAULT_SCRAPE_DELAY_MIN = 3
+DEFAULT_SCRAPE_DELAY_MAX = 8
 
 # Retry configuration
 MAX_RETRIES = 2
 RETRY_DELAY = 10
 
-# Persistent browser data directory (relative to project root)
-BROWSER_DATA_DIR = Path(__file__).parent.parent.parent / "chrome_data"
-COOKIES_FILE = BROWSER_DATA_DIR / "twitter_cookies.json"
+# Pagination: how many pages of tweets to fetch per account
+DEFAULT_MAX_PAGES = 1
 
 
-def _load_cookies() -> list[dict]:
-    """Load saved Twitter cookies from JSON file."""
-    if COOKIES_FILE.exists():
-        try:
-            import json
-            with open(COOKIES_FILE, 'r') as f:
-                cookies = json.load(f)
-            debug_log(f"[NODE: fetch_twitter_content] Loaded {len(cookies)} cookies from {COOKIES_FILE}")
-            return cookies
-        except Exception as e:
-            debug_log(f"[NODE: fetch_twitter_content] Failed to load cookies: {e}", "warning")
-    return []
+# Module-level client (initialized once per pipeline run)
+_client: Optional[TwitterClient] = None
+
+
+def _get_client() -> TwitterClient:
+    """Get or create the shared TwitterClient instance."""
+    global _client
+    if _client is None:
+        pool = AccountPool()
+        _client = TwitterClient(pool)
+    return _client
 
 
 def fetch_twitter_content(state: dict) -> dict:
     """
-    Fetch tweets from Twitter accounts using Playwright.
+    Fetch tweets from Twitter accounts using HTTP GraphQL API.
 
     Args:
         state: Pipeline state with 'twitter_accounts' and 'twitter_settings'
@@ -85,35 +86,45 @@ def fetch_twitter_content(state: dict) -> dict:
         Dict with 'raw_tweets' list (adapted for filter_business_news compatibility)
     """
     with track_time("fetch_twitter_content"):
-        debug_log("[NODE: fetch_twitter_content] Entering")
+        debug_log("[NODE: fetch_twitter_content] Entering (HTTP mode)")
 
         twitter_accounts = state.get("twitter_accounts", [])
         settings = state.get("twitter_settings", {})
         scrape_delay_min = settings.get("scrape_delay_min", DEFAULT_SCRAPE_DELAY_MIN)
         scrape_delay_max = settings.get("scrape_delay_max", DEFAULT_SCRAPE_DELAY_MAX)
+        max_pages = settings.get("max_pages", DEFAULT_MAX_PAGES)
 
         debug_log(f"[NODE: fetch_twitter_content] Processing {len(twitter_accounts)} accounts")
-        debug_log(f"[NODE: fetch_twitter_content] Delay between accounts: {scrape_delay_min}-{scrape_delay_max}s (randomized)")
+        debug_log(f"[NODE: fetch_twitter_content] Delay between accounts: {scrape_delay_min}-{scrape_delay_max}s")
+        debug_log(f"[NODE: fetch_twitter_content] Max pages per account: {max_pages}")
 
         if not twitter_accounts:
             return {"raw_tweets": []}
 
+        client = _get_client()
         all_tweets: list[RawTweet] = []
+        failed_accounts: list[str] = []
 
         for i, account in enumerate(twitter_accounts):
             handle = account.get("handle", "")
             debug_log(f"[NODE: fetch_twitter_content] Scraping {handle} ({i+1}/{len(twitter_accounts)})")
 
-            tweets = _scrape_account_with_retry(handle)
+            tweets = _scrape_account_with_retry(client, handle, max_pages)
             all_tweets.extend(tweets)
 
             debug_log(f"[NODE: fetch_twitter_content] Got {len(tweets)} tweets from {handle}")
 
-            # Rate limit delay (skip for last account)
+            if not tweets:
+                failed_accounts.append(handle)
+
+            # Delay between accounts (skip for last account)
             if i < len(twitter_accounts) - 1:
                 delay = random.uniform(scrape_delay_min, scrape_delay_max)
                 debug_log(f"[NODE: fetch_twitter_content] Waiting {delay:.1f}s before next account...")
                 time.sleep(delay)
+
+        # Save account pool state (usage stats, rate limit info)
+        client.pool.save()
 
         # Deduplicate by tweet_id
         seen_ids = set()
@@ -124,172 +135,106 @@ def fetch_twitter_content(state: dict) -> dict:
                 unique_tweets.append(tweet)
 
         debug_log(f"[NODE: fetch_twitter_content] Total tweets: {len(unique_tweets)} (after dedup)")
+        if failed_accounts:
+            debug_log(f"[NODE: fetch_twitter_content] Failed accounts: {failed_accounts}", "warning")
         debug_log(f"[NODE: fetch_twitter_content] Output: {len(unique_tweets)} raw_tweets")
 
         return {"raw_tweets": unique_tweets}
 
 
-def _scrape_account_with_retry(handle: str) -> list[RawTweet]:
+def _scrape_account_with_retry(
+    client: TwitterClient, handle: str, max_pages: int
+) -> list[RawTweet]:
     """
     Scrape a single Twitter account with retry logic.
 
     Args:
-        handle: Twitter handle (e.g., "@a16z")
+        client: TwitterClient instance.
+        handle: Twitter handle (e.g., "@a16z").
+        max_pages: Max pages of tweets to fetch.
 
     Returns:
-        List of RawTweet dicts
+        List of RawTweet dicts.
     """
     for attempt in range(MAX_RETRIES + 1):
         try:
-            return _scrape_single_account(handle)
+            return _scrape_single_account(client, handle, max_pages)
+        except CookieExpiredError:
+            # Don't retry on expired cookies — all accounts are likely expired
+            debug_log(
+                f"[NODE: fetch_twitter_content] Cookie expired for {handle}. "
+                "Re-run twitter_cdp_login.py to refresh.",
+                "error",
+            )
+            return []
+        except RateLimitError as e:
+            wait = e.reset_at - time.time()
+            if wait > 300:  # Don't wait more than 5 minutes
+                debug_log(
+                    f"[NODE: fetch_twitter_content] Rate limited for {wait:.0f}s, skipping {handle}",
+                    "warning",
+                )
+                return []
+            debug_log(
+                f"[NODE: fetch_twitter_content] Rate limited, waiting {wait:.0f}s...",
+                "warning",
+            )
+            time.sleep(max(wait, 0) + 1)
+            # Retry after rate limit expires
         except Exception as e:
             if attempt < MAX_RETRIES:
-                debug_log(f"[NODE: fetch_twitter_content] Attempt {attempt + 1} failed for {handle}: {e}", "warning")
-                debug_log(f"[NODE: fetch_twitter_content] Retrying in {RETRY_DELAY}s...", "warning")
+                debug_log(
+                    f"[NODE: fetch_twitter_content] Attempt {attempt + 1} failed for {handle}: {e}",
+                    "warning",
+                )
+                debug_log(
+                    f"[NODE: fetch_twitter_content] Retrying in {RETRY_DELAY}s...",
+                    "warning",
+                )
                 time.sleep(RETRY_DELAY)
             else:
-                debug_log(f"[NODE: fetch_twitter_content] Max retries reached for {handle}: {e}", "error")
+                debug_log(
+                    f"[NODE: fetch_twitter_content] Max retries reached for {handle}: {e}",
+                    "error",
+                )
                 return []
 
     return []
 
 
-def _scrape_single_account(handle: str) -> list[RawTweet]:
+def _scrape_single_account(
+    client: TwitterClient, handle: str, max_pages: int
+) -> list[RawTweet]:
     """
-    Scrape tweets from a single Twitter account using Playwright.
-
-    Uses persistent browser context and expect_response pattern
-    for reliable GraphQL API interception.
+    Fetch tweets from a single Twitter account via HTTP.
 
     Args:
-        handle: Twitter handle (e.g., "@a16z")
+        client: TwitterClient instance.
+        handle: Twitter handle (e.g., "@a16z").
+        max_pages: Max pages of tweets to fetch.
 
     Returns:
-        List of RawTweet dicts
+        List of RawTweet dicts.
     """
-    # Remove @ prefix for URL
-    username = handle.lstrip("@")
-    profile_url = f"https://x.com/{username}"
+    responses = client.fetch_user_tweets(
+        screen_name=handle,
+        max_pages=max_pages,
+    )
 
-    # Ensure browser data directory exists
-    browser_data_dir = str(BROWSER_DATA_DIR.resolve())
-    os.makedirs(browser_data_dir, exist_ok=True)
-
-    debug_log(f"[NODE: fetch_twitter_content] Launching Playwright for {profile_url}")
-    debug_log(f"[NODE: fetch_twitter_content] Using persistent context: {browser_data_dir}")
-
-    captured_responses: list[dict] = []
-
-    with sync_playwright() as p:
-        # Use persistent context to maintain cookies/session state
-        # This is the key difference - Twitter serves different content to fresh vs returning browsers
-        context = p.chromium.launch_persistent_context(
-            user_data_dir=browser_data_dir,
-            headless=True,
-            viewport={"width": 1280, "height": 800},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-            # Hide automation signals
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-infobars",
-                "--no-first-run",
-                "--no-default-browser-check",
-            ],
-            ignore_default_args=["--enable-automation"],
-        )
-        page = context.new_page()
-
-        # Load saved cookies (from CDP login)
-        cookies = _load_cookies()
-        if cookies:
-            context.add_cookies(cookies)
-            debug_log(f"[NODE: fetch_twitter_content] Injected {len(cookies)} cookies")
-
-        try:
-            # Use expect_response to explicitly wait for UserTweets API response
-            # This is more reliable than passive listening
-            with page.expect_response(
-                lambda response: "UserTweets" in response.url and response.status == 200,
-                timeout=API_RESPONSE_TIMEOUT
-            ) as response_info:
-                # Navigate with domcontentloaded (faster, doesn't wait for all resources)
-                page.goto(profile_url, wait_until="domcontentloaded", timeout=PAGE_TIMEOUT)
-
-            # Get the captured response
-            response = response_info.value
-            debug_log(f"[NODE: fetch_twitter_content] Captured UserTweets response: {response.url[:80]}...")
-
-            try:
-                json_data = response.json()
-                captured_responses.append({
-                    "url": response.url,
-                    "data": json_data
-                })
-            except Exception as e:
-                debug_log(f"[NODE: fetch_twitter_content] Failed to parse response JSON: {e}", "warning")
-
-        except Exception as e:
-            debug_log(f"[NODE: fetch_twitter_content] expect_response failed: {e}", "warning")
-            # Fallback: try passive capture if expect_response times out
-            debug_log("[NODE: fetch_twitter_content] Falling back to passive response capture...")
-            captured_responses = _fallback_passive_capture(page, profile_url)
-
-        context.close()
-
-    # Parse captured responses
-    tweets = _parse_twitter_responses(captured_responses, handle)
-
+    tweets = _parse_twitter_responses(responses, handle)
     return tweets
 
 
-def _fallback_passive_capture(page, profile_url: str) -> list[dict]:
-    """
-    Fallback method using passive response capture.
-    Used when expect_response times out.
-    """
-    captured: list[dict] = []
-
-    def handle_response(response: Response):
-        url = response.url
-        if "UserTweets" in url:
-            try:
-                if response.status == 200:
-                    content_type = response.headers.get("content-type", "")
-                    if "json" in content_type:
-                        body = response.json()
-                        captured.append({"url": url, "data": body})
-                        debug_log(f"[NODE: fetch_twitter_content] Fallback captured: {url[:80]}...")
-            except Exception:
-                pass
-
-    page.on("response", handle_response)
-
-    try:
-        page.goto(profile_url, wait_until="networkidle", timeout=PAGE_TIMEOUT)
-        page.wait_for_timeout(WAIT_FOR_API)
-    except Exception as e:
-        debug_log(f"[NODE: fetch_twitter_content] Fallback navigation note: {e}", "warning")
-
-    return captured
+# =============================================================================
+# Response Parsing (unchanged from Playwright version — same GraphQL structure)
+# =============================================================================
 
 
 def _parse_twitter_responses(responses: list[dict], handle: str) -> list[RawTweet]:
-    """
-    Parse captured Twitter API responses to extract tweets.
-
-    Args:
-        responses: List of captured API responses
-        handle: Twitter handle for this account
-
-    Returns:
-        List of RawTweet dicts
-    """
+    """Parse captured Twitter API responses to extract tweets."""
     tweets: list[RawTweet] = []
 
     for resp in responses:
-        if "UserTweets" not in resp.get("url", ""):
-            continue
-
         data = resp.get("data", {})
 
         try:
@@ -310,12 +255,10 @@ def _parse_twitter_responses(responses: list[dict], handle: str) -> list[RawTwee
                         entries = [entry]
 
                 for entry in entries:
-                    # Handle individual tweet items (TimelineTimelineItem)
                     tweet = _parse_tweet_entry(entry, handle)
                     if tweet:
                         tweets.append(tweet)
 
-                    # Handle conversation/thread modules (TimelineTimelineModule)
                     module_tweets = _parse_module_entry(entry, handle)
                     tweets.extend(module_tweets)
 
@@ -326,19 +269,7 @@ def _parse_twitter_responses(responses: list[dict], handle: str) -> list[RawTwee
 
 
 def _parse_module_entry(entry: dict, handle: str) -> list[RawTweet]:
-    """
-    Parse a TimelineTimelineModule entry (conversation thread) to extract tweets.
-
-    Twitter groups tweets into "profile-conversation" modules for threads.
-    Each module contains multiple tweet items.
-
-    Args:
-        entry: Module entry from API response
-        handle: Twitter handle
-
-    Returns:
-        List of RawTweet dicts
-    """
+    """Parse a TimelineTimelineModule entry (conversation thread)."""
     if not entry:
         return []
 
@@ -346,7 +277,6 @@ def _parse_module_entry(entry: dict, handle: str) -> list[RawTweet]:
     if content.get("entryType") != "TimelineTimelineModule":
         return []
 
-    # Only parse profile-conversation modules (not who-to-follow, etc.)
     entry_id = entry.get("entryId", "")
     if "profile-conversation" not in entry_id:
         return []
@@ -370,16 +300,7 @@ def _parse_module_entry(entry: dict, handle: str) -> list[RawTweet]:
 
 
 def _parse_tweet_entry(entry: dict, handle: str) -> Optional[RawTweet]:
-    """
-    Parse a single tweet entry from the timeline.
-
-    Args:
-        entry: Tweet entry from API response
-        handle: Twitter handle
-
-    Returns:
-        RawTweet dict or None if not a valid tweet
-    """
+    """Parse a single tweet entry from the timeline."""
     if not entry:
         return None
 
@@ -396,24 +317,13 @@ def _parse_tweet_entry(entry: dict, handle: str) -> Optional[RawTweet]:
 
 
 def _extract_tweet_from_result(tweet_result: dict, handle: str) -> Optional[RawTweet]:
-    """
-    Extract tweet data from a tweet_results.result object.
-
-    Args:
-        tweet_result: The result object containing tweet data
-        handle: Twitter handle
-
-    Returns:
-        RawTweet dict or None if not a valid tweet
-    """
+    """Extract tweet data from a tweet_results.result object."""
     if not tweet_result:
         return None
 
-    # Handle tombstone (deleted/unavailable tweets)
     if tweet_result.get("__typename") == "TweetTombstone":
         return None
 
-    # Extract tweet data
     legacy = tweet_result.get("legacy", {})
     full_text = legacy.get("full_text", "")
     created_at = legacy.get("created_at", "")
@@ -439,10 +349,8 @@ def _extract_tweet_from_result(tweet_result: dict, handle: str) -> Optional[RawT
     quoted_text = quoted.get("legacy", {}).get("full_text", "") if quoted else ""
     is_quote_tweet = bool(quoted_text)
 
-    # Parse date
     pub_date = _parse_twitter_date(created_at)
 
-    # Construct tweet URL
     username = handle.lstrip("@")
     url = f"https://x.com/{username}/status/{tweet_id}"
 
@@ -460,7 +368,6 @@ def _extract_tweet_from_result(tweet_result: dict, handle: str) -> Optional[RawT
         "is_retweet": False,
         "is_quote_tweet": is_quote_tweet,
         "quoted_text": quoted_text if is_quote_tweet else None,
-        # Compatibility fields for filter_business_news
         "link": url,
         "title": full_text,
         "description": quoted_text if is_quote_tweet else "",
@@ -471,15 +378,7 @@ def _extract_tweet_from_result(tweet_result: dict, handle: str) -> Optional[RawT
 
 
 def _parse_twitter_date(created_at: str) -> str:
-    """
-    Parse Twitter date format to YYYY-MM-DD.
-
-    Args:
-        created_at: Twitter date format (e.g., "Tue Dec 30 11:54:33 +0000 2025")
-
-    Returns:
-        Date string in YYYY-MM-DD format, or empty string on failure
-    """
+    """Parse Twitter date format to YYYY-MM-DD."""
     if not created_at:
         return ""
 

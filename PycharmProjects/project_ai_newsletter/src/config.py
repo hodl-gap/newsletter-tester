@@ -97,3 +97,35 @@ def load_config_settings() -> dict:
     if config_file.exists():
         return json.loads(config_file.read_text(encoding="utf-8"))
     return {}
+
+
+# =============================================================================
+# Shared Data Directory (for multi-config Twitter caching)
+# =============================================================================
+
+def get_shared_data_dir() -> Path:
+    """
+    Get shared data directory for cross-config caching.
+
+    Used for consolidated Twitter scraping where tweets are cached once
+    and shared across multiple configs.
+
+    Returns:
+        Path to data/shared/ directory (creates if needed)
+    """
+    shared_dir = DATA_DIR / "shared"
+    shared_dir.mkdir(parents=True, exist_ok=True)
+    return shared_dir
+
+
+def get_shared_twitter_cache_path() -> Path:
+    """
+    Get path to shared Twitter cache file.
+
+    Used by twitter_multi_orchestrator to save consolidated tweets
+    and by twitter_layer2_orchestrator (with use_shared_cache=True) to read.
+
+    Returns:
+        Path to data/shared/twitter_raw_cache.json
+    """
+    return get_shared_data_dir() / "twitter_raw_cache.json"

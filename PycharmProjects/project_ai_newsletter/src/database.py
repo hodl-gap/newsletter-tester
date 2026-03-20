@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS articles (
     region TEXT,
     category TEXT,
     layer TEXT,
+    filter_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     embedding BLOB
 );
@@ -148,6 +149,8 @@ class ArticleDatabase:
             self._migrate_full_content(conn)
             # Migration: Add new dedup_log columns if missing (for existing DBs)
             self._migrate_dedup_log(conn)
+            # Migration: Add filter_reason column if missing (for existing DBs)
+            self._migrate_filter_reason(conn)
 
         debug_log(f"[DB] Database initialized at {self.db_path}")
 
@@ -205,6 +208,20 @@ class ArticleDatabase:
             conn.commit()
         except Exception as e:
             debug_log(f"[DB] Dedup log migration warning: {e}", "warning")
+
+    def _migrate_filter_reason(self, conn):
+        """Add filter_reason column to existing databases."""
+        try:
+            cursor = conn.execute("PRAGMA table_info(articles)")
+            columns = [row[1] for row in cursor.fetchall()]
+
+            if "filter_reason" not in columns:
+                debug_log("[DB] Migrating: Adding filter_reason column")
+                conn.execute("ALTER TABLE articles ADD COLUMN filter_reason TEXT")
+                conn.commit()
+                debug_log("[DB] Migration complete: filter_reason column added")
+        except Exception as e:
+            debug_log(f"[DB] Migration warning: {e}", "warning")
 
     # -------------------------------------------------------------------------
     # URL Deduplication
@@ -289,8 +306,8 @@ class ArticleDatabase:
                 conn.execute(
                     """INSERT INTO articles
                        (url, url_hash, title, summary, full_content, source, source_type, pub_date,
-                        region, category, layer, embedding)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        region, category, layer, filter_reason, embedding)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (
                         url,
                         url_hash,
@@ -303,6 +320,7 @@ class ArticleDatabase:
                         article.get("region"),
                         article.get("category"),
                         article.get("layer"),
+                        article.get("filter_reason"),
                         embedding_blob
                     )
                 )
@@ -341,8 +359,8 @@ class ArticleDatabase:
                     conn.execute(
                         """INSERT INTO articles
                            (url, url_hash, title, summary, full_content, source, source_type, pub_date,
-                            region, category, layer, embedding)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                            region, category, layer, filter_reason, embedding)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                         (
                             url,
                             url_hash,
@@ -355,6 +373,7 @@ class ArticleDatabase:
                             article.get("region"),
                             article.get("category"),
                             article.get("layer"),
+                            article.get("filter_reason"),
                             embedding_blob
                         )
                     )

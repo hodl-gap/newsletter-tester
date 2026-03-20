@@ -33,6 +33,7 @@
     "https://asia.nikkei.com/Business/Technology",
     "https://www.forbes.com/technology/",
     "https://pulsenews.co.kr/",
+    "https://www.mk.co.kr/",
     "https://kedglobal.com/",
     "https://www.agbi.com/",
     "https://www.consultancy-me.com/",
@@ -52,7 +53,6 @@
     "https://techcrunch.com/tag/artificial-intelligence/",
     "https://www.wsj.com/news/technology/artificial-intelligence",
     "https://venturebeat.com/",
-    "https://www.epnc.co.kr/",
     "https://zdnet.co.kr/",
     "https://www.foxnews.com/",
     "https://finainews.com/",
@@ -60,6 +60,14 @@
     "https://www.marktechpost.com/",
     "https://finance.yahoo.com/",
     "https://www.nytimes.com/",
-    "https://news.hada.io/new"
+    "https://news.hada.io/new",
+    "https://www.alizila.com/"
+  ],
+  "obsolete": [
+    {
+      "url": "https://www.epnc.co.kr/",
+      "reason": "Too much non-AI content (general electronics/semiconductor news)",
+      "disabled_date": "2026-01-15"
+    }
   ]
 }

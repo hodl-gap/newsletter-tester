@@ -33,9 +33,15 @@ Thumbs.db
 
 # Logs
 debug.log
+*.log
+
+# Data & output (generated at runtime)
+data/
+output/
+*.db
 
 # Claude Code
 .claude/
 
-# Browser data (Playwright persistent context)
+# Browser data (session cookies, persistent context)
 chrome_data/

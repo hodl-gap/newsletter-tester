@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import TypedDict
 from collections import defaultdict
 
-from src.config import get_data_dir
+from src.config import get_data_dir, get_shared_twitter_cache_path
 from src.tracking import debug_log, track_time
 
 
@@ -227,3 +227,70 @@ def _build_cache_json(raw_tweets: list[dict], settings: dict) -> dict:
         "cache_ttl_hours": cache_ttl,
         "accounts": accounts,
     }
+
+
+# =============================================================================
+# Multi-Config Shared Cache Support
+# =============================================================================
+
+def save_shared_twitter_cache(state: dict) -> dict:
+    """
+    Save raw tweets to shared cache for multi-config access.
+
+    Saves to data/shared/twitter_raw_cache.json instead of config-specific path.
+    Used by twitter_multi_orchestrator for consolidated scraping.
+
+    Args:
+        state: Pipeline state with:
+            - 'raw_tweets': List of RawTweet dicts
+            - 'twitter_settings': Settings dict
+            - 'config_handle_map': Dict mapping config -> set of handles (optional)
+
+    Returns:
+        Dict with 'save_status'
+    """
+    with track_time("save_shared_twitter_cache"):
+        debug_log("[NODE: save_shared_twitter_cache] Entering")
+
+        raw_tweets = state.get("raw_tweets", [])
+        settings = state.get("twitter_settings", {})
+        config_handle_map = state.get("config_handle_map", {})
+
+        debug_log(f"[NODE: save_shared_twitter_cache] Caching {len(raw_tweets)} tweets")
+        debug_log(f"[NODE: save_shared_twitter_cache] Config handle map: {config_handle_map}")
+
+        # Get shared cache path
+        cache_file = get_shared_twitter_cache_path()
+
+        # Build cache JSON (reuse existing helper)
+        cache_data = _build_cache_json(raw_tweets, settings)
+
+        # Add config_handle_map to cache for reference
+        # Convert sets to lists for JSON serialization
+        cache_data["config_handle_map"] = {
+            config: list(handles)
+            for config, handles in config_handle_map.items()
+        }
+
+        # Save to shared location
+        with open(cache_file, "w", encoding="utf-8") as f:
+            json.dump(cache_data, f, indent=2, ensure_ascii=False)
+        debug_log(f"[NODE: save_shared_twitter_cache] Saved: {cache_file}")
+
+        # Calculate stats
+        handle_count = len(cache_data.get("accounts", {}))
+        tweet_count = sum(
+            acc.get("tweet_count", 0)
+            for acc in cache_data.get("accounts", {}).values()
+        )
+
+        save_status = {
+            "cache_path": str(cache_file),
+            "total_handles": handle_count,
+            "cached_tweets": tweet_count,
+            "configs_covered": list(config_handle_map.keys()),
+        }
+
+        debug_log(f"[NODE: save_shared_twitter_cache] Status: {save_status}")
+
+        return {"save_status": save_status}

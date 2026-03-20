@@ -3,6 +3,10 @@ Load Cached Tweets Node
 
 Reads raw tweet cache from Layer 1 and returns tweets for available accounts.
 Checks cache freshness and warns if stale.
+
+Supports both:
+- Config-specific cache: data/{config}/twitter_raw_cache.json (default)
+- Shared cache: data/shared/twitter_raw_cache.json (when use_shared_cache=True)
 """
 
 import json
@@ -10,22 +14,65 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-from src.config import get_data_dir
+from src.config import get_data_dir, get_shared_twitter_cache_path, get_twitter_accounts_path
 from src.tracking import debug_log, track_time
 
 
 def _get_cache_file() -> Path:
-    """Get path for twitter_raw_cache.json."""
+    """Get path for config-specific twitter_raw_cache.json."""
     return get_data_dir() / "twitter_raw_cache.json"
+
+
+def _get_config_handles() -> set[str]:
+    """
+    Get handles from current config's twitter_accounts.json.
+
+    Used to filter shared cache tweets to only those relevant to this config.
+
+    Returns:
+        Set of handle strings (e.g., {"@OpenAI", "@AnthropicAI"})
+    """
+    config_path = get_twitter_accounts_path()
+
+    if not config_path.exists():
+        debug_log(
+            f"[_get_config_handles] twitter_accounts.json not found: {config_path}",
+            "warning"
+        )
+        return set()
+
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        debug_log(f"[_get_config_handles] Error reading {config_path}: {e}", "error")
+        return set()
+
+    handles = set()
+    for account in data.get("accounts", []):
+        handle = account.get("handle", "")
+        if handle:
+            # Normalize handle
+            if not handle.startswith("@"):
+                handle = f"@{handle}"
+            handles.add(handle)
+
+    return handles
 
 
 def load_cached_tweets(state: dict) -> dict:
     """
     Load cached tweets from twitter_raw_cache.json.
 
+    Supports two modes:
+    - Default: Reads from config-specific cache (data/{config}/twitter_raw_cache.json)
+    - Shared cache: Reads from shared cache (data/shared/twitter_raw_cache.json)
+      when use_shared_cache=True. Filters tweets to handles in this config.
+
     Args:
         state: Pipeline state with:
             - 'available_accounts': List of AvailableAccountInfo from L1
+            - 'use_shared_cache': If True, read from shared cache (optional)
 
     Returns:
         Dict with 'raw_tweets' list
@@ -34,11 +81,30 @@ def load_cached_tweets(state: dict) -> dict:
         debug_log("[NODE: load_cached_tweets] Entering")
 
         available_accounts = state.get("available_accounts", [])
-        available_handles = {acc["handle"] for acc in available_accounts}
+        use_shared_cache = state.get("use_shared_cache", False)
+
+        # Determine which handles to load
+        if use_shared_cache:
+            # When using shared cache, filter by current config's handles
+            config_handles = _get_config_handles()
+            available_handles = config_handles
+            debug_log(
+                f"[NODE: load_cached_tweets] Using SHARED cache, "
+                f"filtering to {len(config_handles)} config handles"
+            )
+        else:
+            # Default: use handles from available_accounts (L1 output)
+            available_handles = {acc["handle"] for acc in available_accounts}
 
         debug_log(f"[NODE: load_cached_tweets] Loading tweets for {len(available_handles)} accounts")
 
-        cache_file = _get_cache_file()
+        # Select cache file based on mode
+        if use_shared_cache:
+            cache_file = get_shared_twitter_cache_path()
+            debug_log(f"[NODE: load_cached_tweets] Reading from shared cache: {cache_file}")
+        else:
+            cache_file = _get_cache_file()
+            debug_log(f"[NODE: load_cached_tweets] Reading from config cache: {cache_file}")
 
         # Check if cache file exists
         if not cache_file.exists():

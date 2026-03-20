@@ -108,6 +108,10 @@ MODEL_COSTS = {
         "input": 0.25,
         "output": 1.25,
     },
+    "gpt-5-mini": {
+        "input": 0.30,   # $0.30 per 1M input tokens
+        "output": 1.20,  # $1.20 per 1M output tokens
+    },
 }
 
 

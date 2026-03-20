@@ -32,6 +32,7 @@ class OutputRecord(TypedDict):
     url: str            # Article URL
     title: str          # Article title (bonus field)
     full_content: str   # Original article text (for re-processing)
+    filter_reason: str  # LLM reason for keeping the article
 
 
 def _is_failed_summary(contents: str) -> bool:
@@ -101,6 +102,7 @@ def build_output_dataframe(state: dict) -> dict:
                 "url": article.get("link", ""),
                 "title": article.get("title", ""),
                 "full_content": article.get("full_content") or article.get("description", ""),
+                "filter_reason": article.get("filter_reason", ""),
             }
             output_data.append(record)
 

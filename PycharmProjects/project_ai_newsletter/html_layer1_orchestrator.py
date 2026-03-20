@@ -33,7 +33,10 @@ from src.tracking import track_time, cost_tracker, reset_cost_tracker, debug_log
 class HTMLDiscoveryState(TypedDict):
     """State for HTML Layer 1 pipeline."""
     url_filter: list[str] | None  # Optional filter for URLs (substring match)
+    full_rescan: bool  # Force re-check all sources (ignore analyzed_at)
+    refresh_days: int  # Days before re-checking a source
     sources_to_test: list[SourceInfo]
+    skipped_urls: list[str]  # URLs skipped due to recent check
     accessibility_results: list[AccessibilityResult]
     listing_analyses: list[ListingAnalysis]
     article_analyses: list[ArticleAnalysis]
@@ -76,7 +79,12 @@ def build_graph() -> StateGraph:
 # Entry Point
 # =============================================================================
 
-def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> dict:
+def run(
+    url_filter: list[str] | None = None,
+    config: str = DEFAULT_CONFIG,
+    full_rescan: bool = False,
+    refresh_days: int = 7,
+) -> dict:
     """
     Run the HTML scrapability discovery pipeline.
 
@@ -88,6 +96,9 @@ def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> di
                    Only sources containing any of these substrings will be tested.
                    Example: ['pulsenews', 'rundown']
         config: Configuration name (default: business_news).
+        full_rescan: If True, re-check all sources regardless of analyzed_at.
+                    Default is False (incremental mode).
+        refresh_days: Days before re-checking a source (default: 7).
 
     Returns:
         Final pipeline state with results.
@@ -99,6 +110,7 @@ def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> di
         debug_log("=" * 60)
         debug_log("HTML LAYER 1: SCRAPABILITY DISCOVERY")
         debug_log(f"CONFIG: {config}")
+        debug_log(f"MODE: {'Full Rescan' if full_rescan else f'Incremental ({refresh_days} day refresh)'}")
         debug_log("=" * 60)
 
         # Reset cost tracker
@@ -109,7 +121,10 @@ def run(url_filter: list[str] | None = None, config: str = DEFAULT_CONFIG) -> di
 
         initial_state: HTMLDiscoveryState = {
             "url_filter": url_filter,
+            "full_rescan": full_rescan,
+            "refresh_days": refresh_days,
             "sources_to_test": [],
+            "skipped_urls": [],
             "accessibility_results": [],
             "listing_analyses": [],
             "article_analyses": [],
@@ -141,7 +156,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run HTML scrapability discovery (HTML Layer 1)")
     parser.add_argument("--config", default=DEFAULT_CONFIG, help="Config to use (default: business_news)")
     parser.add_argument("--url-filter", nargs="*", help="Filter for specific URLs")
+    parser.add_argument("--full-rescan", action="store_true",
+                       help="Force re-check all sources (ignore analyzed_at)")
+    parser.add_argument("--refresh-days", type=int, default=7,
+                       help="Days before re-checking a source (default: 7)")
 
     args = parser.parse_args()
 
-    run(config=args.config, url_filter=args.url_filter)
+    run(
+        config=args.config,
+        url_filter=args.url_filter,
+        full_rescan=args.full_rescan,
+        refresh_days=args.refresh_days,
+    )
